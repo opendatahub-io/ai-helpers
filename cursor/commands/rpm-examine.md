@@ -1,0 +1,1 @@
+../../claude-plugins/rpm/commands/examine.md

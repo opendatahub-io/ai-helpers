@@ -1,0 +1,1 @@
+../../claude-plugins/konflux/commands/application.md

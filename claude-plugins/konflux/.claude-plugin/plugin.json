@@ -1,0 +1,8 @@
+{
+  "name": "konflux",
+  "description": "A plugin to analyze and trigger Konflux builds",
+  "version": "0.0.1",
+  "author": {
+    "name": "github.com/pavolloffay"
+  }
+}

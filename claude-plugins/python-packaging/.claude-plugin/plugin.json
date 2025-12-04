@@ -1,0 +1,8 @@
+{
+  "name": "python-packaging",
+  "description": "Tools and skills for Python package management",
+  "version": "1.0.0",
+  "author": {
+    "name": "AI Helpers Marketplace"
+  }
+}

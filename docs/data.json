@@ -4,6 +4,43 @@
   "tools": {
     "claude_code": [
       {
+        "name": "git",
+        "description": "Git workflow automation and utilities",
+        "commands": [
+          {
+            "name": "aipcc-commit-suggest",
+            "description": "Generate AIPCC Commits style commit messages or summarize existing commits",
+            "synopsis": "/git:aipcc-commit-suggest       # Analyze staged changes",
+            "argument_hint": "[N]"
+          }
+        ],
+        "skills": [
+          {
+            "name": "shallow-clone",
+            "id": "shallow-clone",
+            "description": "Perform a shallow clone of a Git repository to a temporary location."
+          }
+        ],
+        "hooks": [],
+        "agents": [],
+        "has_readme": true
+      },
+      {
+        "name": "gitlab",
+        "description": "Tools and skills for interacting with GitLab resources",
+        "commands": [],
+        "skills": [
+          {
+            "name": "pipeline-debugger",
+            "id": "pipeline-debugger",
+            "description": "Debug and monitor GitLab CI/CD pipelines for merge requests. Check pipeline status, view job logs, and troubleshoot CI failures. Use this when the user needs to investigate GitLab CI pipeline issues, check job statuses, or view specific job logs."
+          }
+        ],
+        "hooks": [],
+        "agents": [],
+        "has_readme": true
+      },
+      {
         "name": "hello-world",
         "description": "A hello world plugin",
         "commands": [
@@ -12,6 +49,110 @@
             "description": "Hello world plugin implementation",
             "synopsis": "/hello-world:echo [name]",
             "argument_hint": "[name]"
+          }
+        ],
+        "skills": [],
+        "hooks": [],
+        "agents": [],
+        "has_readme": true
+      },
+      {
+        "name": "jira",
+        "description": "Jira workflow automation and utilities",
+        "commands": [
+          {
+            "name": "sprint-summary",
+            "description": "Generate comprehensive sprint summaries by analyzing JIRA sprint data, including issue breakdown, progress metrics, and team performance insights.",
+            "synopsis": "/jira:sprint-summary <sprint-name> [options]",
+            "argument_hint": "<sprint-name> [options]"
+          },
+          {
+            "name": "upload-chat-log",
+            "description": "Export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation.",
+            "synopsis": "/jira:upload-chat-log [ticket-key]",
+            "argument_hint": "[ticket-key]"
+          }
+        ],
+        "skills": [
+          {
+            "name": "upload-chat-log",
+            "id": "upload-chat-log",
+            "description": "Export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation."
+          }
+        ],
+        "hooks": [],
+        "agents": [],
+        "has_readme": true
+      },
+      {
+        "name": "konflux",
+        "description": "A plugin to analyze and trigger Konflux builds",
+        "commands": [
+          {
+            "name": "application",
+            "description": "Manage Konflux application",
+            "synopsis": "/konflux:application status <application>",
+            "argument_hint": "<subcommand> [args]"
+          },
+          {
+            "name": "component",
+            "description": "Manage Konflux component",
+            "synopsis": "/konflux:component status <component>",
+            "argument_hint": "<subcommand> [args]"
+          }
+        ],
+        "skills": [],
+        "hooks": [],
+        "agents": [],
+        "has_readme": true
+      },
+      {
+        "name": "python-packaging",
+        "description": "Tools and skills for Python package management",
+        "commands": [],
+        "skills": [
+          {
+            "name": "complexity",
+            "id": "complexity",
+            "description": "Analyze Python package build complexity by inspecting PyPI metadata. Evaluates compilation requirements, dependencies, distribution types, and provides recommendations for wheel building strategies."
+          },
+          {
+            "name": "env-finder",
+            "id": "env-finder",
+            "description": "Investigate environment variables that can be set when building Python wheels for a given project. Analyzes setup.py, CMake files, and other build configuration files to discover customizable build environment variables."
+          },
+          {
+            "name": "license-checker",
+            "id": "license-checker",
+            "description": "Assess license compatibility for Python package redistribution using SPDX.org license database. Evaluates whether a given license allows building and distributing wheels, with real-time license information lookup."
+          },
+          {
+            "name": "source-finder",
+            "id": "source-finder",
+            "description": "Locate source code repositories for Python packages by analyzing PyPI metadata, project URLs, and code hosting platforms like GitHub, GitLab, and Bitbucket. Provides deterministic results with confidence levels."
+          }
+        ],
+        "hooks": [],
+        "agents": [
+          {
+            "name": "python-packaging-investigator",
+            "id": "investigator",
+            "description": "Investigates Python package repositories to analyze build systems, dependencies, and packaging complexity. Provides comprehensive guidance on how packages can be built from source using integrated analysis skills.",
+            "tools": "Bash, Read, Grep, Glob, WebFetch, Skill",
+            "model": "sonnet"
+          }
+        ],
+        "has_readme": true
+      },
+      {
+        "name": "rpm",
+        "description": "Tools for working with RPMs",
+        "commands": [
+          {
+            "name": "examine",
+            "description": "Analyze RPM build.log failures",
+            "synopsis": "/rpm:examine <copr-chroot-url>",
+            "argument_hint": "[copr-chroot-url] OR [build-log-url] [srpm-url] OR [build.log] [specfile|dist-git] [sources]"
           }
         ],
         "skills": [],
@@ -36,13 +177,121 @@
         "has_readme": true
       }
     ],
-    "cursor": [],
+    "cursor": [
+      {
+        "name": "commit-suggest-aipcc",
+        "description": "Generate AIPCC Commits style commit messages or summarize existing commits",
+        "commands": [
+          {
+            "name": "suggest-aipcc",
+            "full_command_name": "commit-suggest-aipcc",
+            "description": "Generate AIPCC Commits style commit messages or summarize existing commits",
+            "synopsis": "/git:aipcc-commit-suggest       # Analyze staged changes",
+            "argument_hint": "[N]"
+          }
+        ],
+        "skills": [],
+        "hooks": [],
+        "agents": [],
+        "has_readme": true
+      },
+      {
+        "name": "jira-sprint-summary",
+        "description": "Generate comprehensive sprint summaries by analyzing JIRA sprint data, including issue breakdown, progress metrics, and team performance insights.",
+        "commands": [
+          {
+            "name": "sprint-summary",
+            "full_command_name": "jira-sprint-summary",
+            "description": "Generate comprehensive sprint summaries by analyzing JIRA sprint data, including issue breakdown, progress metrics, and team performance insights.",
+            "synopsis": "/jira-sprint-summary <sprint-name> [options]",
+            "argument_hint": "<sprint-name> [options]"
+          }
+        ],
+        "skills": [],
+        "hooks": [],
+        "agents": [],
+        "has_readme": true
+      },
+      {
+        "name": "konflux-application",
+        "description": "Manage Konflux application",
+        "commands": [
+          {
+            "name": "application",
+            "full_command_name": "konflux-application",
+            "description": "Manage Konflux application",
+            "synopsis": "/konflux-application status <application>",
+            "argument_hint": "<subcommand> [args]"
+          }
+        ],
+        "skills": [],
+        "hooks": [],
+        "agents": [],
+        "has_readme": true
+      },
+      {
+        "name": "konflux-component",
+        "description": "Manage Konflux component",
+        "commands": [
+          {
+            "name": "component",
+            "full_command_name": "konflux-component",
+            "description": "Manage Konflux component",
+            "synopsis": "/konflux-component status <component>",
+            "argument_hint": "<subcommand> [args]"
+          }
+        ],
+        "skills": [],
+        "hooks": [],
+        "agents": [],
+        "has_readme": true
+      },
+      {
+        "name": "rpm-examine",
+        "description": "Analyze RPM build.log failures",
+        "commands": [
+          {
+            "name": "examine",
+            "full_command_name": "rpm-examine",
+            "description": "Analyze RPM build.log failures",
+            "synopsis": "/rpm-examine <copr-chroot-url>",
+            "argument_hint": "[copr-chroot-url] OR [build-log-url] [srpm-url] OR [build.log] [specfile|dist-git] [sources]"
+          }
+        ],
+        "skills": [],
+        "hooks": [],
+        "agents": [],
+        "has_readme": true
+      }
+    ],
     "gemini": [
       {
         "name": "commit-message-assistant",
         "display_name": "Commit Message Assistant",
-        "description": "I am a Commit Message Assistant. Please provide a description of your code changes, and I will generate a well-formatted commit message for you.",
+        "description": "I am the AIPCC Commit Message Assistant. Please provide a description of your code changes, and I will generate a well-formatted commit message for you.",
         "link": "https://gemini.google.com/gem/1j7GV5eSdCl3jtT2dYWrRlDpV6q7eBqqc?usp=sharing",
+        "commands": [],
+        "skills": [],
+        "hooks": [],
+        "agents": [],
+        "has_readme": false
+      },
+      {
+        "name": "aipcc-adr-assistant",
+        "display_name": "AIPCC ADR Assistant",
+        "description": "My purpose is to help you generate well-structured Architecture Decision Records (ADRs) in AIPCC. You provide the relevant documents and notes, and I will synthesize that information to populate a predefined ADR template.",
+        "link": "https://gemini.google.com/gem/11WO66DX_4-MQHIF6fj4LeM8dKxDzkz17?usp=sharing",
+        "commands": [],
+        "skills": [],
+        "hooks": [],
+        "agents": [],
+        "has_readme": false
+      },
+      {
+        "name": "technical-spike-&-investigation",
+        "display_name": "Technical Spike & Investigation",
+        "description": "My purpose is to help an engineer conduct a technical spike for a new feature, library, initiative, or component. Note: gems don\u2019t have access to deep research so if you need the Spike to perform some research on the Internet, you\u2019ll not want to use this Gem and use regular chat sessions.",
+        "link": "https://gemini.google.com/gem/1PAt1u0cEtMbzqjl3Kp3TAzaUft3qrkXw?usp=sharing",
         "commands": [],
         "skills": [],
         "hooks": [],

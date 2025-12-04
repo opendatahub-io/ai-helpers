@@ -5,9 +5,39 @@
   },
   "plugins": [
     {
+      "name": "git",
+      "source": "./claude-plugins/git",
+      "description": "Git workflow automation and utilities"
+    },
+    {
+      "name": "gitlab",
+      "source": "./claude-plugins/gitlab",
+      "description": "Tools and skills for interacting with GitLab resources"
+    },
+    {
       "name": "hello-world",
       "source": "./claude-plugins/hello-world",
       "description": "A hello world plugin"
+    },
+    {
+      "name": "jira",
+      "source": "./claude-plugins/jira",
+      "description": "Jira workflow automation and utilities"
+    },
+    {
+      "name": "konflux",
+      "source": "./claude-plugins/konflux",
+      "description": "A plugin to analyze and trigger Konflux builds"
+    },
+    {
+      "name": "python-packaging",
+      "source": "./claude-plugins/python-packaging",
+      "description": "Tools and skills for Python package management"
+    },
+    {
+      "name": "rpm",
+      "source": "./claude-plugins/rpm",
+      "description": "Tools for working with RPMs"
     },
     {
       "name": "utils",

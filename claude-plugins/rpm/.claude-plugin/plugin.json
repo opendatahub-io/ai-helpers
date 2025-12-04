@@ -1,0 +1,9 @@
+{
+  "name": "rpm",
+  "description": "Tools for working with RPMs",
+  "version": "0.0.1",
+  "author": {
+    "name": "AIPCC DP"
+  }
+}
+

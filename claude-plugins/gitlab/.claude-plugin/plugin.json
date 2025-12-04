@@ -1,0 +1,8 @@
+{
+  "name": "gitlab",
+  "description": "Tools and skills for interacting with GitLab resources",
+  "version": "1.0.0",
+  "author": {
+    "name": "AIPCC AE"
+  }
+}
