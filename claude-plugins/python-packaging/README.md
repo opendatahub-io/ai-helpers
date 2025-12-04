@@ -80,7 +80,7 @@ A specialized investigator agent that thoroughly analyzes Git repositories to un
 
 1. Add the AI Helpers marketplace:
    ```bash
-   /plugin marketplace add git@gitlab.com:redhat/rhel-ai/core/ai-helpers.git
+   /plugin marketplace add opendatahub-io/ai-helper
    ```
 
 2. Install the python-packaging plugin:
@@ -92,7 +92,7 @@ A specialized investigator agent that thoroughly analyzes Git repositories to un
 
 1. Clone the AI Helpers repository:
    ```bash
-   git clone git@gitlab.com:redhat/rhel-ai/core/ai-helpers.git
+   git clone https://github.com/opendatahub-io/ai-helpers
    ```
 
 2. Link the plugin to your Claude directory:
