@@ -41,22 +41,6 @@
         "has_readme": true
       },
       {
-        "name": "hello-world",
-        "description": "A hello world plugin",
-        "commands": [
-          {
-            "name": "echo",
-            "description": "Hello world plugin implementation",
-            "synopsis": "/hello-world:echo [name]",
-            "argument_hint": "[name]"
-          }
-        ],
-        "skills": [],
-        "hooks": [],
-        "agents": [],
-        "has_readme": true
-      },
-      {
         "name": "jira",
         "description": "Jira workflow automation and utilities",
         "commands": [
