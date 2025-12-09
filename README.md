@@ -56,12 +56,13 @@ To use Claude Code with Google Cloud's Vertex AI, you need to pass through your 
 ```bash
 podman run -it \
   --pull always \
+  --userns=keep-id \
   -e CLAUDE_CODE_USE_VERTEX=1 \
   -e CLOUD_ML_REGION=your-ml-region \
   -e ANTHROPIC_VERTEX_PROJECT_ID=your-project-id \
   -e DISABLE_AUTOUPDATER=1 \
-  -v ~/.config/gcloud:/home/claude/.config/gcloud:Z \
-  -v $(pwd):/workspace:Z \
+  -v ~/.config/gcloud:/home/claude/.config/gcloud:ro,z \
+  -v $(pwd):/workspace:z \
   -w /workspace \
   --name claude_code \
   ghcr.io/opendatahub-io/ai-helpers:latest
@@ -72,9 +73,12 @@ podman run -it \
 - `CLOUD_ML_REGION` - Your GCP region (e.g., `us-east5`)
 - `ANTHROPIC_VERTEX_PROJECT_ID` - Your GCP project ID
 
+**Rootless Podman:**
+- `--userns=keep-id` - Preserves host user ID mapping, required for the claude user to access mounted volumes
+
 **Volume Mounts:**
-- `-v ~/.config/gcloud:/home/claude/.config/gcloud:ro` - Passes through your gcloud authentication (read-only)
-- `-v $(pwd):/workspace` - Mounts your current directory into the container
+- `-v ~/.config/gcloud:/home/claude/.config/gcloud:ro,z` - Passes through your gcloud authentication (read-only with SELinux labeling)
+- `-v $(pwd):/workspace:z` - Mounts your current directory into the container
 
 ### Running Commands Non-Interactively
 
@@ -83,14 +87,15 @@ You can execute Claude Code commands directly without entering an interactive se
 ```bash
 podman run -it \
   --pull always \
+  --userns=keep-id \
   -e CLAUDE_CODE_USE_VERTEX=1 \
   -e CLOUD_ML_REGION=your-ml-region \
   -e ANTHROPIC_VERTEX_PROJECT_ID=your-project-id \
-  -v ~/.config/gcloud:/home/claude/.config/gcloud:Z \
-  -v $(pwd):/workspace:Z \
+  -v ~/.config/gcloud:/home/claude/.config/gcloud:ro,z \
+  -v $(pwd):/workspace:z \
   -w /workspace \
   --name claude_code \
-  ghcr.io/opendatahub-io/ai-helpers:latest
+  ghcr.io/opendatahub-io/ai-helpers:latest \
   --print "/hello-world:echo Hello from Claude Code!"
 ```
 
