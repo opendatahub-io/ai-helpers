@@ -1,0 +1,52 @@
+# FIPS 140-3 Prohibited Import Patterns
+# These import patterns indicate usage of non-FIPS compliant cryptographic operations
+
+# PyCrypto/PyCryptodome imports (CRITICAL)
+from Crypto import
+from Crypto.
+import Crypto
+from Cryptodome import
+from Cryptodome.
+import Cryptodome
+
+# Non-approved hash algorithm imports (CRITICAL)
+import blake3
+from blake3 import
+import xxhash
+from xxhash import
+import mmh3
+from mmh3 import
+import blake2
+from blake2 import
+
+# Direct use of non-security random (HIGH - context dependent)
+from random import randint
+from random import random
+from random import choice
+import random
+
+# Weak/deprecated crypto imports (HIGH)
+from hashlib import md5
+from hashlib import sha1
+import md5
+import sha
+
+# Non-FIPS KDF imports (HIGH)
+from argon2 import
+import argon2
+import bcrypt
+from bcrypt import
+import scrypt
+from scrypt import
+
+# Alternative TLS/crypto library imports (CRITICAL)
+from M2Crypto import
+import M2Crypto
+from tlslite import
+import tlslite
+
+# Note: The following are ALLOWED if used correctly:
+# - from cryptography import (when linked to system OpenSSL FIPS)
+# - import hashlib (when using approved algorithms)
+# - from secrets import (this is the CORRECT random source)
+# - import ssl (when system is in FIPS mode)

@@ -1,0 +1,161 @@
+{
+  "hash_algorithms": {
+    "approved": {
+      "SHA-224": {"min_output_bits": 224, "fips_approved": true},
+      "SHA-256": {"min_output_bits": 256, "fips_approved": true},
+      "SHA-384": {"min_output_bits": 384, "fips_approved": true},
+      "SHA-512": {"min_output_bits": 512, "fips_approved": true},
+      "SHA-512/224": {"min_output_bits": 224, "fips_approved": true},
+      "SHA-512/256": {"min_output_bits": 256, "fips_approved": true},
+      "SHA3-224": {"min_output_bits": 224, "fips_approved": true},
+      "SHA3-256": {"min_output_bits": 256, "fips_approved": true},
+      "SHA3-384": {"min_output_bits": 384, "fips_approved": true},
+      "SHA3-512": {"min_output_bits": 512, "fips_approved": true}
+    },
+    "deprecated": {
+      "MD5": {
+        "severity": "HIGH",
+        "reason": "Cryptographically broken, not FIPS approved",
+        "allowed_use_case": "Non-security checksums with usedforsecurity=False"
+      },
+      "SHA-1": {
+        "severity": "HIGH",
+        "reason": "Deprecated for digital signatures and MACs",
+        "allowed_use_case": "HMAC-SHA1 only, not for new applications"
+      }
+    },
+    "prohibited": {
+      "BLAKE2": {"severity": "CRITICAL", "reason": "Not FIPS approved"},
+      "BLAKE3": {"severity": "CRITICAL", "reason": "Not FIPS approved"},
+      "BLAKE2b": {"severity": "CRITICAL", "reason": "Not FIPS approved"},
+      "BLAKE2s": {"severity": "CRITICAL", "reason": "Not FIPS approved"},
+      "xxHash": {"severity": "CRITICAL", "reason": "Not FIPS approved"},
+      "MurmurHash": {"severity": "CRITICAL", "reason": "Not FIPS approved"}
+    }
+  },
+  "symmetric_encryption": {
+    "approved": {
+      "AES-128-CBC": {"min_key_bits": 128, "fips_approved": true},
+      "AES-192-CBC": {"min_key_bits": 192, "fips_approved": true},
+      "AES-256-CBC": {"min_key_bits": 256, "fips_approved": true},
+      "AES-128-GCM": {"min_key_bits": 128, "fips_approved": true, "aead": true},
+      "AES-192-GCM": {"min_key_bits": 192, "fips_approved": true, "aead": true},
+      "AES-256-GCM": {"min_key_bits": 256, "fips_approved": true, "aead": true},
+      "AES-128-CCM": {"min_key_bits": 128, "fips_approved": true, "aead": true},
+      "AES-192-CCM": {"min_key_bits": 192, "fips_approved": true, "aead": true},
+      "AES-256-CCM": {"min_key_bits": 256, "fips_approved": true, "aead": true}
+    },
+    "deprecated": {
+      "3DES": {
+        "severity": "HIGH",
+        "reason": "Deprecated, 112-bit security is insufficient",
+        "replacement": "AES-128 or higher"
+      },
+      "DES": {
+        "severity": "CRITICAL",
+        "reason": "56-bit key, cryptographically broken",
+        "replacement": "AES-128 or higher"
+      }
+    },
+    "prohibited": {
+      "RC4": {"severity": "CRITICAL", "reason": "Cryptographically broken"},
+      "Blowfish": {"severity": "CRITICAL", "reason": "Not FIPS approved"},
+      "ChaCha20": {"severity": "CRITICAL", "reason": "Not FIPS approved"},
+      "ChaCha20-Poly1305": {"severity": "CRITICAL", "reason": "Not FIPS approved"},
+      "Salsa20": {"severity": "CRITICAL", "reason": "Not FIPS approved"}
+    }
+  },
+  "asymmetric_encryption": {
+    "approved": {
+      "RSA": {
+        "min_key_bits": 2048,
+        "recommended_key_bits": 3072,
+        "fips_approved": true,
+        "padding_modes": ["OAEP", "PSS"]
+      },
+      "ECDH": {
+        "min_key_bits": 256,
+        "fips_approved": true,
+        "approved_curves": ["P-256", "P-384", "P-521"]
+      },
+      "ECDSA": {
+        "min_key_bits": 256,
+        "fips_approved": true,
+        "approved_curves": ["P-256", "P-384", "P-521"]
+      }
+    },
+    "deprecated": {
+      "RSA-1024": {
+        "severity": "HIGH",
+        "reason": "Key length insufficient (minimum 2048 bits required)"
+      }
+    },
+    "prohibited": {
+      "Curve25519": {"severity": "CRITICAL", "reason": "Not FIPS approved"},
+      "Ed25519": {"severity": "CRITICAL", "reason": "Not FIPS approved"},
+      "X25519": {"severity": "CRITICAL", "reason": "Not FIPS approved"}
+    }
+  },
+  "key_derivation": {
+    "approved": {
+      "PBKDF2": {
+        "fips_approved": true,
+        "min_iterations": 10000,
+        "approved_hmac": ["HMAC-SHA256", "HMAC-SHA384", "HMAC-SHA512"]
+      },
+      "HKDF": {
+        "fips_approved": true,
+        "approved_hmac": ["HMAC-SHA256", "HMAC-SHA384", "HMAC-SHA512"]
+      },
+      "KBKDF": {
+        "fips_approved": true,
+        "note": "Key-based KDF in Counter Mode"
+      }
+    },
+    "prohibited": {
+      "scrypt": {"severity": "CRITICAL", "reason": "Not FIPS approved"},
+      "Argon2": {"severity": "CRITICAL", "reason": "Not FIPS approved"},
+      "bcrypt": {"severity": "CRITICAL", "reason": "Not FIPS approved"}
+    }
+  },
+  "random_number_generation": {
+    "approved": {
+      "secrets_module": {
+        "fips_approved": true,
+        "note": "Uses system CSPRNG (os.urandom) which uses /dev/urandom"
+      },
+      "os_urandom": {
+        "fips_approved": true,
+        "note": "System CSPRNG, FIPS-approved when system is in FIPS mode"
+      },
+      "SystemRandom": {
+        "fips_approved": true,
+        "note": "Uses os.urandom internally"
+      }
+    },
+    "prohibited": {
+      "random_module": {
+        "severity": "HIGH",
+        "reason": "Mersenne Twister, not cryptographically secure",
+        "replacement": "secrets module"
+      }
+    }
+  },
+  "message_authentication": {
+    "approved": {
+      "HMAC-SHA256": {"fips_approved": true, "min_key_bits": 128},
+      "HMAC-SHA384": {"fips_approved": true, "min_key_bits": 128},
+      "HMAC-SHA512": {"fips_approved": true, "min_key_bits": 128},
+      "CMAC-AES": {"fips_approved": true, "min_key_bits": 128},
+      "GMAC": {"fips_approved": true, "min_key_bits": 128}
+    },
+    "deprecated": {
+      "HMAC-MD5": {"severity": "HIGH", "reason": "MD5 is cryptographically broken"},
+      "HMAC-SHA1": {
+        "severity": "MEDIUM",
+        "reason": "SHA-1 deprecated, but HMAC-SHA1 still allowed in FIPS mode",
+        "note": "Not for new applications"
+      }
+    }
+  }
+}

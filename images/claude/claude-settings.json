@@ -9,6 +9,7 @@
   },
   "enabledPlugins": {
     "aipcc@odh-ai-helpers": true,
+    "fips-compliance-checker@odh-ai-helpers": true,
     "git@odh-ai-helpers": true,
     "gitlab@odh-ai-helpers": true,
     "jira@odh-ai-helpers": true,

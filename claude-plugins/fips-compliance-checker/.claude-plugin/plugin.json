@@ -1,0 +1,8 @@
+{
+  "name": "fips-compliance-checker",
+  "description": "FIPS 140-3 compliance scanning for containerized applications",
+  "version": "1.0.0",
+  "author": {
+    "name": "AI Helpers Marketplace"
+  }
+}
