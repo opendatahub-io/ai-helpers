@@ -171,6 +171,12 @@
             "file_path": "claude-plugins/python-packaging/skills/license-checker/SKILL.md"
           },
           {
+            "name": "license-finder",
+            "id": "license-finder",
+            "description": "Deterministically find license information for Python packages by checking PyPI metadata first, then falling back to Git repository LICENSE files using shallow cloning.",
+            "file_path": "claude-plugins/python-packaging/skills/license-finder/SKILL.md"
+          },
+          {
             "name": "source-finder",
             "id": "source-finder",
             "description": "Locate source code repositories for Python packages by analyzing PyPI metadata, project URLs, and code hosting platforms like GitHub, GitLab, and Bitbucket. Provides deterministic results with confidence levels.",

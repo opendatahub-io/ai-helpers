@@ -130,3 +130,8 @@ For deprecated SPDX licenses:
 4. Recommend updating package licensing
 
 For complex licensing scenarios involving multiple packages or custom license terms, recommend consultation with legal counsel.
+
+## Integration Notes
+
+This skill works best when combined with:
+- **python-packaging:license-finder** - Use to find license names before compatibility assessment

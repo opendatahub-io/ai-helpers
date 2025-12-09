@@ -114,6 +114,7 @@ If the script fails or package is not found:
 ## Integration Notes
 
 This skill works best when combined with:
+- **python-packaging:license-finder** - License information helps assess redistribution requirements
 - Package dependency analysis
 - Build environment setup
 - Continuous integration planning
