@@ -1,0 +1,9 @@
+{
+  "name": "slack",
+  "description": "Slack digest workflow",
+  "version": "1.0.0",
+  "author": {
+    "name": "Willy Hardy"
+  }
+}
+
