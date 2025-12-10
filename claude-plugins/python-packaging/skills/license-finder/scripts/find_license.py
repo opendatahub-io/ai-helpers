@@ -75,7 +75,7 @@ def main():
     info = data.get("info", {})
 
     # First check the newer SPDX license_expression field (PEP 639)
-    license_expression = info.get("license_expression", "").strip()
+    license_expression = (info.get("license_expression") or "").strip()
 
     if license_expression and license_expression.lower() not in [
         "unknown",
