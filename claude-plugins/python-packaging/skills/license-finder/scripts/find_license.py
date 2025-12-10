@@ -71,14 +71,31 @@ def main():
     )
     data = fetch_pypi_data(args.package, args.version)
 
-    # Check license field
-    license_info = data.get("info", {}).get("license", "").strip()
+    # Check license fields - prioritize newer license_expression field
+    info = data.get("info", {})
+
+    # First check the newer SPDX license_expression field (PEP 639)
+    license_expression = info.get("license_expression", "").strip()
+
+    if license_expression and license_expression.lower() not in [
+        "unknown",
+        "none",
+        "null",
+        "",
+    ]:
+        print(f"LICENSE FOUND: {license_expression}")
+        sys.exit(0)
+
+    # Fall back to legacy license field for backwards compatibility
+    license_info = (info.get("license") or "").strip()
 
     if license_info and license_info.lower() not in ["unknown", "none", "null", ""]:
         print(f"LICENSE FOUND: {license_info}")
         sys.exit(0)
     else:
-        print("No license found in PyPI metadata")
+        print(
+            "No license found in PyPI metadata (checked both license_expression and license fields)"
+        )
 
         # Provide source repository URL for fallback search
         repo_url = get_source_repository_url(data)
