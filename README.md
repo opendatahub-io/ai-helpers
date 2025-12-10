@@ -22,8 +22,8 @@ For comprehensive information about plugin architecture and development, see the
    ```bash
    /plugin marketplace add opendatahub-io/ai-helpers
    ```
-   > [!IMPORTANT]
-   > Changes take effect the next time you start Claude Code. If Claude Code is already running, restart it to load the updates.
+> [!IMPORTANT]
+> Changes take effect the next time you start Claude Code. If Claude Code is already running, restart it to load the updates.
 
 2. **Install a plugin:**
    ```bash

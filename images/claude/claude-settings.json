@@ -11,6 +11,7 @@
     "aipcc@odh-ai-helpers": true,
     "git@odh-ai-helpers": true,
     "gitlab@odh-ai-helpers": true,
+    "hello-world@odh-ai-helpers": true,
     "jira@odh-ai-helpers": true,
     "konflux@odh-ai-helpers": true,
     "python-packaging@odh-ai-helpers": true,

@@ -6,6 +6,7 @@
       "claude_plugin_dirs": [
         "git",
         "gitlab",
+        "hello-world",
         "jira",
         "konflux",
         "python-packaging",

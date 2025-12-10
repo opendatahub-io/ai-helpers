@@ -20,6 +20,11 @@
       "description": "Tools and skills for interacting with GitLab resources"
     },
     {
+      "name": "hello-world",
+      "source": "./claude-plugins/hello-world",
+      "description": "A hello world plugin"
+    },
+    {
       "name": "jira",
       "source": "./claude-plugins/jira",
       "description": "Jira workflow automation and utilities"

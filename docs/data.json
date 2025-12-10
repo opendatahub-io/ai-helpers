@@ -9,6 +9,7 @@
         "claude_plugin_dirs": [
           "git",
           "gitlab",
+          "hello-world",
           "jira",
           "konflux",
           "python-packaging",
@@ -92,6 +93,24 @@
             "file_path": "claude-plugins/gitlab/skills/pipeline-debugger/SKILL.md"
           }
         ],
+        "hooks": [],
+        "agents": [],
+        "has_readme": true
+      },
+      {
+        "name": "hello-world",
+        "description": "A hello world plugin",
+        "category": "general",
+        "commands": [
+          {
+            "name": "echo",
+            "description": "Hello world plugin implementation",
+            "synopsis": "/hello-world:echo [name]",
+            "argument_hint": "[name]",
+            "file_path": "claude-plugins/hello-world/commands/echo.md"
+          }
+        ],
+        "skills": [],
         "hooks": [],
         "agents": [],
         "has_readme": true

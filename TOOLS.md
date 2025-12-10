@@ -7,6 +7,7 @@ This document lists all available Claude Code tools, Cursor tools, and Gemini Ge
 - [Aipcc](#aipcc-claude-code-tool)
 - [Git](#git-claude-code-tool)
 - [Gitlab](#gitlab-claude-code-tool)
+- [Hello World](#hello-world-claude-code-tool)
 - [Jira](#jira-claude-code-tool)
 - [Konflux](#konflux-claude-code-tool)
 - [Python Packaging](#python-packaging-claude-code-tool)
@@ -55,6 +56,15 @@ Tools and skills for interacting with GitLab resources
 - **pipeline-debugger** - Debug and monitor GitLab CI/CD pipelines for merge requests. Check pipeline status, view job logs, and troubleshoot CI failures. Use this when the user needs to investigate GitLab CI pipeline issues, check job statuses, or view specific job logs.
 
 See [claude-plugins/gitlab/README.md](claude-plugins/gitlab/README.md) for detailed documentation.
+
+### Hello World Claude Code Tool
+
+A hello world plugin
+
+**Commands:**
+- **`/hello-world:echo` `[name]`** - Hello world plugin implementation
+
+See [claude-plugins/hello-world/README.md](claude-plugins/hello-world/README.md) for detailed documentation.
 
 ### Jira Claude Code Tool
 

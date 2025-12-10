@@ -2,14 +2,11 @@
 
 Git workflow automation and utilities for Claude Code.
 
-## Commands
+## Skills
 
-### `/git:aipcc-commit-suggest`
+### `shallow-clone`
 
-Generate Conventional Commits style commit messages for staged changes or recent commits, following
-AIPCC guidelines.
-
-See the [commands/](commands/) directory for full documentation of each command.
+Perform a shallow clone of a Git repository to a temporary location.
 
 ## Installation
 
