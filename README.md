@@ -3,7 +3,7 @@
 This repository is a collaborative place hosting collections of AI plugins to automate and assist with various tasks .
 
 > [!NOTE]
-> Right now the focus is to support Claude Code and Cursor AI.
+> Right now the focus is to support Claude Code, Gemini Gems and Cursor AI.
 > Other tools are welcome here, please submit Pull Requests.
 
 > [!NOTE]
