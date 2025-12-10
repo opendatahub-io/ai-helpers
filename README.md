@@ -114,6 +114,7 @@ Make sure your commands and agents follow the conventions for the Sections struc
 4. Restart `claude` with `ctrl+c` `ctrl+c` and rerun
 5. Test plugin and remove local marketplace after done testing which will remove plugin
 6. You can now reinstall from the git marketplace
+
 ### Adding New Commands
 
 When contributing new commands:
