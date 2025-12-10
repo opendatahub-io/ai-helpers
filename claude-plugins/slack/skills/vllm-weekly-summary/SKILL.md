@@ -53,25 +53,25 @@ The slackdump tool must be configured with access to the vLLM Slack workspace be
 ### Basic Usage
 ```bash
 # Generate summary for the last 7 days
-.claude/skills/vllm-weekly-summary/scripts/generate_transcript.py
+./scripts/generate_transcript.py
 ```
 
 ### Custom Date Range
 ```bash
 # Generate summary for the last 14 days
-.claude/skills/vllm-weekly-summary/scripts/generate_transcript.py --days 14
+./scripts/generate_transcript.py --days 14
 ```
 
 ### Different Channel
 ```bash
 # Generate summary for a different channel
-.claude/skills/vllm-weekly-summary/scripts/generate_transcript.py --channel C07R5PAL2L9
+./scripts/generate_transcript.py --channel C07R5PAL2L9
 ```
 
 ### Custom Output Directory
 ```bash
 # Specify output directory
-.claude/skills/vllm-weekly-summary/scripts/generate_transcript.py --output-dir my_summary
+./scripts/generate_transcript.py --output-dir my_summary
 ```
 
 ## Output Structure
@@ -168,15 +168,11 @@ Run `slackdump workspace add` to authenticate with the vLLM workspace
 ### "No messages found"
 Check the date range and channel ID. The channel may not have messages in that time period.
 
-## Maintenance
-
----
-
 ## Quick Reference
 
 **Default Command:**
 ```bash
-.claude/skills/vllm-weekly-summary/scripts/generate_transcript.py
+./scripts/generate_transcript.py
 ```
 
 **Output:**
