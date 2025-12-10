@@ -216,10 +216,10 @@
         "commands": [],
         "skills": [
           {
-            "name": "vLLM Weekly Summary",
-            "id": "vllm-weekly-summary",
-            "description": "Generate weekly summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team",
-            "file_path": "claude-plugins/slack/skills/vllm-weekly-summary/SKILL.md"
+            "name": "vLLM Slack Summary",
+            "id": "vllm-slack-summary",
+            "description": "Generate slack summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team",
+            "file_path": "claude-plugins/slack/skills/vllm-slack-summary/SKILL.md"
           }
         ],
         "hooks": [],

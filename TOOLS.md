@@ -108,7 +108,7 @@ See [claude-plugins/rpm/README.md](claude-plugins/rpm/README.md) for detailed do
 Slack plugin
 
 **Skills:**
-- **vLLM Weekly Summary** - Generate weekly summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team
+- **vLLM Slack Summary** - Generate slack summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team
 
 See [claude-plugins/slack/README.md](claude-plugins/slack/README.md) for detailed documentation.
 

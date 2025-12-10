@@ -1,11 +1,11 @@
 ---
-name: vLLM Weekly Summary
-description: Generate weekly summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team
+name: vLLM Slack Summary
+description: Generate slack summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team
 ---
 
-# vLLM Weekly Summary Skill
+# vLLM slack Summary Skill
 
-Automates generating weekly summaries of the vLLM CI SIG Slack channel for the Red Hat AI Inference Server (RHAIIS) team.
+Automates generating slack summaries of the vLLM CI SIG Slack channel for the Red Hat AI Inference Server (RHAIIS) team.
 
 ## Prerequisites
 
@@ -34,13 +34,13 @@ When summarizing the transcript, focus on:
 
 ## Output
 
-The skill creates `vllm_weekly_summary/` containing:
+The skill creates `vllm_slack_summary/` containing:
 
 ```text
-vllm_weekly_summary/
+vllm_slack_summary/
 ├── slack_export/                               # Raw Slack export
 ├── transcript.md                               # Markdown transcript
-└── weekly_summary_YYYY-MM-DD_to_YYYY-MM-DD.md  # Summary report
+└── slack_summary_YYYY-MM-DD_to_YYYY-MM-DD.md  # Summary report
 ```
 
 After generating the transcript, analyze it and create a summary with:
@@ -61,5 +61,5 @@ After generating the transcript, analyze it and create a summary with:
 ## Quick Reference
 
 - **Channel ID**: C07R5PAL2L9 (vLLM CI SIG)
-- **Transcript**: `vllm_weekly_summary/transcript.md`
-- **Summary**: `vllm_weekly_summary/weekly_summary_YYYY-MM-DD_to_YYYY-MM-DD.md`
+- **Transcript**: `vllm_slack_summary/transcript.md`
+- **Summary**: `vllm_slack_summary/slack_summary_YYYY-MM-DD_to_YYYY-MM-DD.md`

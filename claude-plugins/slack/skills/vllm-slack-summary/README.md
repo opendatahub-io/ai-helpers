@@ -1,6 +1,6 @@
-# vLLM Weekly Summary Skill
+# vLLM Slack Summary Skill
 
-Automated weekly summaries of vLLM CI SIG Slack activity for the Red Hat AI Inference Server (RHAIIS) team.
+Automated slack summaries of vLLM CI SIG Slack activity for the Red Hat AI Inference Server (RHAIIS) team.
 
 ## Quick Start
 
@@ -23,13 +23,11 @@ Automated weekly summaries of vLLM CI SIG Slack activity for the Red Hat AI Infe
 ## Files
 
 ```
-vllm-weekly-summary/
+vllm-slack-summary/
 ├── SKILL.md                          # Main skill documentation
 ├── README.md                         # This file
 ├── scripts/
-│   └── generate_transcript.py       # Main script
-└── templates/
-    └── summary_template.md          # Template for AI summaries
+    └── generate_transcript.py       # Main script
 ```
 
 ## Usage Examples
@@ -50,7 +48,7 @@ vllm-weekly-summary/
 
 ## Output
 
-Creates `vllm_weekly_summary/` directory with:
+Creates `vllm_slack_summary/` directory with:
 - `transcript.md` - Formatted conversation transcript
 - `slack_export/` - Raw Slack export data
 
@@ -63,7 +61,7 @@ Creates `vllm_weekly_summary/` directory with:
 
 2. **Analyze with Claude**
    - Claude reads the transcript
-   - Generates structured summary using template
+   - Generates summary
    - Highlights critical issues for RHAIIS team
 
 3. **Take Action**
@@ -108,9 +106,9 @@ slackdump workspace add
 
 ## Maintenance
 
-- Weekly runs recommended (Monday mornings)
+- Weekly runs recommended (Tuesday afternoon before SIG CI meeting)
 - Review slackdump updates monthly
-- Update template quarterly based on team needs
+- Update summary guidance quarterly based on team needs
 
 ## Support
 

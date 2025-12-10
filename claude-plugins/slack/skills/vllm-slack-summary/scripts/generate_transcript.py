@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate Slack Transcript for vLLM Weekly Summary
+Generate Slack Transcript for vLLM Slack Summary
 
 Exports Slack channel messages and converts them to a markdown transcript
 for Claude to summarize.
@@ -19,7 +19,7 @@ Usage:
 Arguments:
     --days        Number of days to look back (default: 7)
     --channel     Slack channel ID (default: C07R5PAL2L9 for vLLM CI SIG)
-    --output-dir  Directory for output files (default: vllm_weekly_summary)
+    --output-dir  Directory for output files (default: vllm_slack_summary)
 
 Output:
     Creates a directory containing:
@@ -440,7 +440,7 @@ def convert_to_transcript(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate weekly summary of vLLM CI Slack channel"
+        description="Generate summary of vLLM CI Slack channel"
     )
     parser.add_argument(
         "--days", type=int, default=7, help="Number of days to look back (default: 7)"
@@ -451,7 +451,7 @@ def main():
         help="Slack channel ID (default: vLLM CI SIG)",
     )
     parser.add_argument(
-        "--output-dir", default="vllm_weekly_summary", help="Output directory"
+        "--output-dir", default="vllm_slack_summary", help="Output directory"
     )
 
     args = parser.parse_args()
@@ -465,7 +465,7 @@ def main():
         sys.exit(1)
 
     print("=" * 60)
-    print("vLLM Weekly Summary Generator for RHAIIS Team")
+    print("vLLM Slack Summary Generator for RHAIIS Team")
     print("=" * 60)
 
     # Create output directory
