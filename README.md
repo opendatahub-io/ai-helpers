@@ -9,6 +9,15 @@ This repository is a collaborative place hosting collections of AI plugins to au
 > [!NOTE]
 > This project was inspired by the [OpenShift AI helpers](https://github.com/openshift-eng/ai-helpers).
 
+## Got an Idea?
+
+Have an idea for a new plugin, command, or assistant but not sure how to implement it? We'd love to hear about it! Simply file a GitHub issue with your idea in the title and we'll work together to make it happen.
+
+> [!TIP]
+> [Share your idea](https://github.com/opendatahub-io/ai-helpers/issues/new?type=Feature&labels=%22help%20wanted%22)
+
+No implementation details needed - just describe what you'd like to automate or what workflow you think could be improved. The community can help figure out the best way to build it.
+
 ## Claude Code Plugins
 
 Claude Code plugins extend Claude's functionality with custom commands, subagents and skills for specific workflows and tasks.
