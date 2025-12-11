@@ -12,8 +12,8 @@ This document lists all available Claude Code tools, Cursor tools, and Gemini Ge
 - [Konflux](#konflux-claude-code-tool)
 - [Python Packaging](#python-packaging-claude-code-tool)
 - [Rpm](#rpm-claude-code-tool)
-- [Slack](#slack-claude-code-tool)
 - [Utils](#utils-claude-code-tool)
+- [Vllm](#vllm-claude-code-tool)
 
 ## Cursor Tools
 
@@ -114,15 +114,6 @@ Tools for working with RPMs
 
 See [claude-plugins/rpm/README.md](claude-plugins/rpm/README.md) for detailed documentation.
 
-### Slack Claude Code Tool
-
-Slack plugin
-
-**Skills:**
-- **vLLM Slack Summary** - Generate slack summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team
-
-See [claude-plugins/slack/README.md](claude-plugins/slack/README.md) for detailed documentation.
-
 ### Utils Claude Code Tool
 
 A generic utilities plugin serving as a catch-all for various helper commands and agents
@@ -131,6 +122,15 @@ A generic utilities plugin serving as a catch-all for various helper commands an
 - **`/utils:placeholder`** - Placeholder command for the utils plugin
 
 See [claude-plugins/utils/README.md](claude-plugins/utils/README.md) for detailed documentation.
+
+### Vllm Claude Code Tool
+
+vLLM plugin
+
+**Skills:**
+- **vLLM Slack Summary** - Generate slack summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team
+
+See [claude-plugins/vllm/README.md](claude-plugins/vllm/README.md) for detailed documentation.
 
 ## Cursor Tools
 

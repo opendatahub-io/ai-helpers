@@ -45,14 +45,14 @@
       "description": "Tools for working with RPMs"
     },
     {
-      "name": "slack",
-      "source": "./claude-plugins/slack",
-      "description": "Slack plugin"
-    },
-    {
       "name": "utils",
       "source": "./claude-plugins/utils",
       "description": "A generic utilities plugin serving as a catch-all for various helper commands and agents"
+    },
+    {
+      "name": "vllm",
+      "source": "./claude-plugins/vllm",
+      "description": "vLLM plugin"
     }
   ]
 }

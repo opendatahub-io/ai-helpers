@@ -1,6 +1,6 @@
-# Slack Plugin
+# vLLM Plugin
 
-Tools and skills for analyzing Slack channel activity and generating summaries from workspace exports.
+Tools and skills specific for vLLM.
 
 ## Skills
 
@@ -11,6 +11,6 @@ Generate message summaries of vLLM CI SIG Slack channel activity for the RHAIIS 
 ## Installation
 
 ```bash
-/plugin install slack@odh-ai-helpers
+/plugin install vllm@odh-ai-helpers
 ```
 

@@ -1,6 +1,6 @@
 {
-  "name": "slack",
-  "description": "Slack plugin",
+  "name": "vllm",
+  "description": "vLLM plugin",
   "version": "1.0.0",
   "author": {
     "name": "AI Helpers Marketplace"

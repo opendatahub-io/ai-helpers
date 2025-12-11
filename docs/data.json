@@ -41,6 +41,13 @@
           "Commit Message Assistant",
           "AIPCC ADR Assistant"
         ]
+      },
+      "vllm": {
+        "name": "vLLM",
+        "description": "Tools specifically designed for vLLM workflows and processes",
+        "claude_plugin_dirs": [
+          "vllm"
+        ]
       }
     }
   },
@@ -235,23 +242,6 @@
         "has_readme": true
       },
       {
-        "name": "slack",
-        "description": "Slack plugin",
-        "category": "general",
-        "commands": [],
-        "skills": [
-          {
-            "name": "vLLM Slack Summary",
-            "id": "vllm-slack-summary",
-            "description": "Generate slack summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team",
-            "file_path": "claude-plugins/slack/skills/vllm-slack-summary/SKILL.md"
-          }
-        ],
-        "hooks": [],
-        "agents": [],
-        "has_readme": true
-      },
-      {
         "name": "utils",
         "description": "A generic utilities plugin serving as a catch-all for various helper commands and agents",
         "category": "general",
@@ -265,6 +255,23 @@
           }
         ],
         "skills": [],
+        "hooks": [],
+        "agents": [],
+        "has_readme": true
+      },
+      {
+        "name": "vllm",
+        "description": "vLLM plugin",
+        "category": "vllm",
+        "commands": [],
+        "skills": [
+          {
+            "name": "vLLM Slack Summary",
+            "id": "vllm-slack-summary",
+            "description": "Generate slack summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team",
+            "file_path": "claude-plugins/vllm/skills/vllm-slack-summary/SKILL.md"
+          }
+        ],
         "hooks": [],
         "agents": [],
         "has_readme": true
