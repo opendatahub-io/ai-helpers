@@ -82,7 +82,8 @@ When you have multiple related tools that form a cohesive workflow or domain, co
          "name": "Your Category Name",
          "description": "Clear description of the category's purpose and scope",
          "claude_plugin_dirs": ["plugin1", "plugin2"],
-         "cursor_commands": ["command1", "command2"]
+         "cursor_commands": ["command1", "command2"],
+         "gemini_gems": ["gem title", "gem title 2"]
        }
      }
    }

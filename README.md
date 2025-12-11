@@ -1,6 +1,6 @@
 # AI Helpers
 
-This repository is a collaborative place hosting collections of AI plugins to automate and assist with various tasks .
+This repository is a collaborative place hosting collections of AI plugins to automate and assist with various tasks.
 
 > [!NOTE]
 > Right now the focus is to support Claude Code, Gemini Gems and Cursor AI.
@@ -158,7 +158,8 @@ Example category definition:
       "name": "General",
       "description": "General-purpose tools and utilities",
       "claude_plugin_dirs": ["git", "utils", "python-packaging"],
-      "cursor_commands": ["jira-sprint-summary"]
+      "cursor_commands": ["jira-sprint-summary"],
+      "gemini_gems": ["Email Copilot", "Technical Spike & Investigation"]
     }
   }
 }
@@ -174,14 +175,15 @@ To add a new category:
      "name": "Your Category Name",
      "description": "Description of your category's purpose",
      "claude_plugin_dirs": ["plugin1", "plugin2"],
-     "cursor_commands": ["command1", "command2"]
+     "cursor_commands": ["command1", "command2"],
+     "gemini_gems": ["gem title", "gem title 2"]
    }
    ```
 
 2. **Assign tools to the category**:
    - For Claude Code plugins: Add the plugin directory name to `claude_plugin_dirs`
    - For Cursor commands: Add the command name (without .md extension) to `cursor_commands`
-   - For Gemini Gems: Categories are automatically applied based on YAML metadata
+   - For Gemini Gems: Add the gem title to `gemini_gems`
 
 3. **Update documentation**: Run `make update` to regenerate the website data
 
@@ -192,7 +194,7 @@ The build system automatically:
 - Updates `categories.json` during `make update` to include any new tools
 - Preserves manual categorizations while ensuring no tools are left uncategorized
 
-This ensures zero maintenance burden for new tools while preserving intentional categorizations.
+This ensures zero maintenance burden for new tools while preserving intentional categorization.
 
 ## Cursor
 
@@ -253,7 +255,7 @@ pre-commit install --hook-type pre-push
 pre-commit run --all-files  # Test all files
 ```
 
-This automatically scans all plugins and regenerates the complete plugin/command documentation in TOOLS.md.
+This automatically scans all plugins and regenerates the complete plugin/command documentation in [TOOLS.md](TOOLS.md).
 
 ## License
 
