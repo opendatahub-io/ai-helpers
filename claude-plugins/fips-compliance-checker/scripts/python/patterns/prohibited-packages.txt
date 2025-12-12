@@ -1,0 +1,47 @@
+# FIPS 140-3 Prohibited Python Packages
+# These packages implement independent cryptographic operations that bypass
+# the RHEL system's FIPS-certified cryptographic module
+
+# Pure Python crypto implementations (CRITICAL violations)
+pycrypto
+PyCryptodome
+PyCryptodomex
+pycryptodome
+pycryptodomex
+
+# Non-FIPS approved hash algorithms (CRITICAL violations)
+blake3
+blake2
+xxhash
+mmh3
+pyhash
+cityhash
+murmurhash
+farmhash
+
+# Alternative crypto libraries (CRITICAL violations)
+m2crypto
+tlslite
+tlslite-ng
+cryptlib
+keyczar
+
+# Specific algorithm implementations (CRITICAL violations)
+argon2-cffi
+argon2pure
+bcrypt
+scrypt
+py-scrypt
+
+# JWT libraries that may use non-compliant crypto (HIGH - requires inspection)
+pyjwt
+python-jose
+jose
+authlib
+
+# TLS/SSL libraries that bypass system crypto (CRITICAL violations)
+pyopenssl
+
+# Note: Some packages like 'paramiko' and 'cryptography' are ALLOWED
+# if they link to system OpenSSL 3 with FIPS provider. The runtime
+# verification layer checks for proper linkage.

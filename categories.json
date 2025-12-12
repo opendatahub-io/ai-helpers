@@ -4,6 +4,7 @@
       "name": "General",
       "description": "General-purpose tools and utilities",
       "claude_plugin_dirs": [
+        "fips-compliance-checker",
         "git",
         "gitlab",
         "hello-world",

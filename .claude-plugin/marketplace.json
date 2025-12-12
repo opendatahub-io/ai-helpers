@@ -10,6 +10,11 @@
       "description": "Tools specifically designed for AIPCC workflows and processes"
     },
     {
+      "name": "fips-compliance-checker",
+      "source": "./claude-plugins/fips-compliance-checker",
+      "description": "FIPS 140-3 compliance scanning for containerized applications"
+    },
+    {
       "name": "git",
       "source": "./claude-plugins/git",
       "description": "Git workflow automation and utilities"

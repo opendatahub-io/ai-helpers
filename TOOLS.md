@@ -5,6 +5,7 @@ This document lists all available Claude Code tools, Cursor tools, and Gemini Ge
 ## Claude Code Tools
 
 - [Aipcc](#aipcc-claude-code-tool)
+- [Fips Compliance Checker](#fips-compliance-checker-claude-code-tool)
 - [Git](#git-claude-code-tool)
 - [Gitlab](#gitlab-claude-code-tool)
 - [Hello World](#hello-world-claude-code-tool)
@@ -39,6 +40,18 @@ Tools specifically designed for AIPCC workflows and processes
 - **`/aipcc:commit-suggest` `[N]`** - Generate AIPCC Commits style commit messages or summarize existing commits
 
 See [claude-plugins/aipcc/README.md](claude-plugins/aipcc/README.md) for detailed documentation.
+
+### Fips Compliance Checker Claude Code Tool
+
+FIPS 140-3 compliance scanning for containerized applications
+
+**Commands:**
+- **`/fips-compliance-checker:fips-scan`** - Scan project or container image for FIPS 140-3 compliance violations
+
+**Agents:**
+- **fips-compliance-checker** - MUST BE USED PROACTIVELY when you need to audit a containerized application for FIPS 140-3 compliance. Specifically invoke this agent when:\n\n<example>\nContext: User has just finished implementing cryptographic operations in their Python application and wants to ensure FIPS compliance.\nuser: "I've added encryption to our user authentication module using the cryptography library. Can you check if this is FIPS compliant?"\nassistant: "I'll use the fips-compliance-checker:fips-compliance-checker agent to analyze your code for FIPS 140-3 compliance issues."\n<agent invocation with Task tool>\n</example>\n\n<example>\nContext: User is preparing to containerize their application and wants a compliance check before deployment.\nuser: "We're about to build our container image for production. The app uses some crypto libraries and we need to be FIPS compliant on RHEL 9."\nassistant: "Let me launch the fips-compliance-checker:fips-compliance-checker agent to scan your dependencies and source code for potential FIPS 140-3 compliance violations."\n<agent invocation with Task tool>\n</example>\n\n<example>\nContext: User provides a container image reference for scanning.\nuser: "Can you check if quay.io/myorg/myapp:v1.2.3 is FIPS compliant?"\nassistant: "I'll use the fips-compliance-checker:fips-compliance-checker agent to scan this container image for FIPS 140-3 compliance, including running check-payload if available."\n<agent invocation with Task tool>\n</example>\n\n<example>\nContext: User is reviewing dependencies in their Go application.\nuser: "I'm using the standard Go crypto package. Is this okay for FIPS?"\nassistant: "I need to use the fips-compliance-checker:fips-compliance-checker agent to evaluate your Go crypto usage for FIPS 140-3 compliance on RHEL 9."\n<agent invocation with Task tool>\n</example>\n\nMUST BE USED PROACTIVELY when:\n- User mentions cryptographic operations, encryption, hashing, or TLS/SSL in their code\n- User discusses container images for Red Hat products or RHEL-based deployments\n- User adds dependencies that might include cryptographic libraries\n- User mentions FIPS, compliance, security certifications, or government requirements\n- User is working with Java, Python, Go, Rust, or C/C++ code that handles sensitive data (Tools: Glob, Grep, Read, WebFetch, TodoWrite, BashOutput, KillShell, Bash, SlashCommand) (Model: inherit)
+
+See [claude-plugins/fips-compliance-checker/README.md](claude-plugins/fips-compliance-checker/README.md) for detailed documentation.
 
 ### Git Claude Code Tool
 
