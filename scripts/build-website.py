@@ -494,7 +494,28 @@ def build_website_data():
 
     # Process Claude Code plugins
     for plugin_info in marketplace["plugins"]:
-        plugin_path = base_path / plugin_info["source"]
+        source = plugin_info["source"]
+
+        # External plugins have object sources - skip local scanning
+        if isinstance(source, dict):
+            category = get_plugin_category(plugin_info["name"], categories_data)
+            plugin_data = {
+                "name": plugin_info["name"],
+                "description": plugin_info["description"],
+                "category": category,
+                "commands": [],
+                "skills": [],
+                "hooks": [],
+                "agents": [],
+                "has_readme": False,
+                "external": True,
+                "source": source,
+            }
+            website_data["tools"]["claude_code"].append(plugin_data)
+            continue
+
+        # Local plugin - scan directory
+        plugin_path = base_path / source
 
         # Get commands, skills, hooks, and agents
         commands = get_plugin_commands(plugin_path, plugin_info["name"])

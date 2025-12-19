@@ -51,6 +51,72 @@ def get_plugin_metadata(plugins_dir: Path) -> List[Dict]:
     return plugin_metadata
 
 
+def load_external_plugins(config_path: Path) -> List[Dict]:
+    """Load external plugin definitions from config file.
+
+    External plugins are specified with their source (github, git URL, etc.)
+    and are included directly in the marketplace without cloning.
+    """
+    if not config_path.exists():
+        return []
+
+    try:
+        with open(config_path, "r") as f:
+            config = json.load(f)
+    except (json.JSONDecodeError, IOError) as e:
+        print(f"Warning: Could not read external plugins config: {e}", file=sys.stderr)
+        return []
+
+    external_plugins = []
+    for plugin in config.get("plugins", []):
+        # Validate required fields
+        if "name" not in plugin:
+            print(
+                f"Warning: Skipping external plugin missing 'name': {plugin}",
+                file=sys.stderr,
+            )
+            continue
+        if "source" not in plugin:
+            print(
+                f"Warning: Skipping external plugin '{plugin.get('name')}' missing 'source'",
+                file=sys.stderr,
+            )
+            continue
+
+        external_plugins.append(
+            {
+                "name": plugin["name"],
+                "description": plugin.get("description", f"{plugin['name']} plugin"),
+                "source": plugin["source"],
+            }
+        )
+
+    return external_plugins
+
+
+def merge_plugins(
+    local_plugins: List[Dict], external_plugins: List[Dict]
+) -> List[Dict]:
+    """Merge local and external plugins, warning on name conflicts.
+
+    Local plugins take precedence over external plugins with the same name.
+    """
+    local_names = {p["name"] for p in local_plugins}
+    merged = list(local_plugins)
+
+    for plugin in external_plugins:
+        if plugin["name"] in local_names:
+            print(
+                f"Warning: External plugin '{plugin['name']}' conflicts with "
+                f"local plugin, skipping external",
+                file=sys.stderr,
+            )
+            continue
+        merged.append(plugin)
+
+    return merged
+
+
 def generate_claude_settings(plugin_metadata: List[Dict]) -> Dict:
     """Generate Claude Code settings configuration."""
 
@@ -117,28 +183,37 @@ def main():
     plugins_dir = repo_root / "claude-plugins"
     settings_path = repo_root / "images" / "claude" / "claude-settings.json"
     marketplace_path = repo_root / ".claude-plugin" / "marketplace.json"
+    external_sources_path = repo_root / "claude-external-plugin-sources.json"
 
     if not plugins_dir.exists():
         print(f"Error: Plugins directory not found: {plugins_dir}", file=sys.stderr)
         sys.exit(1)
 
-    print("Scanning plugins...")
-    plugin_metadata = get_plugin_metadata(plugins_dir)
+    print("Scanning local plugins...")
+    local_plugins = get_plugin_metadata(plugins_dir)
 
-    if not plugin_metadata:
-        print("Warning: No plugins found", file=sys.stderr)
+    if not local_plugins:
+        print("Warning: No local plugins found", file=sys.stderr)
     else:
-        plugin_names = [plugin["name"] for plugin in plugin_metadata]
-        print(f"Found plugins: {', '.join(plugin_names)}")
+        plugin_names = [plugin["name"] for plugin in local_plugins]
+        print(f"Found local plugins: {', '.join(plugin_names)}")
+
+    # Load and merge external plugins
+    external_plugins = load_external_plugins(external_sources_path)
+    if external_plugins:
+        ext_names = [plugin["name"] for plugin in external_plugins]
+        print(f"Found external plugins: {', '.join(ext_names)}")
+
+    all_plugins = merge_plugins(local_plugins, external_plugins)
 
     print("Generating Claude settings...")
-    settings = generate_claude_settings(plugin_metadata)
+    settings = generate_claude_settings(all_plugins)
 
     print(f"Writing {settings_path}...")
     write_settings_file(settings_path, settings)
 
     print("Generating marketplace configuration...")
-    marketplace = generate_marketplace_json(plugin_metadata)
+    marketplace = generate_marketplace_json(all_plugins)
 
     print(f"Writing {marketplace_path}...")
     write_settings_file(marketplace_path, marketplace)
