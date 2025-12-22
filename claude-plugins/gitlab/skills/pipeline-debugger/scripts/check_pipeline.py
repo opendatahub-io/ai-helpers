@@ -5,7 +5,11 @@
 # ]
 # ///
 """
-Check CI pipeline status for the merge request associated with a git branch.
+Check CI pipeline status for GitLab pipelines.
+
+Can inspect pipelines either by:
+  1. Finding the merge request for a git branch (current or specified)
+  2. Directly inspecting a pipeline by its ID
 
 Authentication (checked in order):
   1. GITLAB_TOKEN environment variable
@@ -52,9 +56,10 @@ def display_pipeline_status(pipeline: ProjectPipeline) -> None:
         return
 
     # Group jobs by stage; sort by when they started so stages display in order
+    # Jobs with started_at=None are sorted last.
     jobs_by_stage: dict[str, list[Any]] = defaultdict(list)
     max_job_name_len = 0
-    for job in sorted(jobs, key=lambda j: j.started_at):
+    for job in sorted(jobs, key=lambda j: (j.started_at is None, j.started_at)):
         jobs_by_stage[job.stage].append(job)
         max_job_name_len = max(max_job_name_len, len(job.name))
 
@@ -84,7 +89,6 @@ def view_job_log(pipeline: ProjectPipeline, job_name: str) -> None:
     # Get the full job object (list() returns partial objects without trace())
     full_job = project.jobs.get(job.id)
 
-    print(f"\n{'=' * 80}")
     print(f"Job: {full_job.name}")
     print(f"Status: {full_job.status}")
     print(f"Stage: {full_job.stage}")
@@ -108,9 +112,20 @@ def find_mr_for_branch(
     return mrs[0]
 
 
-def get_latest_pipeline(mr: ProjectMergeRequest) -> ProjectPipeline | None:
+def get_latest_mr_pipeline(mr: ProjectMergeRequest) -> ProjectPipeline | None:
     """Get the latest pipeline for a merge request."""
     pipelines = mr.pipelines.list(get_all=True)
+    if not pipelines:
+        return None
+    # Pipelines are returned in newest to oldest
+    return pipelines[0]
+
+
+def get_latest_branch_pipeline(
+    project: Project, branch_name: str
+) -> ProjectPipeline | None:
+    """Get the latest pipeline for a branch."""
+    pipelines = project.pipelines.list(ref=branch_name, get_all=True)
     if not pipelines:
         return None
     # Pipelines are returned in newest to oldest
@@ -124,6 +139,21 @@ def get_current_branch() -> str:
         text=True,
     )
     return result.strip()
+
+
+def get_main_branch() -> str:
+    """Get the name of the main branch (e.g., 'main' or 'master')."""
+    try:
+        result = subprocess.check_output(
+            ["git", "symbolic-ref", "refs/remotes/origin/HEAD"],
+            text=True,
+            stderr=subprocess.DEVNULL,
+        )
+        # Output: refs/remotes/origin/main
+        return result.strip().split("/")[-1]
+    except subprocess.CalledProcessError:
+        # Fallback to 'main' if symbolic ref is not set
+        return "main"
 
 
 def get_gitlab_token(domain: str) -> str:
@@ -203,6 +233,13 @@ def main() -> None:
         default=None,
     )
     parser.add_argument(
+        "-p",
+        "--pipeline-id",
+        help="Pipeline ID to inspect directly (skips MR or branch lookup)",
+        type=int,
+        default=None,
+    )
+    parser.add_argument(
         "-j",
         "--job",
         help="Download and print the log for the specified job name",
@@ -210,12 +247,13 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    branch_name = args.branch if args.branch else get_current_branch()
-    if branch_name == "main":
+    # Validate mutually exclusive options
+    if args.pipeline_id and args.branch:
         print(
-            "WARNING: You are on the 'main' branch; this will display the latest CI run on main",
+            "ERROR: Cannot specify both --pipeline-id and --branch; use one or the other",
             file=sys.stderr,
         )
+        sys.exit(1)
 
     gitlab_domain, project_path = get_gitlab_info()
     gitlab_url = f"https://{gitlab_domain}"
@@ -225,25 +263,55 @@ def main() -> None:
 
     project = gl.projects.get(project_path)
 
-    mr = find_mr_for_branch(project, branch_name)
-    if not mr:
-        print(
-            f"ERROR: No open merge request found for branch '{branch_name}'",
-            file=sys.stderr,
-        )
-        sys.exit(1)
+    if args.pipeline_id:
+        try:
+            pipeline = project.pipelines.get(args.pipeline_id)
+        except gitlab.exceptions.GitlabGetError:
+            print(
+                f"ERROR: Pipeline {args.pipeline_id} not found in project {project_path}",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+    else:
+        branch_name = args.branch if args.branch else get_current_branch()
+        main_branch = get_main_branch()
 
-    print(f"Found MR !{mr.iid}: {mr.title}")
-    print(f"MR URL: {mr.web_url}")
+        if branch_name == main_branch:
+            if not args.job:
+                print(f"Pipeline branch: {branch_name}")
+            pipeline = get_latest_branch_pipeline(project, branch_name)
+            if not pipeline:
+                print(
+                    f"ERROR: No pipeline found on {main_branch} branch", file=sys.stderr
+                )
+                sys.exit(1)
+        else:
+            mr = find_mr_for_branch(project, branch_name)
+            if not mr:
+                print(
+                    f"ERROR: No open merge request found for branch '{branch_name}'",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
 
-    pipeline = get_latest_pipeline(mr)
-    if not pipeline:
-        print(f"ERROR: No pipeline found for merge request !{mr.iid}", file=sys.stderr)
-        sys.exit(1)
+            if not args.job:
+                print(f"Found MR !{mr.iid}: {mr.title}")
+                print(f"Pipeline branch: {branch_name}")
+                print(f"MR URL: {mr.web_url}")
+
+            pipeline = get_latest_mr_pipeline(mr)
+            if not pipeline:
+                print(
+                    f"ERROR: No pipeline found for merge request !{mr.iid}",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
 
     if args.job:
         view_job_log(pipeline, args.job)
     else:
+        print(f"Pipeline URL: {pipeline.web_url}")
+        print(f"Status: {pipeline.status}")
         print(f"{'=' * 80}")
         display_pipeline_status(pipeline)
 
