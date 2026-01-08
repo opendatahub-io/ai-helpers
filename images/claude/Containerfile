@@ -54,6 +54,3 @@ USER claude
 
 # Set Claude Code as the default command
 ENTRYPOINT ["claude"]
-
-# Default to showing help
-CMD ["--help"]
