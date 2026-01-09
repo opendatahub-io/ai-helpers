@@ -1,0 +1,32 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-dockerfile
+{
+	"name": "MVP Container for dev container workflow",
+	"build": {
+		// Sets the run context to one level up instead of the .devcontainer folder.
+		"context": "..",
+		// Update the 'Containerfile' property if you aren't using the standard 'Containerfile' filename.
+		"dockerfile": "../images/claude/Containerfile"
+	},
+	"postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && ./scripts/setup_claude.sh",
+	// Mount Git config.
+	"mounts": [
+		"source=${env:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached",
+		"type=bind,source=${localEnv:HOME}/.config/gcloud,target=/root/.config/gcloud,consistency=cached",
+		"type=bind,source=${localEnv:HOME}/.anthropic,target=/root/.anthropic,consistency=cached"
+	],
+	"containerEnv": {
+		"ANTHROPIC_VERTEX_PROJECT_ID": "your-project",
+		"CLAUDE_CODE_USE_VERTEX": "1",
+		"CLOUD_ML_REGION": "your-region",
+		"GOOGLE_APPLICATION_CREDENTIALS": "/root/.config/gcloud/application_default_credentials.json",
+		"CLAUDE_PROJECT_DIR": "${containerWorkspaceFolder}"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"anthropic.claude-code"
+			]
+		}
+	}
+}
