@@ -58,7 +58,7 @@
       "name": "fips-compliance-checker",
       "source": {
         "source": "url",
-        "url": "https://github.com/grdryn/fips-compliance-checker-claude-code-plugin.git"
+        "url": "https://github.com/opendatahub-io/fips-compliance-checker-claude-code-plugin.git"
       },
       "description": "Plugin to scan for FIPS compliance"
     }
