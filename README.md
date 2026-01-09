@@ -60,7 +60,7 @@ podman build -f images/claude/Containerfile -t ai-helpers .
 
 or you can use the one built by our CI periodically.
 
-To use Claude Code with Google Cloud's Vertex AI, you need to pass through your gcloud credentials and set the required environment variables:
+To use Claude Code interactively with Google Cloud's Vertex AI, you need to pass through your gcloud credentials and set the required environment variables:
 
 ```bash
 podman run -it \
@@ -73,8 +73,8 @@ podman run -it \
   -v ~/.config/gcloud:/home/claude/.config/gcloud:ro,z \
   -v $(pwd):/workspace:z \
   -w /workspace \
-  --name claude_code \
-  ghcr.io/opendatahub-io/ai-helpers:latest
+  --name claude-code__$(basename $(pwd)) \
+  ghcr.io/opendatahub-io/ai-helpers:latest --
 ```
 
 **Environment Variables:**
@@ -103,7 +103,7 @@ podman run -it \
   -v ~/.config/gcloud:/home/claude/.config/gcloud:ro,z \
   -v $(pwd):/workspace:z \
   -w /workspace \
-  --name claude_code \
+  --name claude-code__$(basename $(pwd)) \
   ghcr.io/opendatahub-io/ai-helpers:latest \
   --print "/hello-world:echo Hello from Claude Code!"
 ```
