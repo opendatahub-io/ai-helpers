@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "skills": {
+    "hello-world": {
+      "type": "domain",
+      "enforcement": "block",
+      "priority": "critical",
+      "promptTriggers": {
+        "keywords": ["hello", "world"],
+        "intentPatterns": ["hello.*world"]
+      }
+    },
+    "skill-developer": {
+      "type": "domain",
+      "enforcement": "block",
+      "priority": "critical",
+      "promptTriggers": {
+        "keywords": [
+          "skill",
+          "skills",
+          "skill-rules",
+          "skill-rules.json",
+          "trigger",
+          "triggers",
+          "hook",
+          "hooks",
+          "activation"
+        ],
+        "intentPatterns": [
+          "(create|add|make|build|develop).*?skill",
+          "(modify|edit|update|change).*?skill",
+          "(debug|fix|troubleshoot).*?(skill|trigger|activation)",
+          "skill.*?(not|isn't|doesn't).*?(trigger|activat|work)",
+          "(how|what|explain).*?(skill|trigger|hook).*?work"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          ".claude/skills/**/*.md",
+          ".claude/skills/skill-rules.json",
+          ".claude/hooks/*.py",
+          ".claude/hooks/*.sh"
+        ]
+      }
+    }
+  }
+}
