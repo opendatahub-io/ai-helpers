@@ -46,6 +46,13 @@
         "category": "general",
         "file_path": "",
         "link": "https://gemini.google.com/gem/1P0wg_pwCga6YDVKfd3enWY1CRh2EzuXI?usp=sharing"
+      },
+      {
+        "name": "tl-dev",
+        "description": "My purpose is to act as your technical article filter. Provide a URL, and I will generate a concise TL;DR summary for you. I first determine if the content is technical. If not, I will reply only with Content is not relevant to software development.",
+        "category": "general",
+        "file_path": "",
+        "link": "https://gemini.google.com/gem/1vi4as7sXcljjj0nFwq0rXGYdLl0NJ-7g?usp=sharing"
       }
     ],
     "skills": [
