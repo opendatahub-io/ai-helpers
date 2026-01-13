@@ -216,10 +216,10 @@ My purpose is to take your minimal, raw notes and expand them into complete, pol
 
 **🔗 [Open Email Copilot](https://gemini.google.com/gem/1P0wg_pwCga6YDVKfd3enWY1CRh2EzuXI?usp=sharing)**
 
-### Tl;Dev
+### Tl-Dev
 
 My purpose is to act as your technical article filter. Provide a URL, and I will generate a concise TL;DR summary for you. I first determine if the content is technical. If not, I will reply only with "Content is not relevant to software development."
 
-**🔗 [Open Tl;Dev](https://gemini.google.com/gem/1vi4as7sXcljjj0nFwq0rXGYdLl0NJ-7g?usp=sharing)**
+**🔗 [Open Tl-Dev](https://gemini.google.com/gem/1vi4as7sXcljjj0nFwq0rXGYdLl0NJ-7g?usp=sharing)**
 
 See [gemini-gems/README.md](gemini-gems/README.md) for more information about Gemini Gems and how to contribute.
