@@ -1,0 +1,99 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.19.2"
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "4237fdad0ec3f0a0d36818f5b4037d84",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "90ae6c6c6205af3fc65e94f54c14429f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "97e17bc947c70f81791dd7c8b7226c45",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"presentation-navigation\">Presentation Navigation</h2>\n<span class=\"paragraph\"><strong>Current Slide:</strong> 1. Title</span>\n<span class=\"paragraph\"><marimo-ui-element object-id='vblA-0' random-id='e821bb20-dd3c-ecb9-39df-536379253ed8'><marimo-slider data-initial-value='1' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Slide&lt;/span&gt;&lt;/span&gt;&quot;' data-start='1' data-stop='12' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "a0749c57c37cba66882483ceca15d7b0",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "\n<style>\n    /* Global font scaling for presentation */\n    .marimo {\n        font-size: 200% !important;\n        line-height: 1.6 !important;\n    }\n\n    /* Headings - extra large */\n    h1 {\n        font-size: 3.5em !important;\n        margin-bottom: 0.5em !important;\n        line-height: 1.2 !important;\n    }\n\n    h2 {\n        font-size: 2.5em !important;\n        margin-bottom: 0.4em !important;\n        line-height: 1.3 !important;\n    }\n\n    h3 {\n        font-size: 2em !important;\n        margin-bottom: 0.3em !important;\n        line-height: 1.3 !important;\n    }\n\n    /* Paragraph and list text */\n    p, li {\n        font-size: 1.5em !important;\n        margin-bottom: 0.8em !important;\n        line-height: 1.6 !important;\n    }\n\n    /* Callout boxes */\n    .callout {\n        font-size: 1.4em !important;\n        padding: 1.5em !important;\n        margin: 1em 0 !important;\n    }\n\n    /* Code blocks */\n    code, pre {\n        font-size: 1.3em !important;\n        line-height: 1.5 !important;\n    }\n\n    /* Tables */\n    table {\n        font-size: 1.4em !important;\n    }\n\n    th, td {\n        padding: 0.8em !important;\n    }\n\n    /* Accordion headers */\n    .accordion summary {\n        font-size: 1.5em !important;\n        padding: 0.8em !important;\n    }\n\n    /* Mermaid diagrams - larger */\n    .mermaid {\n        transform: scale(1.5) !important;\n        transform-origin: top left !important;\n        margin: 2em 0 !important;\n    }\n\n    /* Bullet points larger */\n    ul, ol {\n        margin-left: 1.5em !important;\n    }\n\n    /* Strong/bold text */\n    strong, b {\n        font-weight: 700 !important;\n    }\n\n    /* Links */\n    a {\n        font-size: 1.4em !important;\n    }\n</style>\n"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "f44ac708a67d868f73576d9b311f3c54",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div style=\"text-align: center; padding: 60px 20px;\">\n    <svg width=\"300\" height=\"100\" viewBox=\"0 0 300 100\" style=\"margin-bottom: 40px;\">\n        <text x=\"150\" y=\"50\" font-family=\"Arial, sans-serif\" font-size=\"48\" font-weight=\"bold\"\n              fill=\"#EE0000\" text-anchor=\"middle\" dominant-baseline=\"middle\">\n            Red Hat\n        </text>\n    </svg>\n\n    <h1 style=\"color: #EE0000; font-size: 2.5em; margin-bottom: 20px;\">\n        Agor + Speckit + Jira\n    </h1>\n\n    <h2 style=\"color: #333; font-size: 1.8em; margin-bottom: 20px;\">\n        Multi-Agent Specification-Driven Development\n    </h2>\n\n    <p style=\"font-size: 1.3em; color: #666;\">\n        AI-Assisted Development with Structure and Scale\n    </span>\n\n    <hr style=\"width: 60%; margin: 40px auto; border: 2px solid #EE0000;\">\n\n    <p style=\"font-size: 1.1em; color: #888;\">\n        An attempt at an Agentic Engineering Workflow\n    </span>\n</div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "0bd877eb8b847f00a222707726be7cdb",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    }
+  ]
+}
