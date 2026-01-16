@@ -46,6 +46,17 @@ RUN useradd -m -u 1000 -s /bin/bash claude
 COPY . /opt/ai-helpers
 RUN chown -R claude:claude /opt/ai-helpers
 
+# Create Claude configuration directory and copy settings
+#   Note: We pre-configure known_marketplaces.json because extraKnownMarketplaces doesn't seem to work in non-interactive mode.
+RUN mkdir -p /home/claude/.claude/plugins
+COPY ./images/claude/claude-settings.json /home/claude/.claude/settings.json
+COPY ./images/claude/known_marketplaces.json /home/claude/.claude/plugins/known_marketplaces.json
+RUN chown -R claude:claude /home/claude/.claude
+
+# Create workspace directory
+RUN mkdir -p /workspace && chown -R claude:claude /workspace
+WORKDIR /workspace
+
 # Switch to claude user
 USER claude
 
