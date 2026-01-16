@@ -2,6 +2,8 @@
 name: python-packaging-license-checker
 description: Assess license compatibility for Python package redistribution using SPDX.org license database. Evaluates whether a given license allows building and distributing wheels, with real-time license information lookup.
 allowed-tools: WebFetch
+agent: python-packaging:python-packaging-investigator
+context: fork
 ---
 
 # Python Package License Compatibility Checker
