@@ -15,20 +15,17 @@ RUN dnf install -y nodejs \
     git \
     && dnf clean all
 
-# Install Google Cloud CLI
-RUN tee /etc/yum.repos.d/google-cloud-sdk.repo << EOM
-[google-cloud-cli]
-name=Google Cloud CLI
-baseurl=https://packages.cloud.google.com/yum/repos/cloud-sdk-el9-x86_64
-enabled=1
-gpgcheck=1
-repo_gpgcheck=0
-gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-EOM
 
-RUN dnf install -y google-cloud-cli && \
-    dnf clean all
-    
+RUN echo '[google-cloud-cli]' > /etc/yum.repos.d/google-cloud-sdk.repo && \
+echo 'name=Google Cloud CLI' >> /etc/yum.repos.d/google-cloud-sdk.repo && \
+echo 'baseurl=https://packages.cloud.google.com/yum/repos/cloud-sdk-el9-x86_64' >> /etc/yum.repos.d/google-cloud-sdk.repo && \
+echo 'enabled=1' >> /etc/yum.repos.d/google-cloud-sdk.repo && \
+echo 'gpgcheck=1' >> /etc/yum.repos.d/google-cloud-sdk.repo && \
+echo 'repo_gpgcheck=0' >> /etc/yum.repos.d/google-cloud-sdk.repo && \
+echo 'gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg' >> /etc/yum.repos.d/google-cloud-sdk.repo && \
+dnf install -y google-cloud-cli && \
+dnf clean all
+
 # Install uv for PEP 723 script dependency management
 RUN curl -LsSf https://astral.sh/uv/install.sh | UV_INSTALL_DIR="/usr/local/bin/" INSTALLER_NO_MODIFY_PATH=1 sh
 
@@ -49,19 +46,14 @@ RUN useradd -m -u 1000 -s /bin/bash claude
 COPY . /opt/ai-helpers
 RUN chown -R claude:claude /opt/ai-helpers
 
-# Create Claude configuration directory and copy settings
-#   Note: We pre-configure known_marketplaces.json because extraKnownMarketplaces doesn't seem to work in non-interactive mode.
-RUN mkdir -p /home/claude/.claude/plugins
-COPY ./images/claude/claude-settings.json /home/claude/.claude/settings.json
-COPY ./images/claude/known_marketplaces.json /home/claude/.claude/plugins/known_marketplaces.json
-RUN chown -R claude:claude /home/claude/.claude
-
-# Create workspace directory
-RUN mkdir -p /workspace && chown -R claude:claude /workspace
-WORKDIR /workspace
-
 # Switch to claude user
 USER claude
+
+# Install Claude Code CLI as the claude user
+RUN curl -fsSL https://claude.ai/install.sh | bash
+
+# Add Claude Code to PATH
+ENV PATH="/home/claude/.local/bin:${PATH}"
 
 # Set Claude Code as the default command
 ENTRYPOINT ["claude"]
