@@ -1,6 +1,8 @@
 ---
 name: upload-chat-log
 description: Export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation.
+allowed-tools: [Write, Bash]
+isolate-context: true
 ---
 
 # Upload Chat Log to JIRA
