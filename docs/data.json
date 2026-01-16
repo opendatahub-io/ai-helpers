@@ -26,6 +26,7 @@
         ],
         "gemini_gems": [
           "Email Copilot",
+          "TL;Dev",
           "Technical Spike & Investigation"
         ]
       },
@@ -433,6 +434,18 @@
         "description": "My purpose is to take your minimal, raw notes and expand them into complete, polished email drafts, acting as your thought partner.",
         "category": "general",
         "link": "https://gemini.google.com/gem/1P0wg_pwCga6YDVKfd3enWY1CRh2EzuXI?usp=sharing",
+        "commands": [],
+        "skills": [],
+        "hooks": [],
+        "agents": [],
+        "has_readme": false
+      },
+      {
+        "name": "tl;dev",
+        "display_name": "TL;Dev",
+        "description": "We are drowning in a sea of open tabs. Every day, we skip potentially game-changing articles simply because we don't have the time to vet them. This Gem acts as your technical filter, ensuring you never miss a critical insight just because the signal was lost in the noise.",
+        "category": "general",
+        "link": "https://gemini.google.com/gem/1vi4as7sXcljjj0nFwq0rXGYdLl0NJ-7g?usp=sharing",
         "commands": [],
         "skills": [],
         "hooks": [],
