@@ -2,6 +2,7 @@
 name: complexity
 description: Analyze Python package build complexity by inspecting PyPI metadata. Evaluates compilation requirements, dependencies, distribution types, and provides recommendations for wheel building strategies.
 allowed-tools: [Bash, Read]
+user-invocable: true
 ---
 
 # Python Package Build Complexity Analysis

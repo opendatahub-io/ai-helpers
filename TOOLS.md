@@ -14,6 +14,7 @@ This document lists all available Claude Code tools, Cursor tools, and Gemini Ge
 - [Rpm](#rpm-claude-code-tool)
 - [Utils](#utils-claude-code-tool)
 - [Vllm](#vllm-claude-code-tool)
+- [Vllm Compare Reqs](#vllm-compare-reqs-claude-code-tool)
 
 ## Cursor Tools
 
@@ -21,6 +22,7 @@ This document lists all available Claude Code tools, Cursor tools, and Gemini Ge
 - [Jira](#jira-cursor-tool)
 - [Konflux](#konflux-cursor-tool)
 - [Rpm](#rpm-cursor-tool)
+- [Vllm](#vllm-cursor-tool)
 
 ## Gemini Gems
 
@@ -132,6 +134,18 @@ vLLM plugin
 
 See [claude-plugins/vllm/README.md](claude-plugins/vllm/README.md) for detailed documentation.
 
+### Vllm Compare Reqs Claude Code Tool
+
+Compare vllm requirements files between versions
+
+**Commands:**
+- **`/vllm-compare-reqs:compare`** - 
+
+**Skills:**
+- **vllm-compare-reqs** - Compare vllm requirements files between versions
+
+See [claude-plugins/vllm-compare-reqs/README.md](claude-plugins/vllm-compare-reqs/README.md) for detailed documentation.
+
 ## Cursor Tools
 
 ### Aipcc Cursor Tool
@@ -168,6 +182,15 @@ Rpm workflow automation for Cursor AI integration
 
 **Commands:**
 - **`/rpm-examine` `[copr-chroot-url] OR [build-log-url] [srpm-url] OR [build.log] [specfile|dist-git] [sources]`** - Analyze RPM build.log failures
+
+See [cursor/README.md](cursor/README.md) for installation and usage instructions.
+
+### Vllm Cursor Tool
+
+Vllm workflow automation for Cursor AI integration
+
+**Commands:**
+- **`/vllm-compare-reqs` `<version1> <version2> <variant|requirements-file> [--pretty]`** - Compare vllm requirements files and Dockerfiles between versions
 
 See [cursor/README.md](cursor/README.md) for installation and usage instructions.
 

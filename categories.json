@@ -13,13 +13,15 @@
         "python-packaging",
         "rpm",
         "slack",
-        "utils"
+        "utils",
+        "vllm-compare-reqs"
       ],
       "cursor_commands": [
         "jira-sprint-summary",
         "konflux-application",
         "konflux-component",
-        "rpm-examine"
+        "rpm-examine",
+        "vllm-compare-reqs"
       ],
       "gemini_gems": [
         "Email Copilot",

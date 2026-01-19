@@ -18,6 +18,7 @@
     "rpm@odh-ai-helpers": true,
     "utils@odh-ai-helpers": true,
     "vllm@odh-ai-helpers": true,
+    "vllm-compare-reqs@odh-ai-helpers": true,
     "fips-compliance-checker@odh-ai-helpers": true
   }
 }
