@@ -1,0 +1,11 @@
+{
+  "name": "vllm-compare-reqs",
+  "description": "Compare vllm requirements files between versions",
+  "version": "1.0.0",
+  "author": {
+    "name": "AI Helpers Marketplace"
+  }
+}
+
+
+

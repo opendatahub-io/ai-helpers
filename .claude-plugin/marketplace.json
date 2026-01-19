@@ -55,6 +55,11 @@
       "description": "vLLM plugin"
     },
     {
+      "name": "vllm-compare-reqs",
+      "source": "./claude-plugins/vllm-compare-reqs",
+      "description": "Compare vllm requirements files between versions"
+    },
+    {
       "name": "fips-compliance-checker",
       "source": {
         "source": "url",

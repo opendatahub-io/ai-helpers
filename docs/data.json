@@ -16,13 +16,15 @@
           "python-packaging",
           "rpm",
           "slack",
-          "utils"
+          "utils",
+          "vllm-compare-reqs"
         ],
         "cursor_commands": [
           "jira-sprint-summary",
           "konflux-application",
           "konflux-component",
-          "rpm-examine"
+          "rpm-examine",
+          "vllm-compare-reqs"
         ],
         "gemini_gems": [
           "Email Copilot",
@@ -278,6 +280,31 @@
         "has_readme": true
       },
       {
+        "name": "vllm-compare-reqs",
+        "description": "Compare vllm requirements files between versions",
+        "category": "general",
+        "commands": [
+          {
+            "name": "compare",
+            "description": "",
+            "synopsis": "",
+            "argument_hint": "",
+            "file_path": "claude-plugins/vllm-compare-reqs/commands/compare.md"
+          }
+        ],
+        "skills": [
+          {
+            "name": "vllm-compare-reqs",
+            "id": "vllm-compare-reqs",
+            "description": "Compare vllm requirements files between versions",
+            "file_path": "claude-plugins/vllm-compare-reqs/skills/vllm-compare-reqs/SKILL.md"
+          }
+        ],
+        "hooks": [],
+        "agents": [],
+        "has_readme": true
+      },
+      {
         "name": "fips-compliance-checker",
         "description": "Plugin to scan for FIPS compliance",
         "category": "general",
@@ -382,6 +409,25 @@
             "synopsis": "/rpm-examine <copr-chroot-url>",
             "argument_hint": "[copr-chroot-url] OR [build-log-url] [srpm-url] OR [build.log] [specfile|dist-git] [sources]",
             "file_path": "claude-plugins/rpm/commands/examine.md"
+          }
+        ],
+        "skills": [],
+        "hooks": [],
+        "agents": [],
+        "has_readme": true
+      },
+      {
+        "name": "vllm-compare-reqs",
+        "description": "Compare vllm requirements files and Dockerfiles between versions",
+        "category": "general",
+        "commands": [
+          {
+            "name": "compare-reqs",
+            "full_command_name": "vllm-compare-reqs",
+            "description": "Compare vllm requirements files and Dockerfiles between versions",
+            "synopsis": "/vllm-compare-reqs <version1> <version2> <variant|requirements-file> [--pretty]",
+            "argument_hint": "<version1> <version2> <variant|requirements-file> [--pretty]",
+            "file_path": "cursor/commands/vllm-compare-reqs.md"
           }
         ],
         "skills": [],
