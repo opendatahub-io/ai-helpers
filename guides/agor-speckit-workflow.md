@@ -161,6 +161,40 @@ Some reviews benefit from additional perspectives:
 
 > **Key Insight**: The structured stages create natural pause points for thoughtful human review. Rushing through reviews defeats the purpose of the workflow—the goal is to catch issues early, not to move fast through stages.
 
+## Quick Start: Import Agor Board
+
+To get started quickly, import the pre-configured Agor board with all workflow zones:
+
+### Importing the Board Template
+
+1. **Download the board template**: [example-speckit.agor-board.yaml](example-speckit.agor-board.yaml)
+
+2. **Import into Agor**:
+   ```bash
+   # Using Agor CLI
+   agor board import example-speckit.agor-board.yaml
+   ```
+
+   Or via the Agor UI:
+   - Open Agor (`agor open`)
+   - Navigate to Boards
+   - Click "Import Board"
+   - Select the `example-speckit.agor-board.yaml` file
+
+3. **Verify the import**: The board includes pre-configured zones for:
+   - Initial spec-kit setup
+   - Specify (requirements)
+   - Clarify (resolve ambiguities)
+   - Plan (technical design)
+   - Tasks (work breakdown)
+   - Analyze (consistency check)
+   - Implement
+   - Code Review
+   - PR Comment Review
+   - Find Jira Tickets
+
+Each zone has trigger templates pre-configured with the appropriate Speckit commands and workflow steps.
+
 ## Workflow Architecture
 
 > **Visual Diagrams**: For detailed interactive Mermaid diagrams, see [agor-speckit-workflow-diagram.md](agor-speckit-workflow-diagram.md)
