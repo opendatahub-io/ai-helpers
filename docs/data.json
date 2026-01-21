@@ -76,13 +76,41 @@
         "name": "git",
         "description": "Git workflow automation and utilities",
         "category": "general",
-        "commands": [],
+        "commands": [
+          {
+            "name": "commit",
+            "description": "\"Create commit with automatic style detection based on development phase\"",
+            "synopsis": "/git:commit [style_or_message]",
+            "argument_hint": "\"[style_or_message]\"",
+            "file_path": "claude-plugins/git/commands/commit.md"
+          },
+          {
+            "name": "merge",
+            "description": "\"Smart commit squashing with intelligent message combination\"",
+            "synopsis": "/git:merge [count_or_sha] [style]",
+            "argument_hint": "\"[count_or_sha] [style]\"",
+            "file_path": "claude-plugins/git/commands/merge.md"
+          },
+          {
+            "name": "reword",
+            "description": "\"Smart commit message rewording with style transformation\"",
+            "synopsis": "/git:reword [sha] [style_or_message]",
+            "argument_hint": "\"[sha] [style_or_message]\"",
+            "file_path": "claude-plugins/git/commands/reword.md"
+          }
+        ],
         "skills": [
           {
             "name": "shallow-clone",
             "id": "shallow-clone",
             "description": "Perform a shallow clone of a Git repository to a temporary location.",
             "file_path": "claude-plugins/git/skills/shallow-clone/SKILL.md"
+          },
+          {
+            "name": "workflow",
+            "id": "workflow",
+            "description": "Proactive git workflow automation with checkpoint commits and history cleanup",
+            "file_path": "claude-plugins/git/skills/workflow/SKILL.md"
           }
         ],
         "hooks": [],

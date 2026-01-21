@@ -44,8 +44,14 @@ See [claude-plugins/aipcc/README.md](claude-plugins/aipcc/README.md) for detaile
 
 Git workflow automation and utilities
 
+**Commands:**
+- **`/git:commit` `"[style_or_message]"`** - "Create commit with automatic style detection based on development phase"
+- **`/git:merge` `"[count_or_sha] [style]"`** - "Smart commit squashing with intelligent message combination"
+- **`/git:reword` `"[sha] [style_or_message]"`** - "Smart commit message rewording with style transformation"
+
 **Skills:**
 - **shallow-clone** - Perform a shallow clone of a Git repository to a temporary location.
+- **workflow** - Proactive git workflow automation with checkpoint commits and history cleanup
 
 See [claude-plugins/git/README.md](claude-plugins/git/README.md) for detailed documentation.
 
