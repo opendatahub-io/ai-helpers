@@ -1,0 +1,238 @@
+# Agor Board Export
+# Generated: 2026-01-20T18:14:43.832Z
+# Version: 1.0
+name: Jounce-speckit
+description: work on jounce jira tasks while implementing the mindset of speckit
+icon: 🍎
+objects:
+  zone-1766505858704:
+    type: zone
+    x: -880
+    'y': -20
+    width: 556.0980507521713
+    height: 1132.195085685484
+    label: Initial spec-kit setup
+    color: '#d32029'
+    trigger:
+      behavior: always_new
+      template: |-
+        DO NOT RUN : just p in this session!!
+
+        -  copy  ~/projects/ai-toolkit/CLAUDE.md to CLAUDE.md
+
+        - run uv sync
+         
+        - run. y | specify init . --ai claude --script sh
+          
+        - copy constitution from ~/projects/ai-toolkit/specify/constitution.md to .specify/memory/constitution.md
+
+
+        -  replace common.sh  file with the  /Users/josephberry/projects/spec-kit/scripts/bash/common.sh
+
+        -  Update pyproject.toml [tool.lintok] to exclude   "specs/**"  
+
+        - If  { worktree.issue_url } is null - get Jira issue info  based on the Git WorkTree branch, then update the { worktree.issue_url } with the following link https://jounce.atlassian.net/browse/JN-XXXX where xxxx is the number from the Jira Task
+
+        - If the length of the branch name is longer the 55 characters - suggest to shorten the branch name. 
+        it must still contain the prefix of the jira ticket (e.g. jn-xxxx) 
+        e.g. git branch jn-3767-post-processing-db should  get the issue jn-3767
+        If you can't find a jira ticket - ask for one
+
+        - if { worktree.pull_request_url } is null / empty - check for PR with the jira ticket (check also for lower case).  update the worktree  PR url { worktree.pull_request_url }. if there is no PR  and create a DRAFT PR without commits
+  zone-1766505864767:
+    type: zone
+    x: -260
+    'y': -120
+    width: 588.9692520936725
+    height: 1220.0162705490075
+    label: specify
+    color: '#d87a16'
+    trigger:
+      behavior: always_new
+      template: |-
+        Use the branch name for the spec feature. preserve the jira suffix jn-xxxx 
+
+        if { worktree.issue_url }  is a jira ticket of type of sub task - if necessary get additional background from the parent story.
+
+        Create the spec document.  Focus on the what and why, not the tech stack. 
+        - Pipe the content of  { worktree.issue_url }  into /speckit.specify
+        - the spec documentation needs to be under the `specs` folder
+
+        Verify at the end the branch name has a prefix of jn-xxxx and the spec feature has the same name of the branch
+  zone-1766505895192:
+    type: zone
+    x: 400
+    'y': -80
+    width: 626.5297949468807
+    height: 1169.504830206789
+    label: Plan
+    color: '#49aa19'
+    trigger:
+      behavior: show_picker
+      template: |-
+        if the git is dirty - run 
+        git add . && git commit -m "wip: pre specify plan cleanup"
+
+        Create a technical implementation plan 
+        Run /speckit.plan
+
+        Verify that every line in the md files  ends with double space
+  zone-1766505903512:
+    type: zone
+    x: 1080
+    'y': -80
+    width: 649.8379628696495
+    height: 1177.9607461711516
+    label: Tasks
+    color: '#1668dc'
+    trigger:
+      behavior: show_picker
+      template: |-
+        if the git is dirty - run 
+        git add . && git commit -m "wip: pre specify tasks cleanup"
+
+        run /speckit.tasks
+  zone-1766507072691:
+    type: zone
+    x: -260
+    'y': 1220
+    width: 1223.9932149503722
+    height: 572.3145742866004
+    label: Clarify
+    color: '#d9d9d9'
+    trigger:
+      behavior: show_picker
+      template: |-
+        If the git is dirty , stage all files and commit with
+        git commit -m"wip: pre-clarify cleanup" --no-verify
+
+        Run /speckit.clarify 
+
+        or .specify/scripts/bash/check-prerequisites.sh --json --paths-only
+  zone-1766507174432:
+    type: zone
+    x: 1100
+    'y': 1220
+    width: 1323.7108438016958
+    height: 567.7112153639371
+    label: Analyze
+    color: '#d9d9d9'
+    trigger:
+      behavior: show_picker
+      template: run /speckit.analyze
+  zone-1766507220265:
+    type: zone
+    x: 1780
+    'y': -780
+    width: 624.5664385597602
+    height: 1880.511747828784
+    label: Implement
+    color: '#642ab5'
+    trigger:
+      behavior: show_picker
+      template: |-
+        if the git is dirty - run 
+        git add . && git commit -m "wip: pre specify Implement cleanup"
+
+        run /speckit.implement
+
+        DO NOT commit files as part of the implementation only stage them.
+  zone-1768210557284:
+    type: zone
+    x: 4080
+    'y': -200
+    width: 1051.3947794117648
+    height: 1303.0970588235296
+    label: Danger Delete Zone
+    borderColor: '#d3c720'
+    backgroundColor: '#d9d9d91a'
+  zone-1768679669781:
+    type: zone
+    x: 2440
+    'y': -780
+    width: 575.1705707279714
+    height: 1863.0116908421287
+    label: CodeReview
+    borderColor: '#cb2b83'
+    backgroundColor: '#d9d9d91a'
+    trigger:
+      behavior: always_new
+      template: |-
+        Role & Context
+        You are an expert Software Architect and Security Auditor. You are performing a deep-dive code review on {{ worktree.pull_request_url }} . Your goal is to ensure the code is production-ready, secure, and maintainable. You evaluate the changes within the context of the entire repository, not just in isolation.
+
+        Review Objectives
+        Logic & Reliability: Detect potential race conditions, off-by-one errors, or unhandled edge cases.
+
+        Security: Scan for hardcoded credentials, injection vulnerabilities, and unsafe data handling.
+
+        Architecture: Ensure changes align with existing design patterns and don't introduce unnecessary complexity.
+
+        Performance: Identify inefficient loops, redundant database queries, or memory leaks.
+
+        Review Feedback Tiers (Required Output Format)
+        🔴 Critical Issues
+        Focus: Must-fix items before merging.
+        Bugs: Logic flaws that will cause incorrect behavior or crashes.
+        Security: Vulnerabilities that compromise the system or leak data.
+        Breaking Changes: API or database schema changes that break backward compatibility without a migration path.
+        Stability: Missing error handling for network requests or file I/O.
+
+        🟡 High Value
+        Focus: Improvements to the long-term health of the codebase.
+        Refactoring: Suggestions to simplify overly complex logic or reduce code duplication.
+        Maintainability: Improving naming conventions, adding necessary documentation, or clarifying intent.
+        Performance: Optimizations that reduce resource usage or latency.
+        Testing: Identifying gaps in test coverage for the new logic.
+
+        🟢 Low Value
+        Focus: Helpful minor adjustments.
+        Nitpicks: Small style choices that don't impact functionality.
+        Typos: Spelling errors in comments, variable names, or documentation.
+        Syntax Shorthand: Using more modern or concise language features where appropriate.
+
+        Execution Instructions
+        Analyze Context: Read the existing files in the repository to understand the established coding style and patterns before providing feedback.
+        Be Objective: Base your feedback on technical merits and industry best practices.
+
+        Final Verdict: At the end of your review, provide a clear recommendation:
+
+        ✅ APPROVE: No Critical Issues and high overall quality.
+        💬 COMMENT: Useful feedback provided, but no blockers found.
+        ❌ REQUEST CHANGES: At least one Critical Issue must be addressed.  
+
+        The outcome should be written into a temp/code_review.md file
+  zone-1768682803291:
+    type: zone
+    x: -1640
+    'y': -60
+    width: 691.7107014587035
+    height: 1154.8473127347281
+    label: Find Jira tickets
+    borderColor: '#d9d9d9'
+    backgroundColor: '#d9d9d91a'
+    trigger:
+      behavior: show_picker
+      template: |-
+        Review all ticket in the jounce jira project https://jounce.atlassian.net/jira/software/c/projects/JN/
+        and find any new ticket that is assigned to Joseph Berry.  
+
+        Check that it has all relevant information in order to be able to execute on it.
+  zone-1768747856682:
+    type: zone
+    x: 3080
+    'y': -760
+    width: 554.5028533726363
+    height: 1852.267643757581
+    label: PR comment review
+    borderColor: '#d9d9d9'
+    backgroundColor: '#d9d9d91a'
+    trigger:
+      behavior: always_new
+      template: |-
+        Review the comments in the {{ worktree.pull_request_url }} and plan how to address the various comments.
+
+        Verify that the comment is reasonable and what actions can be taken. if the issue is complex give at least 
+
+        the analysis should be written into temp/pr_code_review###.md
+        since there may be multiple iterations the ### may be updated following new comments
