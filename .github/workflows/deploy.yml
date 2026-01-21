@@ -27,23 +27,10 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install marimo
-        run: pip install marimo
-
       - name: Build documentation
         run: |
           mkdir -p _site
           cp -r docs/* _site/
-
-      - name: Export Marimo notebooks to WASM
-        run: |
-          mkdir -p _site/presentations
-          marimo export html-wasm guides/ewa_notebook.py -o _site/presentations/ewa-notebook --mode run
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
