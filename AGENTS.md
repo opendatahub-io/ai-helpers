@@ -74,75 +74,20 @@ Conversational AI assistants created within Google's Gemini platform. Each Gem i
 
 ## Tool Registry
 
-The marketplace uses a centralized tool registry in `tools.json` to organize all available tools by their type and category. This provides a single source of truth for tool discovery and maintains a well-structured tool collection.
+The marketplace uses a centralized category registry in `categories.yaml` to organize specialized tools by category. **Tools not listed in any category are automatically placed in the "General" category**, providing a clean organization system that requires no action from contributors for basic tools.
 
-### Tool Registry Structure
+### Category Registry Structure
 
-All tools are defined in `tools.json` at the repository root with the following structure:
+Specialized tool categories are defined in `categories.yaml` at the repository root:
 
-```json
-{
-  "tools": [
-    {
-      "name": "tool-name",
-      "description": "Tool description",
-      "type": "skill|command|agent|gem",
-      "category": "category-name"
-    }
-  ],
-  "categories": {
-    "category-name": {
-      "name": "Display Name",
-      "description": "Category description"
-    }
-  }
-}
+```yaml
+CategoryName:
+  - specialized-tool
+  - another-tool
+
+AnotherCategory:
+  - domain-specific-tool
 ```
-
-### Available Categories
-
-- **General**: Default category for general-purpose tools and utilities
-- **AIPCC**: Tools specifically designed for AIPCC workflows and processes
-- **vLLM**: Tools specifically designed for vLLM workflows and processes
-
-### Adding a New Category
-
-When you have multiple related tools that form a cohesive workflow or domain:
-
-1. **Add category definition** to `tools.json`:
-   ```json
-   "categories": {
-     "your-category": {
-       "name": "Your Category Name",
-       "description": "Clear description of the category's purpose and scope"
-     }
-   }
-   ```
-
-2. **Assign tools to the category** by setting their `category` field
-
-3. **Update documentation**: Run `make update` to regenerate the website
-
-### Category Guidelines
-
-**When to create a new category:**
-- You have 3+ related tools that share a common domain or workflow
-- The tools serve a specific user group or use case
-- The category provides clear value for tool discovery
-
-**Category naming:**
-- Use lowercase with hyphens for category keys (e.g., "data-science")
-- Use clear, descriptive names for display (e.g., "Data Science")
-- Write concise descriptions that explain the category's scope
-
-### Automatic Management
-
-The build system automatically handles tool registry maintenance:
-- New tools are assigned to "general" if not explicitly categorized
-- The registry is updated during `make update` to include new tools
-- Manual categorizations are preserved across updates
-
-This ensures all tools are properly registered and categorized without manual maintenance overhead.
 
 ## Ethical Guidelines
 
@@ -157,7 +102,7 @@ This ensures consent, prevents misrepresentation, respects intellectual property
 
 ## Getting Started
 
-1. **Explore Existing Tools**: Browse [tools.json](tools.json) for available tools or visit our [website](https://opendatahub-io.github.io/ai-helpers/)
+1. **Explore Existing Tools**: Browse [categories.yaml](categories.yaml) for categorized tools or visit our [website](https://opendatahub-io.github.io/ai-helpers/)
 2. **Choose Your Platform**: Review platform-specific READMEs for detailed guidance
 3. **Study Examples**: Look at existing implementations for structure and patterns
 4. **Start Contributing**: Follow the development workflow for your chosen platform

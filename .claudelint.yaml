@@ -67,7 +67,7 @@ rules:
     enabled: true
     severity: error
 
-  tools-json-validation:
+  tools-yaml-validation:
     enabled: true
     severity: error
 

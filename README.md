@@ -28,14 +28,6 @@ For skills, check out the `helpers/skills/` directory for examples.
 For commands, check the `helpers/commands/` directory, and for agents see the `helpers/agents/` directory.
 Using AI code assistant itself to develop the tools is highly encouraged.
 
-### Adding local plugin to session to be able to test (example with Claude Code)
-
-1. Open `claude`
-2. Run `/plugin marketplace add ./`
-3. Run `/plugin` then install the local plugin
-4. Test plugin and remove local marketplace after done testing which will remove plugin
-5. You can now reinstall from the git marketplace
-
 ### Adding New Tools
 
 When contributing new tools:
@@ -45,57 +37,54 @@ When contributing new tools:
 3. **Agents**: Add to the `helpers/agents/` directory with appropriate documentation
 4. **Gemini Gems**: Add to the `helpers/gems/` directory
 
+Once you have added the tool, you'd have to run have to run `make update` in order to generate the website data.
+Then you should git commit your change and after than running `make lint` would run local tests to validate the syntax.
+
+### Testing a plugin locally (example with Claude Code)
+
+1. Open `claude`
+2. Run `/plugin marketplace add ./`
+3. Run `/plugin` then install the local plugin
+4. Test plugin and remove local marketplace after done testing which will remove plugin
+5. You can now reinstall from the git marketplace
+
 ## Tool Registry
 
-The AI Helpers marketplace uses a centralized tool registry in `tools.json` to organize all available tools by their type and category. This provides a single source of truth for tool discovery across all supported AI platforms.
+The AI Helpers marketplace uses a centralized category registry in `categories.yaml` to organize specialized tools by category. **Tools not listed in any category are automatically placed in the "General" category** - perfect for most contributions!
 
-### Tool Registry Structure
+### Category Registry Structure
 
-All tools are registered in `tools.json` with their metadata:
+Specialized tool categories are registered in `categories.yaml`:
 
-```json
-{
-  "tools": [
-    {
-      "name": "tool-name",
-      "description": "Tool description",
-      "type": "skill|command|agent|gem",
-      "category": "category-name"
-    }
-  ],
-  "categories": {
-    "category-name": {
-      "name": "Display Name",
-      "description": "Category description"
-    }
-  }
-}
+```yaml
+CategoryName:
+  - specialized-tool
+  - another-tool
+
+AnotherCategory:
+  - domain-specific-tool
 ```
 
 ### Adding a New Category
 
-To add a new category, edit `tools.json` to include the category definition and assign tools to it:
+To add a new category, edit `categories.yaml` to include the new category as a top-level key:
 
-1. **Add category definition**:
-   ```json
-   "categories": {
-     "your-category": {
-       "name": "Your Category Name",
-       "description": "Description of your category's purpose"
-     }
-   }
+1. **Add category with tools**:
+   ```yaml
+   YourCategory:
+     - your-tool-name
+     - another-tool
    ```
 
-2. **Assign tools** by setting their `category` field
-
-3. **Update documentation**: Run `make update` to regenerate the website
+2. **Update documentation**: Run `make update` to regenerate the website
 
 ### Automatic Management
 
-The build system automatically handles tool registry maintenance:
-- New tools are assigned to "general" if not explicitly categorized
-- The registry is updated during `make update` to include new tools
-- Manual categorizations are preserved across updates
+The build system automatically handles tool organization and validation:
+- Tools not in `categories.yaml` are automatically assigned to "General" category
+- Tool types are inferred from filesystem structure
+- Duplicate tool names across categories are prevented
+- All tools require valid names and types
 
 
 ## Using with Claude Code
@@ -124,7 +113,7 @@ the [official Claude Code plugins documentation](https://docs.claude.com/en/docs
 > [!TIP]
 > To browse and install multiple plugins interactively, use `/plugin` after adding the marketplace.
 > This will show you all available plugins and allow you to install them selectively.
-> For a complete list of all available tools, see **[tools.json](tools.json)** or visit our [website](https://opendatahub-io.github.io/ai-helpers/).
+> For a complete list of all available tools, see **[categories.yaml](categories.yaml)** or visit our [website](https://opendatahub-io.github.io/ai-helpers/).
 
 3. **Use the commands:**
    ```bash

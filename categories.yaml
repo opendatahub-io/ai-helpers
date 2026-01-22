@@ -1,0 +1,7 @@
+AIPCC:
+  - aipcc-commit-suggest
+  - commit-message-assistant
+  - aipcc-adr-assistant
+
+vLLM:
+  - vllm-slack-summary

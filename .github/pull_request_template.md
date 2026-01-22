@@ -55,8 +55,7 @@
 - [ ] Gemini: Created Gem in Gemini platform and verified sharing link works (if applicable)
 
 ## Categorization
-- [ ] Tool is properly categorized in `tools.json` (or uses default "general" category)
-- [ ] If creating a new category: Added clear name and description
+- [ ] Tool is properly categorized in `categories.yaml` (or uses default "General" category)
 
 ## Ethical Guidelines Compliance
 - [ ] ✅ No real people are referenced by name in examples or documentation

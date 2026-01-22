@@ -2,30 +2,18 @@
   "name": "odh-ai-helpers",
   "owner": "ODH",
   "categories": {
-    "categories": {
-      "general": {
-        "name": "General",
-        "description": "General-purpose tools and utilities"
-      },
-      "aipcc": {
-        "name": "AIPCC",
-        "description": "Tools specifically designed for AIPCC workflows and processes"
-      },
-      "vllm": {
-        "name": "vLLM",
-        "description": "Tools specifically designed for vLLM workflows and processes"
-      }
+    "general": {
+      "name": "General"
+    },
+    "aipcc": {
+      "name": "AIPCC"
+    },
+    "vllm": {
+      "name": "vLLM"
     }
   },
   "tools": {
     "gemini": [
-      {
-        "name": "commit-message-assistant",
-        "description": "I am the AIPCC Commit Message Assistant. Please provide a description of your code changes, and I will generate a well-formatted commit message for you.",
-        "category": "aipcc",
-        "file_path": "",
-        "link": "https://gemini.google.com/gem/1j7GV5eSdCl3jtT2dYWrRlDpV6q7eBqqc?usp=sharing"
-      },
       {
         "name": "aipcc-adr-assistant",
         "description": "My purpose is to help you generate well-structured Architecture Decision Records (ADRs) in AIPCC. You provide the relevant documents and notes, and I will synthesize that information to populate a predefined ADR template.",
@@ -34,11 +22,11 @@
         "link": "https://gemini.google.com/gem/11WO66DX_4-MQHIF6fj4LeM8dKxDzkz17?usp=sharing"
       },
       {
-        "name": "technical-spike-investigation",
-        "description": "My purpose is to help an engineer conduct a technical spike for a new feature, library, initiative, or component. Note: gems don't have access to deep research so if you need the Spike to perform some research on the Internet, you'll not want to use this Gem and use regular chat sessions.",
-        "category": "general",
+        "name": "commit-message-assistant",
+        "description": "I am the AIPCC Commit Message Assistant. Please provide a description of your code changes, and I will generate a well-formatted commit message for you.",
+        "category": "aipcc",
         "file_path": "",
-        "link": "https://gemini.google.com/gem/1PAt1u0cEtMbzqjl3Kp3TAzaUft3qrkXw?usp=sharing"
+        "link": "https://gemini.google.com/gem/1j7GV5eSdCl3jtT2dYWrRlDpV6q7eBqqc?usp=sharing"
       },
       {
         "name": "email-copilot",
@@ -46,6 +34,13 @@
         "category": "general",
         "file_path": "",
         "link": "https://gemini.google.com/gem/1P0wg_pwCga6YDVKfd3enWY1CRh2EzuXI?usp=sharing"
+      },
+      {
+        "name": "technical-spike-investigation",
+        "description": "My purpose is to help an engineer conduct a technical spike for a new feature, library, initiative, or component. Note: gems don't have access to deep research so if you need the Spike to perform some research on the Internet, you'll not want to use this Gem and use regular chat sessions.",
+        "category": "general",
+        "file_path": "",
+        "link": "https://gemini.google.com/gem/1PAt1u0cEtMbzqjl3Kp3TAzaUft3qrkXw?usp=sharing"
       },
       {
         "name": "tl-dev",
@@ -177,14 +172,6 @@
         "file_path": "helpers/commands/rpm-examine.md",
         "argument_hint": "[copr-chroot-url] OR [build-log-url] [srpm-url] OR [build.log] [specfile|dist-git] [sources]",
         "synopsis": "/rpm:examine <copr-chroot-url>"
-      },
-      {
-        "name": "utils-placeholder",
-        "description": "Placeholder command for the utils plugin",
-        "category": "general",
-        "file_path": "helpers/commands/utils-placeholder.md",
-        "synopsis": "/utils-placeholder",
-        "argument_hint": ""
       }
     ],
     "agents": [

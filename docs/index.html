@@ -1160,12 +1160,12 @@
             const container = document.getElementById('category-checkboxes');
             const filterBox = document.getElementById('category-filter-box');
 
-            if (!categoriesData || !categoriesData.categories) {
+            if (!categoriesData) {
                 filterBox.style.display = 'none';
                 return;
             }
 
-            const categories = categoriesData.categories;
+            const categories = categoriesData;
             const categoryKeys = Object.keys(categories);
 
             if (categoryKeys.length <= 1) {

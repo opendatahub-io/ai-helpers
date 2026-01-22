@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 """
-Validate tools.json structure and consistency
+Validate categories.yaml structure and tool consistency
 
 This script validates that:
-1. Every category referenced by a tool exists in the categories section
-2. Every category that exists is used by at least one tool
-3. All tools have required fields
-4. Tool types are valid
+1. categories.yaml file exists and contains valid YAML
+2. All category entries are properly structured
+3. All tools listed in categories exist in the filesystem
+4. No duplicate tool names across categories
+5. No duplicate tool names across different tool types (skills, commands, agents, gems)
+6. Identifies tools that will be auto-categorized as 'General'
 
 Usage:
-    python3 scripts/validate_tools.py [tools.json]
+    python3 scripts/validate_tools.py [categories.yaml]
 
 Returns:
     0 on success
@@ -17,20 +19,18 @@ Returns:
 """
 
 import sys
-import json
 import re
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 try:
     import yaml
 except ImportError:
-    yaml = None
+    print("Error: PyYAML is required. Install with: pip install PyYAML")
+    sys.exit(1)
 
 
 VALID_TOOL_TYPES = {"skill", "command", "agent", "gem"}
-REQUIRED_TOOL_FIELDS = {"name", "description", "type", "category"}
-ALLOWED_TOOL_FIELDS = REQUIRED_TOOL_FIELDS  # Only required fields are allowed
 
 
 def title_to_slug(title: str) -> str:
@@ -38,20 +38,29 @@ def title_to_slug(title: str) -> str:
     return re.sub(r"[^a-zA-Z0-9]+", "-", title.lower()).strip("-")
 
 
-def get_filesystem_tools(helpers_dir: Path) -> Dict[str, str]:
-    """Extract all tool names from the filesystem with their types
+def get_filesystem_tools_with_duplicates_check(
+    helpers_dir: Path,
+) -> Tuple[Dict[str, str], List[str]]:
+    """Extract all tool names from the filesystem with their types and check for duplicates across types
 
     Returns:
-        Dict mapping tool name to tool type
+        Tuple of (filesystem_tools dict, list of duplicate errors)
     """
     filesystem_tools = {}
+    duplicate_errors = []
+    # Track where each tool name is found: tool_name -> list of (type, location) tuples
+    tool_locations = {}
 
     # Skills - directories in helpers/skills/
     skills_dir = helpers_dir / "skills"
     if skills_dir.exists() and skills_dir.is_dir():
         for item in skills_dir.iterdir():
             if item.is_dir():
-                filesystem_tools[item.name] = "skill"
+                tool_name = item.name
+                if tool_name not in tool_locations:
+                    tool_locations[tool_name] = []
+                tool_locations[tool_name].append(("skill", str(item)))
+                filesystem_tools[tool_name] = "skill"
 
     # Commands - .md files in helpers/commands/
     commands_dir = helpers_dir / "commands"
@@ -61,7 +70,14 @@ def get_filesystem_tools(helpers_dir: Path) -> Dict[str, str]:
                 # Skip README.md files (case-insensitive)
                 if item.name.lower() == "readme.md":
                     continue
-                filesystem_tools[item.stem] = "command"
+                tool_name = item.stem
+                if tool_name not in tool_locations:
+                    tool_locations[tool_name] = []
+                tool_locations[tool_name].append(("command", str(item)))
+                if tool_name in filesystem_tools:
+                    # Already exists with different type
+                    continue
+                filesystem_tools[tool_name] = "command"
 
     # Agents - .md files in helpers/agents/
     agents_dir = helpers_dir / "agents"
@@ -71,7 +87,31 @@ def get_filesystem_tools(helpers_dir: Path) -> Dict[str, str]:
                 # Skip README.md files (case-insensitive)
                 if item.name.lower() == "readme.md":
                     continue
-                filesystem_tools[item.stem] = "agent"
+                tool_name = item.stem
+                if tool_name not in tool_locations:
+                    tool_locations[tool_name] = []
+                tool_locations[tool_name].append(("agent", str(item)))
+                if tool_name in filesystem_tools:
+                    # Already exists with different type
+                    continue
+                filesystem_tools[tool_name] = "agent"
+            elif item.is_dir():
+                # Directories in agents/ are incorrect - they should be .md files
+                # But we still need to detect them as potential duplicates
+                tool_name = item.name
+                if tool_name not in tool_locations:
+                    tool_locations[tool_name] = []
+                tool_locations[tool_name].append(
+                    ("agent (incorrect format)", str(item))
+                )
+                # Add an error for the incorrect format
+                duplicate_errors.append(
+                    f"Incorrect agent format: '{tool_name}' should be a .md file, not a directory ({item})"
+                )
+                if tool_name in filesystem_tools:
+                    # Already exists with different type
+                    continue
+                filesystem_tools[tool_name] = "agent"
 
     # Gems - titles from gems.yaml
     gems_file = helpers_dir / "gems" / "gems.yaml"
@@ -93,6 +133,14 @@ def get_filesystem_tools(helpers_dir: Path) -> Dict[str, str]:
                     for gem in gems_data["gems"]:
                         if "title" in gem:
                             tool_name = title_to_slug(gem["title"])
+                            if tool_name not in tool_locations:
+                                tool_locations[tool_name] = []
+                            tool_locations[tool_name].append(
+                                ("gem", f"gems.yaml (title: {gem['title']})")
+                            )
+                            if tool_name in filesystem_tools:
+                                # Already exists with different type
+                                continue
                             filesystem_tools[tool_name] = "gem"
             except (yaml.YAMLError, IOError) as e:
                 print(
@@ -100,250 +148,228 @@ def get_filesystem_tools(helpers_dir: Path) -> Dict[str, str]:
                     file=sys.stderr,
                 )
 
-    return filesystem_tools
+    # Check for duplicates across types
+    for tool_name, locations in tool_locations.items():
+        if len(locations) > 1:
+            # Multiple locations found - this is a duplicate
+            location_descriptions = []
+            for tool_type, location in locations:
+                location_descriptions.append(f"{tool_type} ({location})")
+            duplicate_errors.append(
+                f"Duplicate tool name '{tool_name}' found in multiple types: {', '.join(location_descriptions)}"
+            )
+
+    return filesystem_tools, duplicate_errors
 
 
-def load_tools_json(path: Path) -> Dict:
-    """Load and parse tools.json file"""
+def get_filesystem_tools(helpers_dir: Path) -> Dict[str, str]:
+    """Extract all tool names from the filesystem with their types
+
+    Returns:
+        Dict mapping tool name to tool type
+    """
+    tools, _ = get_filesystem_tools_with_duplicates_check(helpers_dir)
+    return tools
+
+
+def load_categories_yaml(path: Path) -> Dict:
+    """Load and parse categories.yaml file"""
     try:
         with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
+            return yaml.safe_load(f)
     except FileNotFoundError:
         print(f"Error: {path} not found")
         sys.exit(1)
-    except json.JSONDecodeError as e:
-        print(f"Error: Invalid JSON in {path}: {e}")
+    except yaml.YAMLError as e:
+        print(f"Error: Invalid YAML in {path}: {e}")
         sys.exit(1)
 
 
-def validate_tool_structure(tool: Dict, index: int) -> List[str]:
+def validate_tool_structure(
+    tool_name: str, index: int, category_name: str = None
+) -> List[str]:
     """Validate individual tool structure"""
     errors = []
-    tool_name = tool.get("name", f"tool[{index}]")
+    tool_identifier = f"tool[{index}]"
+    if category_name:
+        tool_identifier += f" in category '{category_name}'"
 
-    # Check required fields
-    missing_fields = REQUIRED_TOOL_FIELDS - set(tool.keys())
-    for field in missing_fields:
-        errors.append(f"Tool '{tool_name}' is missing required field: {field}")
-
-    # Check for disallowed fields
-    disallowed_fields = set(tool.keys()) - ALLOWED_TOOL_FIELDS
-    for field in sorted(disallowed_fields):
+    # Check tool name is a string and non-empty
+    if not isinstance(tool_name, str):
         errors.append(
-            f"Tool '{tool_name}' has disallowed field: {field}. Only allowed fields: {', '.join(sorted(ALLOWED_TOOL_FIELDS))}"
+            f"{tool_identifier} must be a string, got {type(tool_name).__name__}"
         )
-
-    # Check tool type is valid
-    tool_type = tool.get("type")
-    if tool_type and tool_type not in VALID_TOOL_TYPES:
-        errors.append(
-            f"Tool '{tool_name}' has invalid type '{tool_type}'. Valid types: {', '.join(sorted(VALID_TOOL_TYPES))}"
-        )
-
-    # Check required fields are strings and non-empty
-    for field in REQUIRED_TOOL_FIELDS:
-        value = tool.get(field)
-        if value is not None:
-            if not isinstance(value, str):
-                errors.append(
-                    f"Tool '{tool_name}' field '{field}' must be a string, got {type(value).__name__}"
-                )
-            elif not value.strip():
-                errors.append(f"Tool '{tool_name}' has empty {field}")
+    elif not tool_name.strip():
+        errors.append(f"{tool_identifier} is empty or whitespace only")
 
     return errors
 
 
-def validate_categories(tools: List[Dict], categories: Dict) -> List[str]:
-    """Validate category consistency"""
+def validate_category_tools(category_name: str, tools: List) -> List[str]:
+    """Validate tools within a category"""
     errors = []
 
-    # Get referenced and defined categories
-    referenced_categories = set()
-    for i, tool in enumerate(tools):
-        category = tool.get("category")
-        if category:
-            if not isinstance(category, str):
-                tool_name = tool.get("name", f"tool[{i}]")
-                errors.append(
-                    f"Tool '{tool_name}' field 'category' must be a string, got {type(category).__name__}"
-                )
-            else:
-                referenced_categories.add(category)
-
-    defined_categories = set(categories.keys())
-
-    # Check for referenced categories that don't exist
-    missing_categories = referenced_categories - defined_categories
-    for category in sorted(missing_categories):
+    if not isinstance(tools, list):
         errors.append(
-            f"Category '{category}' is referenced by tools but not defined in categories section"
+            f"Category '{category_name}' must contain a list of tools, got {type(tools).__name__}"
         )
+        return errors
 
-    # Check for defined categories that aren't used
-    unused_categories = defined_categories - referenced_categories
-    for category in sorted(unused_categories):
-        errors.append(f"Category '{category}' is defined but not used by any tools")
-
-    return errors
-
-
-def validate_category_structure(categories: Dict) -> List[str]:
-    """Validate category definitions"""
-    errors = []
-
-    for category_key, category_data in categories.items():
-        if not isinstance(category_data, dict):
-            errors.append(
-                f"Category '{category_key}' must be an object, got {type(category_data).__name__}"
-            )
-            continue
-
-        # Check required fields
-        if "name" not in category_data:
-            errors.append(f"Category '{category_key}' is missing required field: name")
-        if "description" not in category_data:
-            errors.append(
-                f"Category '{category_key}' is missing required field: description"
-            )
-
-        # Check name field is string and non-empty
-        name = category_data.get("name")
-        if name is not None:
-            if not isinstance(name, str):
-                errors.append(
-                    f"Category '{category_key}' field 'name' must be a string, got {type(name).__name__}"
-                )
-            elif not name.strip():
-                errors.append(f"Category '{category_key}' has empty name")
-
-        # Check description field is string and non-empty
-        description = category_data.get("description")
-        if description is not None:
-            if not isinstance(description, str):
-                errors.append(
-                    f"Category '{category_key}' field 'description' must be a string, got {type(description).__name__}"
-                )
-            elif not description.strip():
-                errors.append(f"Category '{category_key}' has empty description")
+    for i, tool_name in enumerate(tools):
+        errors.extend(validate_tool_structure(tool_name, i, category_name))
 
     return errors
 
 
-def validate_tool_names_unique(tools: List[Dict]) -> List[str]:
-    """Validate that tool names are unique"""
+def validate_tool_names_unique(tools_data: Dict) -> List[str]:
+    """Validate that tool names are unique across all categories"""
     errors = []
     seen_names = set()
 
-    for tool in tools:
-        name = tool.get("name")
-        if name:
-            if name in seen_names:
-                errors.append(f"Duplicate tool name: '{name}'")
-            else:
-                seen_names.add(name)
-
-    return errors
-
-
-def validate_filesystem_tools_in_json(tools_data: Dict, helpers_dir: Path) -> List[str]:
-    """Validate that all filesystem tools have entries in tools.json"""
-    errors = []
-
-    # Get tools from both sources
-    filesystem_tools = get_filesystem_tools(helpers_dir)
-    json_tools = {
-        tool.get("name"): tool.get("type") for tool in tools_data.get("tools", [])
-    }
-
-    # Check for missing tools
-    for tool_name, expected_type in filesystem_tools.items():
-        if tool_name not in json_tools:
-            errors.append(
-                f"Tool '{tool_name}' (type: {expected_type}) found in filesystem but missing from tools.json"
-            )
-        elif json_tools[tool_name] != expected_type:
-            errors.append(
-                f"Tool '{tool_name}' has mismatched type: filesystem={expected_type}, tools.json={json_tools[tool_name]}"
-            )
-
-    return errors
-
-
-def validate_tools_json(tools_data: Dict, helpers_dir: Path = None) -> List[str]:
-    """Run all validations on tools.json data"""
-    errors = []
-
-    # Check top-level structure
-    if "tools" not in tools_data:
-        errors.append("Missing required 'tools' field")
-        return errors
-
-    if "categories" not in tools_data:
-        errors.append("Missing required 'categories' field")
-        return errors
-
-    tools = tools_data.get("tools", [])
-    categories = tools_data.get("categories", {})
-
-    if not isinstance(tools, list):
-        errors.append("'tools' field must be an array")
-        return errors
-
-    if not isinstance(categories, dict):
-        errors.append("'categories' field must be an object")
-        return errors
-
-    # Validate individual tools
-    for i, tool in enumerate(tools):
-        if not isinstance(tool, dict):
-            errors.append(
-                f"Tool at index {i} must be an object, got {type(tool).__name__}"
-            )
+    for category_name, tools in tools_data.items():
+        if not isinstance(tools, list):
             continue
-        errors.extend(validate_tool_structure(tool, i))
 
-    # Validate unique tool names
-    errors.extend(validate_tool_names_unique(tools))
+        for tool_name in tools:
+            if not isinstance(tool_name, str):
+                continue
 
-    # Validate categories
-    errors.extend(validate_category_structure(categories))
-    errors.extend(validate_categories(tools, categories))
+            if tool_name in seen_names:
+                errors.append(
+                    f"Duplicate tool name: '{tool_name}' in category '{category_name}'"
+                )
+            else:
+                seen_names.add(tool_name)
 
-    # Validate filesystem tools are in tools.json (if helpers_dir is provided)
+    return errors
+
+
+def validate_tool_names_unique_across_types(helpers_dir: Path) -> List[str]:
+    """Validate that tool names are unique across all tool types (skills, commands, agents, gems)"""
+    _, duplicate_errors = get_filesystem_tools_with_duplicates_check(helpers_dir)
+    return duplicate_errors
+
+
+def validate_filesystem_tools_consistency(
+    categories_data: Dict, helpers_dir: Path
+) -> List[str]:
+    """Validate filesystem tools consistency (info only - tools not in categories.yaml become General)"""
+    errors = []
+
+    # Get tools from filesystem
+    filesystem_tools = get_filesystem_tools(helpers_dir)
+
+    # Extract tool names from YAML structure (organized by category)
+    yaml_tool_names = set()
+    for category_name, tools in categories_data.items():
+        if not isinstance(tools, list):
+            continue
+        for tool_name in tools:
+            if isinstance(tool_name, str):
+                yaml_tool_names.add(tool_name)
+
+    # Check for tools that will become General (info only, not an error)
+    uncategorized_tools = []
+    for tool_name, expected_type in filesystem_tools.items():
+        if tool_name not in yaml_tool_names:
+            uncategorized_tools.append(f"{tool_name} (type: {expected_type})")
+
+    if uncategorized_tools:
+        print("Info: The following tools will be categorized as 'General':")
+        for tool in uncategorized_tools:
+            print(f"  - {tool}")
+
+    return errors
+
+
+def validate_categorized_tools_exist(
+    categories_data: Dict, helpers_dir: Path
+) -> List[str]:
+    """Validate that tools listed in categories actually exist in the filesystem"""
+    errors = []
+
+    # Get tools from filesystem
+    filesystem_tools = get_filesystem_tools(helpers_dir)
+
+    # Check each tool in categories.yaml exists in filesystem
+    for category_name, tools in categories_data.items():
+        if not isinstance(tools, list):
+            continue
+        for tool_name in tools:
+            if not isinstance(tool_name, str):
+                continue
+            if tool_name not in filesystem_tools:
+                errors.append(
+                    f"Tool '{tool_name}' in category '{category_name}' does not exist in filesystem"
+                )
+
+    return errors
+
+
+def validate_categories_yaml(
+    categories_data: Dict, helpers_dir: Path = None
+) -> List[str]:
+    """Run all validations on categories.yaml data"""
+    errors = []
+
+    # Check that the data is a dictionary
+    if not isinstance(categories_data, dict):
+        errors.append(
+            "categories.yaml must contain a dictionary with categories as keys"
+        )
+        return errors
+
+    # Validate tools within each category
+    for category_name, tools in categories_data.items():
+        errors.extend(validate_category_tools(category_name, tools))
+
+    # Validate unique tool names across all categories
+    errors.extend(validate_tool_names_unique(categories_data))
+
+    # Validate unique tool names across all tool types (if helpers_dir is provided)
     if helpers_dir and helpers_dir.exists():
-        errors.extend(validate_filesystem_tools_in_json(tools_data, helpers_dir))
+        errors.extend(validate_tool_names_unique_across_types(helpers_dir))
+
+    # Validate that categorized tools exist in filesystem (if helpers_dir is provided)
+    if helpers_dir and helpers_dir.exists():
+        errors.extend(validate_categorized_tools_exist(categories_data, helpers_dir))
+
+    # Validate filesystem tools consistency (if helpers_dir is provided)
+    if helpers_dir and helpers_dir.exists():
+        errors.extend(
+            validate_filesystem_tools_consistency(categories_data, helpers_dir)
+        )
 
     return errors
 
 
 def main():
     """Main validation function"""
-    # Determine tools.json path
+    # Determine categories.yaml path
     if len(sys.argv) > 1:
-        tools_json_path = Path(sys.argv[1])
+        categories_yaml_path = Path(sys.argv[1])
     else:
-        # Default to tools.json in the current directory
-        tools_json_path = Path("tools.json")
+        # Default to categories.yaml in the current directory
+        categories_yaml_path = Path("categories.yaml")
 
     # Determine helpers directory path
-    helpers_dir = tools_json_path.parent / "helpers"
+    helpers_dir = categories_yaml_path.parent / "helpers"
 
-    # Load tools.json
-    tools_data = load_tools_json(tools_json_path)
+    # Load categories.yaml
+    categories_data = load_categories_yaml(categories_yaml_path)
 
-    # Validate tools.json
-    errors = validate_tools_json(tools_data, helpers_dir)
+    # Validate categories.yaml
+    errors = validate_categories_yaml(categories_data, helpers_dir)
 
     # Report results
     if errors:
-        print("tools.json validation errors found:")
+        print("Tool validation errors found:")
         for error in errors:
             print(f"  ✗ {error}")
         print(f"\n{len(errors)} error(s) found.")
         sys.exit(1)
     else:
-        print("✓ All tools.json validations passed.")
+        print("✓ All tool validations passed.")
         sys.exit(0)
 
 

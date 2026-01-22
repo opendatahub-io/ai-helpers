@@ -1,29 +1,91 @@
 #!/usr/bin/env python3
 """
 Build website data for ODH ai-helpers Github Pages
-Loads tool information from centralized tools.json configuration
+Loads tool information from centralized tools.yaml configuration
 """
 
 import json
+import re
 import sys
 import yaml
 from pathlib import Path
 from typing import Dict
 
 
-def load_tools_config(tools_path: Path) -> Dict:
-    """Load tools configuration from tools.json."""
+def load_categories_config(categories_path: Path) -> Dict:
+    """Load categories configuration from categories.yaml."""
 
-    if not tools_path.exists():
-        print(f"Error: Tools configuration not found: {tools_path}")
+    if not categories_path.exists():
+        print(f"Error: Categories configuration not found: {categories_path}")
         sys.exit(1)
 
     try:
-        with open(tools_path, "r") as f:
-            return json.load(f)
-    except (json.JSONDecodeError, IOError) as e:
-        print(f"Error: Could not read tools configuration: {e}")
+        with open(categories_path, "r") as f:
+            return yaml.safe_load(f)
+    except (yaml.YAMLError, IOError) as e:
+        print(f"Error: Could not read categories configuration: {e}")
         sys.exit(1)
+
+
+def title_to_slug(title: str) -> str:
+    """Convert gem title to slug format (lowercase, spaces/special chars to hyphens)"""
+    return re.sub(r"[^a-zA-Z0-9]+", "-", title.lower()).strip("-")
+
+
+def get_filesystem_tools(helpers_dir: Path) -> Dict[str, str]:
+    """Extract all tool names from the filesystem with their types
+
+    Returns:
+        Dict mapping tool name to tool type
+    """
+    filesystem_tools = {}
+
+    # Skills - directories in helpers/skills/
+    skills_dir = helpers_dir / "skills"
+    if skills_dir.exists() and skills_dir.is_dir():
+        for item in skills_dir.iterdir():
+            if item.is_dir():
+                filesystem_tools[item.name] = "skill"
+
+    # Commands - .md files in helpers/commands/
+    commands_dir = helpers_dir / "commands"
+    if commands_dir.exists() and commands_dir.is_dir():
+        for item in commands_dir.iterdir():
+            if item.is_file() and item.suffix == ".md":
+                # Skip README.md files (case-insensitive)
+                if item.name.lower() == "readme.md":
+                    continue
+                filesystem_tools[item.stem] = "command"
+
+    # Agents - .md files in helpers/agents/
+    agents_dir = helpers_dir / "agents"
+    if agents_dir.exists() and agents_dir.is_dir():
+        for item in agents_dir.iterdir():
+            if item.is_file() and item.suffix == ".md":
+                # Skip README.md files (case-insensitive)
+                if item.name.lower() == "readme.md":
+                    continue
+                filesystem_tools[item.stem] = "agent"
+
+    # Gems - titles from gems.yaml
+    gems_file = helpers_dir / "gems" / "gems.yaml"
+    if gems_file.exists() and gems_file.is_file():
+        try:
+            with open(gems_file, "r", encoding="utf-8") as f:
+                gems_data = yaml.safe_load(f)
+
+            if gems_data and "gems" in gems_data:
+                for gem in gems_data["gems"]:
+                    if "title" in gem:
+                        tool_name = title_to_slug(gem["title"])
+                        filesystem_tools[tool_name] = "gem"
+        except (yaml.YAMLError, IOError) as e:
+            print(
+                f"Warning: Could not parse gems.yaml ({gems_file}): {e}",
+                file=sys.stderr,
+            )
+
+    return filesystem_tools
 
 
 def get_tool_file_path(tool: Dict, base_path: Path) -> str:
@@ -51,13 +113,14 @@ def get_tool_file_path(tool: Dict, base_path: Path) -> str:
         return ""
 
 
-def get_tool_metadata(tool: Dict, base_path: Path) -> Dict:
+def get_tool_metadata(tool: Dict, category: str, base_path: Path) -> Dict:
     """Get additional metadata for a tool by reading its file."""
 
+    # Initialize metadata with basic info, description will be extracted from markdown
     metadata = {
         "name": tool["name"],
-        "description": tool["description"],
-        "category": tool["category"],
+        "description": "",  # Will be populated from markdown frontmatter
+        "category": category,
         "file_path": get_tool_file_path(tool, base_path),
     }
 
@@ -79,6 +142,7 @@ def get_tool_metadata(tool: Dict, base_path: Path) -> Dict:
 
                         metadata.update(
                             {
+                                "description": skill_data.get("description", ""),
                                 "id": tool["name"],
                                 "allowed_tools": skill_data.get("allowed-tools", ""),
                             }
@@ -119,7 +183,8 @@ def get_tool_metadata(tool: Dict, base_path: Path) -> Dict:
 
                 # Only add synopsis to metadata if we found a non-empty match
                 metadata_updates = {
-                    "argument_hint": frontmatter.get("argument-hint", "")
+                    "description": frontmatter.get("description", ""),
+                    "argument_hint": frontmatter.get("argument-hint", ""),
                 }
                 if match:
                     synopsis = match.group(1).strip()
@@ -152,6 +217,7 @@ def get_tool_metadata(tool: Dict, base_path: Path) -> Dict:
 
                         metadata.update(
                             {
+                                "description": agent_data.get("description", ""),
                                 "id": tool["name"],
                                 "tools": agent_data.get("tools", ""),
                                 "model": agent_data.get("model", ""),
@@ -169,8 +235,9 @@ def get_tool_metadata(tool: Dict, base_path: Path) -> Dict:
             metadata["model"] = ""
 
     elif tool_type == "gem":
-        # Look up link from gems.yaml by matching tool name
+        # For gems, get description and link from gems.yaml by matching tool name
         link = ""
+        description = ""
 
         gemini_gems_path = base_path / "helpers" / "gems" / "gems.yaml"
         if gemini_gems_path.exists():
@@ -194,12 +261,16 @@ def get_tool_metadata(tool: Dict, base_path: Path) -> Dict:
                     gem_title = gem.get("title", "")
                     if gem_title and title_to_kebab_case(gem_title) == tool_name:
                         link = gem.get("link", "")
+                        # Use description from gems.yaml if available
+                        if "description" in gem:
+                            description = gem.get("description", "")
                         break
             except Exception as e:
                 print(f"Warning: Could not read gemini gems data: {e}")
 
         metadata.update(
             {
+                "description": description,
                 "link": link,
             }
         )
@@ -211,42 +282,122 @@ def build_website_data():
     """Build complete website data structure"""
     # Get repository root (parent of scripts directory)
     base_path = Path(__file__).parent.parent
-    tools_path = base_path / "tools.json"
+    categories_path = base_path / "categories.yaml"
 
-    # Load tools configuration
-    tools_config = load_tools_config(tools_path)
+    # Load categories configuration
+    categories_config = (
+        load_categories_config(categories_path) if categories_path.exists() else {}
+    )
+
+    # Get filesystem tools to infer types
+    helpers_dir = base_path / "helpers"
+    filesystem_tools = get_filesystem_tools(helpers_dir)
+
+    # Collect tools that are already in categories to identify General tools
+    categorized_tools = set()
+    for category_name, tools in categories_config.items():
+        if isinstance(tools, list):
+            categorized_tools.update(tools)
+
+    # Check for duplicate tool names
+    all_tools_in_categories = []
+    for category_name, tools in categories_config.items():
+        if isinstance(tools, list):
+            all_tools_in_categories.extend(tools)
+
+    # Validate no duplicates
+    seen_tools = set()
+    duplicate_tools = set()
+    for tool_name in all_tools_in_categories:
+        if tool_name in seen_tools:
+            duplicate_tools.add(tool_name)
+        seen_tools.add(tool_name)
+
+    if duplicate_tools:
+        print("Error: Duplicate tool names found in categories:")
+        for tool in duplicate_tools:
+            print(f"  - {tool}")
+        sys.exit(1)
+
+    # Identify tools that should be in General category (not in any category)
+    general_tools = []
+    for tool_name in filesystem_tools.keys():
+        if tool_name not in categorized_tools:
+            general_tools.append(tool_name)
+
+    # Create complete categories structure (including General if there are uncategorized tools)
+    categories = {}
+    if general_tools:
+        categories["general"] = {"name": "General"}
+    for category_key in categories_config.keys():
+        # Convert category names to lowercase keys for consistent filtering
+        categories[category_key.lower()] = {"name": category_key}
 
     website_data = {
         "name": "odh-ai-helpers",
         "owner": "ODH",
-        "categories": {"categories": tools_config["categories"]},
+        "categories": categories,
         "tools": {"gemini": [], "skills": [], "commands": [], "agents": []},
     }
 
-    # Process all tools
-    for tool in tools_config["tools"]:
-        # Validate tool dictionary has expected keys
-        if not isinstance(tool, dict):
-            print(f"Warning: Malformed tool entry (not a dict): {tool}")
+    # Process General tools first (uncategorized tools)
+    if general_tools:
+        for tool_name in general_tools:
+            if tool_name in filesystem_tools:
+                tool_type = filesystem_tools[tool_name]
+                tool_metadata = get_tool_metadata(
+                    {"name": tool_name, "type": tool_type}, "general", base_path
+                )
+
+                if tool_type == "skill":
+                    website_data["tools"]["skills"].append(tool_metadata)
+                elif tool_type == "command":
+                    website_data["tools"]["commands"].append(tool_metadata)
+                elif tool_type == "agent":
+                    website_data["tools"]["agents"].append(tool_metadata)
+                elif tool_type == "gem":
+                    website_data["tools"]["gemini"].append(tool_metadata)
+
+    # Process tools by category
+    for category_name, tools in categories_config.items():
+        if not isinstance(tools, list):
+            print(
+                f"Warning: Category '{category_name}' does not contain a list of tools"
+            )
             continue
 
-        required_keys = ["name", "type", "description", "category"]
-        missing_keys = [key for key in required_keys if key not in tool]
-        if missing_keys:
-            print(f"Warning: Tool missing required keys {missing_keys}: {tool}")
-            continue
+        for tool_name in tools:
+            # Validate tool name is a string
+            if not isinstance(tool_name, str):
+                print(
+                    f"Warning: Tool name must be a string in category '{category_name}': {tool_name}"
+                )
+                continue
 
-        tool_metadata = get_tool_metadata(tool, base_path)
-        tool_type = tool["type"]
+            # Get tool type from filesystem
+            if tool_name not in filesystem_tools:
+                print(f"Warning: Tool '{tool_name}' not found in filesystem, skipping")
+                continue
 
-        if tool_type == "skill":
-            website_data["tools"]["skills"].append(tool_metadata)
-        elif tool_type == "command":
-            website_data["tools"]["commands"].append(tool_metadata)
-        elif tool_type == "agent":
-            website_data["tools"]["agents"].append(tool_metadata)
-        elif tool_type == "gem":
-            website_data["tools"]["gemini"].append(tool_metadata)
+            tool_type = filesystem_tools[tool_name]
+            tool_metadata = get_tool_metadata(
+                {"name": tool_name, "type": tool_type}, category_name.lower(), base_path
+            )
+
+            if tool_type == "skill":
+                website_data["tools"]["skills"].append(tool_metadata)
+            elif tool_type == "command":
+                website_data["tools"]["commands"].append(tool_metadata)
+            elif tool_type == "agent":
+                website_data["tools"]["agents"].append(tool_metadata)
+            elif tool_type == "gem":
+                website_data["tools"]["gemini"].append(tool_metadata)
+
+    # Sort all tool arrays alphabetically by name to ensure consistent ordering
+    website_data["tools"]["skills"].sort(key=lambda x: x["name"])
+    website_data["tools"]["commands"].sort(key=lambda x: x["name"])
+    website_data["tools"]["agents"].sort(key=lambda x: x["name"])
+    website_data["tools"]["gemini"].sort(key=lambda x: x["name"])
 
     return website_data
 

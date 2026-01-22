@@ -39,9 +39,9 @@ class PluginsDocUpToDateRule(Rule):
             context.root_path / "images" / "claude" / "claude-settings.json"
         )
 
-        # Check if we have tools.json as the source of truth
-        tools_json_path = context.root_path / "tools.json"
-        if not tools_json_path.exists():
+        # Check if we have categories.yaml as the source of truth
+        categories_yaml_path = context.root_path / "categories.yaml"
+        if not categories_yaml_path.exists():
             return violations
 
         try:
@@ -72,7 +72,7 @@ class PluginsDocUpToDateRule(Rule):
                             f"build-website.py failed: {result.stderr}",
                             file_path=data_json_path
                             if data_json_path.exists()
-                            else tools_json_path,
+                            else categories_yaml_path,
                         )
                     )
                     return violations
@@ -96,7 +96,7 @@ class PluginsDocUpToDateRule(Rule):
                             f"update_claude_settings.py failed: {result.stderr}",
                             file_path=claude_settings_path
                             if claude_settings_path.exists()
-                            else tools_json_path,
+                            else categories_yaml_path,
                         )
                     )
                     return violations
@@ -135,13 +135,15 @@ class PluginsDocUpToDateRule(Rule):
 
         except subprocess.TimeoutExpired:
             violations.append(
-                self.violation("'make update' timed out", file_path=tools_json_path)
+                self.violation(
+                    "'make update' timed out", file_path=categories_yaml_path
+                )
             )
         except Exception as e:
             violations.append(
                 self.violation(
                     f"Error checking files up-to-date status: {e}",
-                    file_path=tools_json_path,
+                    file_path=categories_yaml_path,
                 )
             )
 
@@ -242,16 +244,16 @@ class MarketplacePluginsUpToDateRule(Rule):
         return violations
 
 
-class ToolsJsonValidationRule(Rule):
-    """Validate tools.json structure and consistency"""
+class CategoriesYamlValidationRule(Rule):
+    """Validate categories.yaml structure, tool consistency, and prevent duplicates"""
 
     @property
     def rule_id(self) -> str:
-        return "tools-json-validation"
+        return "tools-yaml-validation"
 
     @property
     def description(self) -> str:
-        return "tools.json must have valid structure, consistent categories, and proper tool definitions"
+        return "categories.yaml must have valid structure, consistent categories, proper tool definitions, and no duplicate tool names across types"
 
     def default_severity(self) -> Severity:
         return Severity.ERROR
@@ -259,14 +261,14 @@ class ToolsJsonValidationRule(Rule):
     def check(self, context: RepositoryContext) -> List[RuleViolation]:
         violations = []
 
-        # Check if tools.json exists
-        tools_json_path = context.root_path / "tools.json"
-        if not tools_json_path.exists():
+        # Check if categories.yaml exists
+        categories_yaml_path = context.root_path / "categories.yaml"
+        if not categories_yaml_path.exists():
             if context.has_marketplace():
                 violations.append(
                     self.violation(
-                        "tools.json is required for marketplace repos",
-                        file_path=tools_json_path,
+                        "categories.yaml is required for marketplace repos",
+                        file_path=categories_yaml_path,
                     )
                 )
             return violations
@@ -276,15 +278,15 @@ class ToolsJsonValidationRule(Rule):
         if not validation_script_path.exists():
             violations.append(
                 self.violation(
-                    "scripts/validate_tools.py not found but tools.json exists",
-                    file_path=tools_json_path,
+                    "scripts/validate_tools.py not found but categories.yaml exists",
+                    file_path=categories_yaml_path,
                 )
             )
             return violations
 
         try:
             result = subprocess.run(
-                ["python3", str(validation_script_path), str(tools_json_path)],
+                ["python3", str(validation_script_path), str(categories_yaml_path)],
                 cwd=str(context.root_path),
                 capture_output=True,
                 text=True,
@@ -303,8 +305,8 @@ class ToolsJsonValidationRule(Rule):
                         error_msg = line.strip()[2:].strip()  # Remove ✗ prefix
                         violations.append(
                             self.violation(
-                                f"tools.json validation error: {error_msg}",
-                                file_path=tools_json_path,
+                                f"categories.yaml validation error: {error_msg}",
+                                file_path=categories_yaml_path,
                             )
                         )
 
@@ -312,22 +314,23 @@ class ToolsJsonValidationRule(Rule):
                 if not violations:
                     violations.append(
                         self.violation(
-                            f"tools.json validation failed: {output.strip()}",
-                            file_path=tools_json_path,
+                            f"categories.yaml validation failed: {output.strip()}",
+                            file_path=categories_yaml_path,
                         )
                     )
 
         except subprocess.TimeoutExpired:
             violations.append(
                 self.violation(
-                    "tools.json validation script timed out", file_path=tools_json_path
+                    "categories.yaml validation script timed out",
+                    file_path=categories_yaml_path,
                 )
             )
         except Exception as e:
             violations.append(
                 self.violation(
-                    f"Error running tools.json validation: {e}",
-                    file_path=tools_json_path,
+                    f"Error running categories.yaml validation: {e}",
+                    file_path=categories_yaml_path,
                 )
             )
 

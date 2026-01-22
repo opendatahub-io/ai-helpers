@@ -18,7 +18,7 @@ python3 scripts/build-website.py
 ```
 
 This extracts information from:
-- `tools.json` - Centralized tool registry
+- `categories.yaml` - Centralized category registry
 - `helpers/commands/*.md` - Command definitions
 - `helpers/skills/*/SKILL.md` - Skill definitions
 - `helpers/agents/*.md` - Agent definitions

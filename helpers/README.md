@@ -60,7 +60,7 @@ Standardized capabilities that work across multiple AI platforms using the agent
 
 ## Getting Started
 
-1. **Browse Available Tools**: Check the [root tools.json](../tools.json) for a complete inventory
+1. **Browse Available Tools**: Check the [root categories.yaml](../categories.yaml) for categorized tools
 2. **Explore by Type**: Navigate to the specific tool type directory that matches your needs
 3. **Review Documentation**: Each tool type has detailed README files with usage instructions
 4. **Choose Your Platform**: Select tools compatible with your AI platform of choice
@@ -69,11 +69,11 @@ Standardized capabilities that work across multiple AI platforms using the agent
 
 1. **Choose the Right Type**: Determine whether your tool is best suited as a Skill, Command, Agent, or Gem
 2. **Follow Standards**: Each tool type has specific formatting and structure requirements
-3. **Add to Registry**: Tools are automatically registered in `tools.json` during builds
+3. **Add to Registry**: Tools are automatically categorized in `categories.yaml` or placed in "General" during builds
 4. **Test Thoroughly**: Validate your tool works across intended platforms
 
 For detailed contribution guidelines, see the main repository [AGENTS.md](../AGENTS.md) file.
 
 ## Tool Registry
 
-All tools in this collection are automatically catalogued in the root `tools.json` file, which serves as the central registry for tool discovery and marketplace organization.
+All tools in this collection are automatically organized by the build system. Specialized tools are listed in the root `categories.yaml` file, while uncategorized tools are automatically placed in the "General" category for tool discovery and marketplace organization.
