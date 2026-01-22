@@ -1,6 +1,7 @@
 # Agor + Speckit: Multi-Agent Specification-Driven Development
 
 A comprehensive guide to orchestrating AI-assisted development using Agor's multi-agent canvas, Speckit's specification-driven workflow, and Jira integration.
+A video describing the workflow is in [this link](https://drive.google.com/file/d/11iflSyWEe32SbTJXCSlkka8lKm2_Ggm1/view)
 
 > **Reference**: Based on [GitHub Spec-Kit](https://github.com/github/spec-kit) workflow stages.
 
@@ -20,7 +21,7 @@ The result is a repeatable, documented development process where AI assists at e
 
 Tools and access required to run the workflow:
 
-- **Agor account**: Access to [agor.live](https://agor.live) for multi-agent orchestration
+- **Agor**: Install via `npm install -g agor-live@0.10.0` (see [Agor Installation Guide](agor-install.md) for details)
 - **AI agent**: e.g. Claude Code Anthropic's CLI installed and configured
 - **Speckit**: Installed via `uv tool install specify-cli --from ...`
 - **Jira access**: mcp server configured to read ticket
