@@ -1,90 +1,120 @@
-# Claude Skills Infrastructure
+# Plugin Hooks
 
-This directory contains the Claude Code skills infrastructure for auto-activation and intelligent skill suggestions.
+This directory contains Claude Code hooks for the odh-ai-helpers plugin. These hooks enable automatic skill activation suggestions based on user prompts.
 
 ## Directory Structure
 
 ```
-.claude/
-├── hooks/               # Hook scripts for auto-activation
-│   ├── skill_activation_prompt.py    # Analyzes prompts and suggests skills
-├── skills/              # Skill definitions and resources
-│   └── skill-rules.json
-├── commands/            # Custom slash commands (empty, ready to use)
-├── settings.json        # Hook configuration
-└── README.md           # This file
+helpers/hooks/
+├── hooks.json                    # Hook configuration for the plugin
+├── skill_activation_prompt.py   # Analyzes prompts and suggests skills
+├── skill-rules.json              # Trigger patterns for skill activation
+└── README.md                     # This file
 ```
 
-## Setup Instructions
+## How It Works
 
-### 1. Python Hooks - No Dependencies Required
+When the odh-ai-helpers plugin is installed:
 
-This project uses **Python-based hooks** with no external dependencies beyond Python 3.
+1. **Automatic registration**: The `hooks.json` file registers the `UserPromptSubmit` hook with Claude Code
+2. **Prompt analysis**: When users submit prompts, `skill_activation_prompt.py` analyzes them against patterns in `skill-rules.json`
+3. **Smart suggestions**: If keywords or patterns match, Claude sees a suggestion to use the relevant skill
+4. **Skill activation**: Users can then invoke the suggested skill using the Skill tool
 
-**No installation required!** The hooks are ready to use.
+## Files
 
-Verify hook scripts are executable:
+### hooks.json
 
-```bash
-chmod +x .claude/hooks/*.py
-```
-
-### 2. Configuration
-
-The hooks are configured in [settings.json](settings.json):
-
-- **UserPromptSubmit**: Triggers `skill_activation_prompt.py` to analyze user prompts and suggest relevant skills
-
-## How Auto-Activation Works
-
-1. **User enters a prompt** → `UserPromptSubmit` hook fires
-2. **Hook analyzes prompt** → Matches against patterns in `skill-rules.json`
-3. **Skills suggested** → Claude sees relevant skills for the task
-4. **Claude activates skill** → Skill instructions loaded into context
-
-## Adding New Skills
-
-1. Create skill directory in `.claude/skills/<skill-name>/`
-2. Add `skill.md` with skill instructions
-3. Add entry to `skill-rules.json` with trigger patterns
-4. Test activation with relevant prompts
-
-### Example skill-rules.json Entry
+Defines the hook configuration for the plugin:
 
 ```json
 {
-  "my-skill": {
-    "type": "domain",
-    "enforcement": "suggest",
-    "priority": "high",
-    "promptTriggers": {
-      "keywords": ["keyword1", "keyword2"],
-      "intentPatterns": ["pattern.*regex"]
-    },
-    "fileTriggers": {
-      "paths": ["**/*.py"],
-      "contentPatterns": ["import torch"]
+  "description": "Automatic skill activation suggestions based on user prompts",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/skill_activation_prompt.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Key features:**
+- Uses `${CLAUDE_PLUGIN_ROOT}` for plugin-relative paths
+- Fires on every user prompt submission
+- 5-second timeout for fast response
+
+### skill_activation_prompt.py
+
+Python script that:
+- Reads user prompt from stdin (JSON format)
+- Loads trigger rules from `skill-rules.json`
+- Matches keywords and regex patterns
+- Outputs suggestions in `additionalContext` format
+
+**No dependencies required** - uses only Python 3 standard library.
+
+### skill-rules.json
+
+Defines trigger patterns for each skill:
+
+```json
+{
+  "version": "1.0.0",
+  "skills": {
+    "skill-name": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "promptTriggers": {
+        "keywords": ["keyword1", "keyword2"],
+        "intentPatterns": ["regex.*pattern"]
+      }
     }
   }
 }
 ```
 
-### Skill Priority Levels
+**Priority levels:**
+- **critical**: Required skills (shown with ⚠️)
+- **high**: Strongly recommended (shown with 📚)
+- **medium**: Suggested (shown with 💡)
+- **low**: Optional (shown with 📌)
 
-- **critical**: Required skills (enforcement: block)
-- **high**: Strongly recommended
-- **medium**: Suggested
-- **low**: Optional
+## Adding New Skill Triggers
 
-## Troubleshooting
+To add activation triggers for a new skill:
 
-### Hook Not Firing
+1. **Add entry to skill-rules.json**:
+   ```json
+   {
+     "skills": {
+       "your-skill-name": {
+         "type": "domain",
+         "enforcement": "suggest",
+         "priority": "high",
+         "promptTriggers": {
+           "keywords": ["keyword1", "keyword2"],
+           "intentPatterns": ["pattern.*match"]
+         }
+       }
+     }
+   }
+   ```
 
-1. Check [settings.json](settings.json) is properly formatted
-2. Verify hook scripts are executable (`chmod +x .claude/hooks/*.py`)
-3. Verify `$CLAUDE_PROJECT_DIR` environment variable is set
-4. Check Python 3 is available (`python3 --version`)
 
-## Reference
+## Environment Variables
 
-Based on: https://github.com/diet103/claude-code-infrastructure-showcase
+- `CLAUDE_PLUGIN_ROOT`: Set by Claude Code when running as plugin hook (points to plugin directory)
+- `CLAUDE_PROJECT_DIR`: Fallback for local development (points to project directory)
+
+## References
+
+- [Claude Code Hooks Documentation](http://code.claude.com/docs/en/hooks)
