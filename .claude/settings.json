@@ -1,34 +1,34 @@
 {
   "includeCoAuthoredBy": true,
   "sandbox": {
-    "enabled": true,
-    "autoAllowBashIfSandboxed": true,
-    "excludedCommands": [
-      "podman"
-    ],
-    "filesystem": {
-      "denyRead": [
-        "~/.ssh"
+      "enabled": true,
+      "autoAllowBashIfSandboxed": true,
+      "excludedCommands": [
+          "podman"
       ],
-      "allowWrite": [
-        "."
-      ],
-      "denyWrite": [
-        "~/",
-        ".env"
-      ]
-    },
-    "network": {
-      "allowedDomains": [
-        "github.com",
-        "*.github.com",
-        "gitlab.com",
-        "*.gitlab.com",
-        "gitlab.cee.redhat.com",
-        "pypi.org"
-      ],
-      "deniedDomains": []
-    },
-    "enableWeakerNestedSandbox": false
+      "filesystem": {
+          "denyRead": [
+              "~/.ssh"
+          ],
+          "allowWrite": [
+              "."
+          ],
+          "denyWrite": [
+              "~/",
+              ".env"
+          ]
+      },
+      "network": {
+          "allowedDomains": [
+              "github.com",
+              "*.github.com",
+              "gitlab.com",
+              "*.gitlab.com",
+              "gitlab.cee.redhat.com",
+              "pypi.org"
+          ],
+          "deniedDomains": []
+      },
+      "enableWeakerNestedSandbox": false
   }
 }
