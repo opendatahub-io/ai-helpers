@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0",
+  "skills": {
+    "vllm-slack-summary": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "promptTriggers": {
+        "keywords": [
+          "vllm",
+          "slack summary",
+          "slack channel",
+          "ci sig"
+        ],
+        "intentPatterns": [
+          "vllm.*slack",
+          "slack.*vllm",
+          "summarize.*slack.*vllm",
+          "vllm.*ci.*sig"
+        ]
+      }
+    }
+  }
+}

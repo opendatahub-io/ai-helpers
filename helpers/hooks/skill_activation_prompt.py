@@ -40,10 +40,13 @@ class SkillActivationChecker:
             SystemExit: If file not found or JSON parsing fails.
         """
         try:
-            with open(self.rules_path, 'r') as f:
+            with open(self.rules_path, "r") as f:
                 return json.load(f)
         except FileNotFoundError:
-            print(f"Error: skill-rules.json not found at {self.rules_path}", file=sys.stderr)
+            print(
+                f"Error: skill-rules.json not found at {self.rules_path}",
+                file=sys.stderr,
+            )
             sys.exit(1)
         except json.JSONDecodeError as e:
             print(f"Error parsing skill-rules.json: {e}", file=sys.stderr)
@@ -64,35 +67,38 @@ class SkillActivationChecker:
         prompt_lower = prompt.lower()
         matched_skills = []
 
-        skills = self.rules.get('skills', {})
+        skills = self.rules.get("skills", {})
 
         for skill_name, config in skills.items():
-            triggers = config.get('promptTriggers', {})
+            triggers = config.get("promptTriggers", {})
 
             # Check keyword triggers
-            keywords = triggers.get('keywords', [])
+            keywords = triggers.get("keywords", [])
             if keywords and any(kw.lower() in prompt_lower for kw in keywords):
-                matched_skills.append({
-                    'name': skill_name,
-                    'match_type': 'keyword',
-                    'config': config
-                })
+                matched_skills.append(
+                    {"name": skill_name, "match_type": "keyword", "config": config}
+                )
                 continue
 
             # Check intent pattern triggers
-            intent_patterns = triggers.get('intentPatterns', [])
+            intent_patterns = triggers.get("intentPatterns", [])
             if intent_patterns:
                 for pattern in intent_patterns:
                     try:
                         if re.search(pattern, prompt, re.IGNORECASE):
-                            matched_skills.append({
-                                'name': skill_name,
-                                'match_type': 'intent',
-                                'config': config
-                            })
+                            matched_skills.append(
+                                {
+                                    "name": skill_name,
+                                    "match_type": "intent",
+                                    "config": config,
+                                }
+                            )
                             break
                     except re.error as e:
-                        print(f"Warning: Invalid regex pattern '{pattern}': {e}", file=sys.stderr)
+                        print(
+                            f"Warning: Invalid regex pattern '{pattern}': {e}",
+                            file=sys.stderr,
+                        )
 
         return matched_skills
 
@@ -116,10 +122,12 @@ class SkillActivationChecker:
         output.append("")
 
         # Group by priority
-        critical = [s for s in matched_skills if s['config'].get('priority') == 'critical']
-        high = [s for s in matched_skills if s['config'].get('priority') == 'high']
-        medium = [s for s in matched_skills if s['config'].get('priority') == 'medium']
-        low = [s for s in matched_skills if s['config'].get('priority') == 'low']
+        critical = [
+            s for s in matched_skills if s["config"].get("priority") == "critical"
+        ]
+        high = [s for s in matched_skills if s["config"].get("priority") == "high"]
+        medium = [s for s in matched_skills if s["config"].get("priority") == "medium"]
+        low = [s for s in matched_skills if s["config"].get("priority") == "low"]
 
         if critical:
             output.append("⚠️  CRITICAL SKILLS (REQUIRED):")
@@ -150,6 +158,26 @@ class SkillActivationChecker:
 
         return "\n".join(output)
 
+    def output_json(self, matched_skills: list[dict]) -> None:
+        """Output JSON for UserPromptSubmit hook.
+
+        Args:
+            matched_skills (list[dict]): List of matched skills from check_prompt.
+        """
+        if not matched_skills:
+            sys.exit(0)
+
+        formatted_message = self.format_output(matched_skills)
+
+        output = {
+            "hookSpecificOutput": {
+                "hookEventName": "UserPromptSubmit",
+                "additionalContext": formatted_message,
+            }
+        }
+
+        print(json.dumps(output))
+
 
 def main():
     """Main entry point for the skill activation hook.
@@ -161,7 +189,8 @@ def main():
         JSON object with 'prompt' field containing user's message.
 
     Environment Variables:
-        CLAUDE_PROJECT_DIR: Path to project directory (defaults to ~/project).
+        CLAUDE_PLUGIN_ROOT: Path to plugin directory (for plugin-based hooks).
+        CLAUDE_PROJECT_DIR: Path to project directory (fallback for local development).
 
     Exits:
         0: Success (with or without matches)
@@ -171,21 +200,28 @@ def main():
         # Read input from stdin
         input_data = sys.stdin.read()
         data = json.loads(input_data)
-        prompt = data.get('prompt', '')
+        prompt = data.get("prompt", "")
 
-        # Get project directory
+        # Determine rules path based on environment
         import os
-        project_dir = os.environ.get('CLAUDE_PROJECT_DIR', os.path.expanduser('~/project'))
-        rules_path = Path(project_dir) / '.claude' / 'skills' / 'skill-rules.json'
+
+        plugin_root = os.environ.get("CLAUDE_PLUGIN_ROOT", "")
+        if plugin_root:
+            # Running as plugin hook
+            rules_path = Path(plugin_root) / "hooks" / "skill-rules.json"
+        else:
+            # Fallback to project directory (for local development)
+            project_dir = os.environ.get(
+                "CLAUDE_PROJECT_DIR", os.path.expanduser("~/project")
+            )
+            rules_path = Path(project_dir) / ".claude" / "skills" / "skill-rules.json"
 
         # Check for skill matches
         checker = SkillActivationChecker(rules_path)
         matched_skills = checker.check_prompt(prompt)
 
-        # Output results
-        if matched_skills:
-            output = checker.format_output(matched_skills)
-            print(output)
+        # Output results as JSON
+        checker.output_json(matched_skills)
 
         sys.exit(0)
 
@@ -197,5 +233,5 @@ def main():
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
