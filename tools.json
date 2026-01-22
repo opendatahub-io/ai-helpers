@@ -125,6 +125,12 @@
       "description": "My purpose is to take your minimal, raw notes and expand them into complete, polished email drafts, acting as your thought partner.",
       "type": "gem",
       "category": "general"
+    },
+    {
+      "name": "tl-dev",
+      "description": "My purpose is to act as your technical article filter. Provide a URL, and I will generate a concise TL;DR summary for you. I first determine if the content is technical. If not, I will reply only with Content is not relevant to software development.",
+      "type": "gem",
+      "category": "general"
     }
   ],
   "categories": {
