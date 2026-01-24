@@ -122,6 +122,10 @@ the [official Claude Code plugins documentation](https://docs.claude.com/en/docs
 
 ### Running Claude Code in a Container
 
+For IDE users, we have supplied a devcontainer.json file. For setup and prerequisites, see [Dev Container README](.devcontainer/README.md).
+
+For setup with the standard CLI see the following. 
+
 A container image is available with Claude Code and all plugins pre-installed:
 `ghcr.io/opendatahub-io/ai-helpers:latest`
 
