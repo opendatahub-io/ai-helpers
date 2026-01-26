@@ -83,6 +83,14 @@
         "allowed_tools": ""
       },
       {
+        "name": "python-packaging-bug-finder",
+        "description": "Find known packaging bugs, fixes, and workarounds for Python projects by searching GitHub issues and analyzing their resolution status",
+        "category": "general",
+        "file_path": "helpers/skills/python-packaging-bug-finder/SKILL.md",
+        "id": "python-packaging-bug-finder",
+        "allowed_tools": "Skill WebFetch WebSearch"
+      },
+      {
         "name": "python-packaging-complexity",
         "description": "Analyze Python package build complexity by inspecting PyPI metadata. Evaluates compilation requirements, dependencies, distribution types, and provides recommendations for wheel building strategies.",
         "category": "general",

@@ -231,6 +231,13 @@ Use all available skills in a coordinated manner to provide thorough analysis:
 - Identify configurable environment variables for custom builds
 - Document build-time configuration possibilities
 
+#### 5. Packaging Issue Analysis (bug-finder skill)
+- Search GitHub repository for known packaging and build issues
+- Analyze issue content and comments to determine resolution status
+- Identify version-specific problems affecting the target package version
+- Provide workarounds and fixes for known packaging problems
+- Critical for understanding build blockers before attempting source builds
+
 ## Communication Guidelines
 
 - Use structured templates consistently
@@ -239,4 +246,4 @@ Use all available skills in a coordinated manner to provide thorough analysis:
 - Highlight critical blockers and solutions immediately
 - Assume Claude understands Python packaging concepts
 
-Leverage all analysis skills (source-finder, complexity, license-checker, env-finder) to provide comprehensive automated insights that enable successful package building from source.
+Leverage all analysis skills (source-finder, complexity, license-checker, env-finder, bug-finder) to provide comprehensive automated insights that enable successful package building from source.
