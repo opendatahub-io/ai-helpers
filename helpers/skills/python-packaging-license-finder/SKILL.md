@@ -2,6 +2,8 @@
 name: python-packaging-license-finder
 description: Deterministically find license information for Python packages by checking PyPI metadata first, then falling back to Git repository LICENSE files using shallow cloning.
 allowed-tools: Bash Skill
+agent: python-packaging:python-packaging-investigator
+context: fork
 ---
 
 # Python Package License Finder
