@@ -122,8 +122,8 @@ After any Edit Attempt:
   where `<status>` is `SUCCESS` or `FAILED`
 
 ## Active Technologies
-- Python 3.13 + Slack MCP server (MCP tools), jira Python library (>=3.0.0) (001-jira-upload-slack-thread)
+- Python 3.13 + Slack MCP server + JIRA MCP server (all interactions via MCP) (001-jira-upload-slack-thread)
 - Temporary file storage in `/tmp/claude/` directory (001-jira-upload-slack-thread)
 
 ## Recent Changes
-- 001-jira-upload-slack-thread: Added Python 3.13 + Slack MCP server (MCP tools), jira Python library (>=3.0.0)
+- 001-jira-upload-slack-thread: Added Python 3.13 + Slack MCP server + JIRA MCP server (MCP-only, no direct SDK)

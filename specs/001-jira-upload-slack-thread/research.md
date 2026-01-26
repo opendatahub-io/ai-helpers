@@ -34,25 +34,25 @@ This document consolidates research findings for implementing a skill that fetch
 
 ### 2. JIRA Comment Posting (vs Attachments)
 
-**Decision**: Post markdown as JIRA comment using `jira.add_comment()` method  
+**Decision**: Post markdown as JIRA comment using JIRA MCP server
 
-**Rationale**:  
-- Clarification session confirmed: upload as comment (inline) rather than attachment  
-- Comments are immediately visible in ticket timeline  
-- Matches user expectation for conversation logs  
-- Existing `upload_chat_log.py` uses `jira.add_attachment()` but we'll use `add_comment()`  
+**Rationale**:
+- Clarification session confirmed: upload as comment (inline) rather than attachment
+- Comments are immediately visible in ticket timeline
+- Matches user expectation for conversation logs
+- MCP server provides consistent pattern with Slack integration
 
-**Alternatives Considered**:  
-- **File attachment**: Rejected per clarification (Q1: "Upload as JIRA ticket comment")  
-- **Both comment AND attachment**: Rejected as unnecessary duplication  
+**Alternatives Considered**:
+- **File attachment**: Rejected per clarification (Q1: "Upload as JIRA ticket comment")
+- **Both comment AND attachment**: Rejected as unnecessary duplication
+- **jira Python library**: Rejected in favor of MCP-only approach for consistency
 
-**Implementation Notes**:  
-- JIRA MCP server exposes tools via MCP protocol  
-    - Tools including: ...
-- If failed using mcp try to use `jira` Python library (same as upload_chat_log.py)  
-    - Method: `jira.add_comment(issue=ticket_key, body=markdown_content)`  
-    - Authentication: token_auth via JIRA_API_TOKEN environment variable  
-- JIRA server: https://jounce.atlassian.net/ (not issues.redhat.com)  
+**Implementation Notes**:
+- JIRA MCP server exposes tools via MCP protocol
+    - Tools include: `jira_add_comment`, `jira_get_issue`, etc.
+- All JIRA interactions use MCP server exclusively (no jira Python library fallback)
+- Authentication: JIRA_API_TOKEN environment variable (used by MCP server)
+- JIRA server: https://jounce.atlassian.net/ (configurable via JIRA_PROJECT_URL)
 - Comments support markdown formatting  
 
 ### 3. JIRA Ticket Key Extraction Pattern
@@ -177,7 +177,7 @@ sys.exit(1)
 | Language | Python | 3.13 | Project standard, constitution requirement |
 | Package Manager | UV | latest | Constitution mandate (Principle VI) |
 | Slack Integration | Slack MCP Server | latest | FR-007 requirement, MCP tools |
-| JIRA API | jira library | >=3.0.0 | Existing pattern, proven stable |
+| JIRA Integration | JIRA MCP Server | latest | MCP-only pattern, consistent with Slack |
 | Testing | pytest | latest | Constitution requirement |
 | Type Checking | mypy | latest | Constitution requirement (strict mode) |
 | Linting | ruff | latest | Constitution requirement |

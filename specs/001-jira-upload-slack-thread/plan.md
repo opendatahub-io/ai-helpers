@@ -119,7 +119,7 @@ See [research.md](./research.md) for complete findings.
 
 **Key Decisions**:  
 1. Slack MCP Server for all Slack interactions  
-2. JIRA comments (not attachments) via jira.add_comment()  
+2. JIRA comments (not attachments) via JIRA MCP server  
 3. Regex pattern `[A-Z]+-\d+` for ticket extraction  
 4. Truncate at 50 messages with warning  
 5. Optional AI summary via `--summary` flag (default OFF)  
@@ -258,6 +258,7 @@ Instead of three separate message blocks.
 - Example: `JIRA_PROJECT_URL=https://jounce.atlassian.net/`  
 
 **MCP Server Updates**:  
-- Both Slack and JIRA interactions use MCP servers  
-- No direct Python library dependencies (slack-sdk, jira)  
-- Consistent MCP tool pattern across both services  
+- Both Slack and JIRA interactions use MCP servers exclusively
+- No direct Python library dependencies (slack-sdk, jira)
+- Consistent MCP tool pattern across both services
+- JIRA MCP server provides: jira_add_comment, jira_get_issue, etc.  

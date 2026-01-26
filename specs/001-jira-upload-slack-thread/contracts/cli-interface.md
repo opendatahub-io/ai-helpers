@@ -392,16 +392,16 @@ All contract tests must verify:
 
 **Python Version**: 3.13+  
 
-**Dependencies**:  
-- UV package manager (handles jira library installation)  
-- Slack MCP server (separate service)  
-- JIRA API access at https://jounce.atlassian.net/  
+**Dependencies**:
+- UV package manager (handles script dependencies)
+- Slack MCP server (for Slack API interactions)
+- JIRA MCP server (for JIRA API interactions)
 
-## Updated Dependencies
+## MCP Server Configuration
 
 ### JIRA MCP Server
 
-**Change**: Use JIRA MCP server instead of jira Python library  
+**Integration**: All JIRA interactions use JIRA MCP server exclusively (no jira Python library)  
 
 **Environment Variables**:  
 

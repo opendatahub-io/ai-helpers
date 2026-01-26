@@ -50,19 +50,23 @@ A team member wants to quickly understand the key points of a lengthy Slack disc
 
 ---  
 
-### User Story 3 - Handle Various Slack Thread Formats (Priority: P1)
+### User Story 3 - Handle Primary Slack Thread Format (Priority: P1)
 
-A user provides different formats of Slack URLs (direct thread link, link with reply parameter) and the system correctly parses them.  
+A user provides a direct Slack thread URL and the system correctly parses it with clear error handling for invalid formats.
 
-**Why this priority**: Essential for usability - users shouldn't need to know the "correct" URL format. This is part of the core functionality.  
+**Why this priority**: Essential for usability - users need clear feedback when URLs are malformed. This is part of the core functionality.
 
-**Independent Test**: Can be tested by providing URLs in different formats and verifying all parse correctly and fetch the same thread content.  
+**MVP Scope**: Handles direct thread link format only. `thread_ts` query parameter format deferred to v2.
 
-**Acceptance Scenarios**:  
+**Independent Test**: Can be tested by providing a direct thread URL and verifying it parses correctly, and by providing malformed URLs to verify clear error messages.
 
-1. **Given** a direct thread link format `https://workspace.slack.com/archives/C01234567/p1234567890123456`, **When** the skill parses it, **Then** it correctly extracts channel ID and thread timestamp  
-2. **Given** a thread link with reply parameter `https://workspace.slack.com/archives/C01234567/p1234567890123456?thread_ts=1234567890.123456`, **When** the skill parses it, **Then** it correctly extracts channel ID and thread timestamp  
-3. **Given** a malformed Slack URL, **When** the skill validates it, **Then** it provides a clear error message explaining the expected format  
+**Acceptance Scenarios**:
+
+1. **Given** a direct thread link format `https://workspace.slack.com/archives/C01234567/p1234567890123456`, **When** the skill parses it, **Then** it correctly extracts channel ID and thread timestamp
+2. **Given** a malformed Slack URL, **When** the skill validates it, **Then** it provides a clear error message explaining the expected format
+
+**Deferred to v2**:
+- Thread link with `thread_ts` query parameter format (`?thread_ts=1234567890.123456`)  
 
 ---  
 
@@ -98,7 +102,7 @@ When a user doesn't provide a JIRA ticket key, the system searches the current c
 
 ### Functional Requirements
 
-- **FR-001**: System MUST accept a Slack thread URL as required input in format `https://workspace.slack.com/archives/CHANNEL_ID/pTIMESTAMP` or with `thread_ts` parameter  
+- **FR-001**: System MUST accept a Slack thread URL as required input in format `https://workspace.slack.com/archives/CHANNEL_ID/pTIMESTAMP` (MVP scope; `thread_ts` query parameter format deferred to v2)  
 - **FR-002**: System MUST parse Slack URLs to extract workspace domain, channel ID, and thread timestamp  
 - **FR-003**: System MUST validate Slack URL format before attempting API calls and provide clear error messages for invalid formats  
 - **FR-004**: System MUST accept an optional JIRA ticket key as input  
