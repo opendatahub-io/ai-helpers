@@ -96,14 +96,9 @@ AnotherCategory:
 
 ## Ethical Guidelines
 
-**Critical Requirement**: Never reference real people by name in plugins, commands, or examples.
+This project follows strict ethical guidelines for AI tool development, particularly regarding the use of real people's names and personas.
 
-**Instead of naming people, describe qualities explicitly:**
-- ✅ "Write commit messages that are direct, technically precise, and focused on rationale"
-- ✅ "Explain using clear analogies, wonder, and accessible language for non-experts"
-- ❌ "Write commits in the style of [person's name]"
-
-This ensures consent, prevents misrepresentation, respects intellectual property, and maintains dignity.
+For detailed ethical guidelines and best practices, see [ETHICS.md](ETHICS.md).
 
 ## Getting Started
 

@@ -233,26 +233,9 @@ make lint
 
 ## Ethical Guidelines
 
-We must NEVER reference real people by name, even as stylistic examples (e.g., "in the
-style of 'specific human'").
+This project follows strict ethical guidelines for AI tool development, particularly regarding the use of real people's names and personas.
 
-**Ethical rationale:**
-
-1. **Consent**: Individuals have not consented to have their identity or persona used in AI-generated content
-2. **Misrepresentation**: AI cannot accurately replicate a person's unique voice, style, or intent
-3. **Intellectual Property**: A person's distinctive style may be protected
-4. **Dignity**: Using someone's identity without permission diminishes their autonomy
-
-**Instead, describe specific qualities explicitly**
-
-Good examples:
-
-* "Write commit messages that are direct, technically precise, and focused on the rationale behind changes"
-* "Explain using clear analogies, a sense of wonder, and accessible language for non-experts"
-* "Code review comments that are encouraging, constructive, and focus on collaborative improvement"
-
-When you identify a desirable characteristic (clarity, brevity, formality, humor, etc.), describe it explicitly rather
-than using a person as proxy.
+For detailed ethical guidelines and best practices, see [ETHICS.md](ETHICS.md).
 
 ## Pre-commit Hooks (Optional)
 
