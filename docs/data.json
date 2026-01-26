@@ -68,6 +68,14 @@
         "allowed_tools": "Bash Read"
       },
       {
+        "name": "jira-sprint-parent-links",
+        "description": "Generate comprehensive sprint reports showing all issues with their parent and epic relationships, including strategic hierarchy visualization.",
+        "category": "general",
+        "file_path": "helpers/skills/jira-sprint-parent-links/SKILL.md",
+        "id": "jira-sprint-parent-links",
+        "allowed_tools": ""
+      },
+      {
         "name": "jira-upload-chat-log",
         "description": "Export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation.",
         "category": "general",
