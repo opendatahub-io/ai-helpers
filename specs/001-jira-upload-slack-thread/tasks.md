@@ -26,11 +26,11 @@ Per plan.md project structure:
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Verify Slack MCP server and JIRA MCP server are configured and accessible
-- [ ] T002 Create skill directory structure per plan.md at claude-plugins/jira/skills/upload-slack-thread/
-- [ ] T003 [P] Create SKILL.md with YAML frontmatter (name, description, argument-hint) and usage instructions at claude-plugins/jira/skills/upload-slack-thread/SKILL.md
-- [ ] T004 [P] Create main entry point with PEP 723 metadata at claude-plugins/jira/skills/upload-slack-thread/scripts/upload_slack_thread.py
-- [ ] T005 Create test directory structure per plan.md at tests/contract/, tests/integration/, tests/unit/
+- [X] T001 Verify Slack MCP server and JIRA MCP server are configured and accessible
+- [X] T002 Create skill directory structure per plan.md at claude-plugins/jira/skills/upload-slack-thread/
+- [X] T003 [P] Create SKILL.md with YAML frontmatter (name, description, argument-hint) and usage instructions at claude-plugins/jira/skills/upload-slack-thread/SKILL.md
+- [X] T004 [P] Create main entry point with PEP 723 metadata at claude-plugins/jira/skills/upload-slack-thread/scripts/upload_slack_thread.py
+- [X] T005 Create test directory structure per plan.md at tests/contract/, tests/integration/, tests/unit/
 
 ---
 
@@ -40,13 +40,13 @@ Per plan.md project structure:
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T006 Implement SlackThreadURL dataclass with validation in claude-plugins/jira/skills/upload-slack-thread/scripts/url_parser.py
-- [ ] T007 [P] Implement JIRATicketKey dataclass with validation in claude-plugins/jira/skills/upload-slack-thread/scripts/ticket_extractor.py
-- [ ] T008 [P] Implement ThreadMessage and AttachmentMetadata dataclasses in claude-plugins/jira/skills/upload-slack-thread/scripts/slack_fetcher.py
-- [ ] T009 [P] Implement SlackThread dataclass with truncation logic in claude-plugins/jira/skills/upload-slack-thread/scripts/slack_fetcher.py
-- [ ] T010 Implement CLI argument parsing with argparse in claude-plugins/jira/skills/upload-slack-thread/scripts/upload_slack_thread.py
-- [ ] T011 [P] Implement error handling utilities with exit codes per cli-interface.md in claude-plugins/jira/skills/upload-slack-thread/scripts/upload_slack_thread.py
-- [ ] T012 [P] Implement environment variable loading (JIRA_API_TOKEN, JIRA_PROJECT_URL) in claude-plugins/jira/skills/upload-slack-thread/scripts/upload_slack_thread.py
+- [X] T006 Implement SlackThreadURL dataclass with validation in claude-plugins/jira/skills/upload-slack-thread/scripts/url_parser.py
+- [X] T007 [P] Implement JIRATicketKey dataclass with validation in claude-plugins/jira/skills/upload-slack-thread/scripts/ticket_extractor.py
+- [X] T008 [P] Implement ThreadMessage and AttachmentMetadata dataclasses in claude-plugins/jira/skills/upload-slack-thread/scripts/slack_fetcher.py
+- [X] T009 [P] Implement SlackThread dataclass with truncation logic in claude-plugins/jira/skills/upload-slack-thread/scripts/slack_fetcher.py
+- [X] T010 Implement CLI argument parsing with argparse in claude-plugins/jira/skills/upload-slack-thread/scripts/upload_slack_thread.py
+- [X] T011 [P] Implement error handling utilities with exit codes per cli-interface.md in claude-plugins/jira/skills/upload-slack-thread/scripts/upload_slack_thread.py
+- [X] T012 [P] Implement environment variable loading (JIRA_API_TOKEN, JIRA_PROJECT_URL) in claude-plugins/jira/skills/upload-slack-thread/scripts/upload_slack_thread.py
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -62,25 +62,25 @@ Per plan.md project structure:
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T013 [P] [US1] Contract test for CLI argument validation in tests/contract/test_upload_slack_thread_contract.py
-- [ ] T014 [P] [US1] Contract test for exit codes and output streams in tests/contract/test_upload_slack_thread_contract.py
-- [ ] T015 [P] [US1] Unit test for URL parsing in tests/unit/test_url_parser.py
-- [ ] T016 [P] [US1] Unit test for ticket extraction from text in tests/unit/test_ticket_extractor.py
-- [ ] T017 [P] [US1] Unit test for markdown formatting in tests/unit/test_markdown_formatter.py
-- [ ] T018 [P] [US1] Unit test for Slack fetcher (mock MCP) in tests/unit/test_slack_fetcher.py
-- [ ] T019 [P] [US1] Unit test for JIRA comment poster in tests/unit/test_jira_comment_poster.py
-- [ ] T020 [P] [US1] Integration test for Slack MCP interaction in tests/integration/test_slack_mcp_integration.py
-- [ ] T021 [P] [US1] Integration test for JIRA MCP server interaction in tests/integration/test_jira_mcp_integration.py
+- [X] T013 [P] [US1] Contract test for CLI argument validation in tests/contract/test_upload_slack_thread_contract.py
+- [X] T014 [P] [US1] Contract test for exit codes and output streams in tests/contract/test_upload_slack_thread_contract.py
+- [X] T015 [P] [US1] Unit test for URL parsing in tests/unit/test_url_parser.py
+- [X] T016 [P] [US1] Unit test for ticket extraction from text in tests/unit/test_ticket_extractor.py
+- [X] T017 [P] [US1] Unit test for markdown formatting in tests/unit/test_markdown_formatter.py
+- [X] T018 [P] [US1] Unit test for Slack fetcher (mock MCP) in tests/unit/test_slack_fetcher.py
+- [X] T019 [P] [US1] Unit test for JIRA comment poster in tests/unit/test_jira_comment_poster.py
+- [X] T020 [P] [US1] Integration test for Slack MCP interaction in tests/integration/test_slack_mcp_integration.py
+- [X] T021 [P] [US1] Integration test for JIRA MCP server interaction in tests/integration/test_jira_mcp_integration.py
 
 ### Implementation for User Story 1
 
-- [ ] T022 [US1] Implement parse_slack_url() function in claude-plugins/jira/skills/upload-slack-thread/scripts/url_parser.py
-- [ ] T023 [US1] Implement extract_ticket_from_text() function in claude-plugins/jira/skills/upload-slack-thread/scripts/ticket_extractor.py
-- [ ] T024 [US1] Implement fetch_thread_messages() via Slack MCP in claude-plugins/jira/skills/upload-slack-thread/scripts/slack_fetcher.py
-- [ ] T025 [US1] Implement resolve_user_names() via Slack MCP in claude-plugins/jira/skills/upload-slack-thread/scripts/slack_fetcher.py
-- [ ] T026 [US1] Implement merge_consecutive_messages() in claude-plugins/jira/skills/upload-slack-thread/scripts/markdown_formatter.py
-- [ ] T027 [US1] Implement MarkdownExport dataclass in claude-plugins/jira/skills/upload-slack-thread/scripts/markdown_formatter.py
-- [ ] T028 [US1] Implement format_thread_to_markdown() in claude-plugins/jira/skills/upload-slack-thread/scripts/markdown_formatter.py
+- [X] T022 [US1] Implement parse_slack_url() function in claude-plugins/jira/skills/upload-slack-thread/scripts/url_parser.py
+- [X] T023 [US1] Implement extract_ticket_from_text() function in claude-plugins/jira/skills/upload-slack-thread/scripts/ticket_extractor.py
+- [X] T024 [US1] Implement fetch_thread_messages() via Slack MCP in claude-plugins/jira/skills/upload-slack-thread/scripts/slack_fetcher.py
+- [X] T025 [US1] Implement resolve_user_names() via Slack MCP in claude-plugins/jira/skills/upload-slack-thread/scripts/slack_fetcher.py
+- [X] T026 [US1] Implement merge_consecutive_messages() in claude-plugins/jira/skills/upload-slack-thread/scripts/markdown_formatter.py
+- [X] T027 [US1] Implement MarkdownExport dataclass in claude-plugins/jira/skills/upload-slack-thread/scripts/markdown_formatter.py
+- [X] T028 [US1] Implement format_thread_to_markdown() in claude-plugins/jira/skills/upload-slack-thread/scripts/markdown_formatter.py
 - [ ] T029 [US1] Implement JIRAComment dataclass in claude-plugins/jira/skills/upload-slack-thread/scripts/jira_comment_poster.py
 - [ ] T030 [US1] Implement post_comment_to_jira() via JIRA MCP server in claude-plugins/jira/skills/upload-slack-thread/scripts/jira_comment_poster.py
 - [ ] T031 [US1] Implement main workflow orchestration in claude-plugins/jira/skills/upload-slack-thread/scripts/upload_slack_thread.py

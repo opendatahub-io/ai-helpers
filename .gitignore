@@ -40,3 +40,22 @@ venv/
 # Various logs and metrics tracking info
 *.log
 .anonymous_id
+
+# Environment files
+.env*
+!.env.example
+
+# Build artifacts
+dist/
+build/
+*.tmp
+*.swp
+
+# OS specific
+Thumbs.db
+
+# Coverage and test artifacts
+coverage/
+.tox/
+.coverage
+htmlcov/
