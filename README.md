@@ -214,7 +214,7 @@ claude-container() {
    ln -sf $(pwd)/helpers/commands/* ~/.config/opencode/commands/
    ```
 
-For detailed information about OpenCode.ai skills and commands, see the [OpenCode.ai documentation](https://opencode.ai/docs).
+These helpers are available when loading the odh-ai-helpers plugin from the marketplace as instructed above.
 
 ## Gemini Gems
 

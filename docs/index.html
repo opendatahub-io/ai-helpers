@@ -1386,13 +1386,7 @@
                 <div style="margin-bottom: 1.5rem;">
                     <div style="margin-bottom: 1rem;">
                         <div style="font-weight: 600; margin-bottom: 0.5rem;">Claude Code</div>
-                        ${tool.tool_type === 'skills' ? `
-                        <div style="font-size: 0.875rem; color: var(--text-secondary);">Automatically available when using Claude Code.</div>
-                        ` : tool.tool_type === 'commands' ? `
-                        <div style="font-size: 0.875rem; color: var(--text-secondary);">Automatically available in Claude Code marketplace.</div>
-                        ` : `
-                        <div style="font-size: 0.875rem; color: var(--text-secondary);">Available as sub-agent in Claude Code.</div>
-                        `}
+                        <div style="font-size: 0.875rem; color: var(--text-secondary);">Available through the odh-ai-helpers plugin loaded by marketplace as instructed.</div>
                     </div>
 
                     <div style="margin-bottom: 1rem;">
@@ -1878,21 +1872,6 @@
                     </button>
                 </div>
 
-                <h4 style="margin-bottom: 0.75rem; color: var(--text-primary); font-size: 1rem;">Documentation:</h4>
-
-                <div style="margin-bottom: 1rem;">
-                    <p style="margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 600;">Skills:</p>
-                    <p style="margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
-                        See <a href="https://opencode.ai/docs/skills/" target="_blank" rel="noopener noreferrer" style="color: #FF6B35;">OpenCode.ai Skills documentation</a> for advanced configuration.
-                    </p>
-                </div>
-
-                <div style="margin-bottom: 1rem;">
-                    <p style="margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 600;">Commands:</p>
-                    <p style="margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
-                        See <a href="https://opencode.ai/docs/commands/" target="_blank" rel="noopener noreferrer" style="color: #FF6B35;">OpenCode.ai Commands documentation</a> for advanced configuration.
-                    </p>
-                </div>
 
             `;
             showModal('Installation Instructions', content);
