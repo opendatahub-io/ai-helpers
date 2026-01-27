@@ -143,6 +143,12 @@
             "id": "upload-chat-log",
             "description": "Export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation.",
             "file_path": "claude-plugins/jira/skills/upload-chat-log/SKILL.md"
+          },
+          {
+            "name": "upload-slack-thread",
+            "id": "upload-slack-thread",
+            "description": "Export Slack thread conversations to JIRA tickets as formatted markdown comments.",
+            "file_path": "claude-plugins/jira/skills/upload-slack-thread/SKILL.md"
           }
         ],
         "hooks": [],

@@ -76,6 +76,7 @@ Jira workflow automation and utilities
 
 **Skills:**
 - **upload-chat-log** - Export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation.
+- **upload-slack-thread** - Export Slack thread conversations to JIRA tickets as formatted markdown comments.
 
 See [claude-plugins/jira/README.md](claude-plugins/jira/README.md) for detailed documentation.
 
