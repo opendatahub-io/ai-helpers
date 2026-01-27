@@ -60,3 +60,7 @@ coverage/
 .coverage
 htmlcov/
 tmp/
+
+# Spec-kit workflow files (local only)
+.claude/commands/speckit.*
+.specify/
