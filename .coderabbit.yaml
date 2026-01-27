@@ -1,0 +1,14 @@
+---
+language: en-US
+early_access: false
+enable_free_tier: true
+reviews:
+  poem: false
+  pre_merge_checks:
+    custom_checks:
+      - name: "AgentSkills.io Specification Compliance"
+        mode: warning
+        instructions: "Review all changes in helpers/skills/ directory against the agentskills.io specification (https://agentskills.io/specification). Validate directory structure, SKILL.md format, frontmatter fields, and content guidelines as defined in the specification."
+      - name: "Ethical Compliance"
+        mode: error
+        instructions: "Review all changes in helpers/ directory to ensure compliance with ethical guidelines defined in ETHICS.md. Pay particular attention to avoiding references to real people by name, even as stylistic examples."
