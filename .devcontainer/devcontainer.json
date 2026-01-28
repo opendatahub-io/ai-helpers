@@ -14,7 +14,8 @@
 		"ANTHROPIC_VERTEX_PROJECT_ID": "project",
 		"DISABLE_AUTOUPDATER": "1",
 		"GOOGLE_APPLICATION_CREDENTIALS": "/home/claude/.config/gcloud/application_default_credentials.json",
-		"CLAUDE_PROJECT_DIR": "${containerWorkspaceFolder}"
+		"CLAUDE_PROJECT_DIR": "${containerWorkspaceFolder}",
+		"CLAUDE_PLUGIN_ROOT":"${containerWorkspaceFolder}/helpers"
 	},
 	"customizations": {
 		"vscode": {
