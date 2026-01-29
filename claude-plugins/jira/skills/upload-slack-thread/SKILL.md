@@ -25,9 +25,7 @@ Export a Slack thread conversation to a JIRA ticket as a formatted markdown comm
 
 ## Prerequisites
 
-- **slackdump** installed and authenticated
-  - Install: <https://github.com/rusq/slackdump>
-  - Auth: Run `slackdump workspace add`
+- Slack MCP server configured with valid authentication
 - JIRA MCP server configured (`mcp__mcp-atlassian__jira_*` tools available)
 
 ## Implementation
@@ -44,28 +42,28 @@ Extract components from the URL:
 - URL must match pattern `https://[^/]+\.slack\.com/archives/[A-Z0-9]+/p\d+`
 - If invalid: "Invalid Slack thread URL format. Expected: https://workspace.slack.com/archives/CHANNEL_ID/pTIMESTAMP"
 
-### Step 2: Fetch Thread Messages via slackdump
+### Step 2: Fetch Thread Messages via Slack MCP
 
-Use slackdump CLI to export the thread:
+Use the Slack MCP server to fetch thread messages:
 
-```bash
-slackdump -export-type mattermost -files=false \
-  -t "{channel_id}:{thread_ts}" \
-  -o /tmp/claude/slack_thread_export
+```
+Tool: mcp__slack__conversations_replies
+Parameters:
+  - channel_id: {channel_id}
+  - thread_ts: {converted_timestamp}
 ```
 
 **Message processing:**
-- Parse the exported JSON files in `/tmp/claude/slack_thread_export/`
-- Load `users.json` for user display name resolution
 - Extract `user`, `text`, `ts`, `files` from each message
 - If thread has >50 messages, truncate to first 50 and note in output
+- Parent message (first) should be marked as thread starter
 
 ### Step 3: Resolve User Display Names
 
-From the slackdump export:
-- Load `users.json` from export directory
-- Map `user_id` → `display_name` or `real_name`
-- If user not found, fallback to user_id
+From the Slack MCP response:
+- User display names are typically included in message responses
+- If display_name available, use it; otherwise fallback to user_id
+- Cache resolved names to avoid duplicate lookups
 
 ### Step 4: Determine JIRA Ticket Key
 
@@ -146,10 +144,10 @@ If truncated:
 
 | Issue | Solution |
 |-------|----------|
-| slackdump not found | Ensure slackdump is in PATH: `which slackdump` |
-| Authentication failed | Run `slackdump workspace add` |
+| Slack MCP unavailable | Verify Slack MCP server is configured in Claude Code settings |
+| Authentication failed | Check Slack MCP server authentication tokens |
 | Invalid URL format | Display expected format with example |
-| JIRA MCP unavailable | "Unable to connect to JIRA MCP server. Verify MCP configuration." |
+| JIRA MCP unavailable | Verify JIRA MCP server is configured |
 | Empty thread | "Thread has no messages to export." |
 | Permission errors | Provide specific guidance on required permissions |
 

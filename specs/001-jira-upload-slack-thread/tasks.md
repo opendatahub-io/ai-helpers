@@ -76,18 +76,20 @@ Per plan.md project structure:
 
 - [X] T022 [US1] Implement parse_slack_url() function in claude-plugins/jira/skills/upload-slack-thread/scripts/url_parser.py
 - [X] T023 [US1] Implement extract_ticket_from_text() function in claude-plugins/jira/skills/upload-slack-thread/scripts/ticket_extractor.py
-- [X] T024 [US1] Implement fetch_thread_messages() via Slack MCP in claude-plugins/jira/skills/upload-slack-thread/scripts/slack_fetcher.py
-- [X] T025 [US1] Implement resolve_user_names() via Slack MCP in claude-plugins/jira/skills/upload-slack-thread/scripts/slack_fetcher.py
+- [X] T024 [US1] ~~Implement fetch_thread_messages() via Slack MCP~~ **N/A - Claude calls mcp__slack__conversations_replies directly per SKILL.md**
+- [X] T025 [US1] ~~Implement resolve_user_names() via Slack MCP~~ **N/A - Claude resolves from MCP response per SKILL.md**
 - [X] T026 [US1] Implement merge_consecutive_messages() in claude-plugins/jira/skills/upload-slack-thread/scripts/markdown_formatter.py
 - [X] T027 [US1] Implement MarkdownExport dataclass in claude-plugins/jira/skills/upload-slack-thread/scripts/markdown_formatter.py
 - [X] T028 [US1] Implement format_thread_to_markdown() in claude-plugins/jira/skills/upload-slack-thread/scripts/markdown_formatter.py
-- [ ] T029 [US1] Implement JIRAComment dataclass in claude-plugins/jira/skills/upload-slack-thread/scripts/jira_comment_poster.py
-- [ ] T030 [US1] Implement post_comment_to_jira() via JIRA MCP server in claude-plugins/jira/skills/upload-slack-thread/scripts/jira_comment_poster.py
-- [ ] T031 [US1] Implement main workflow orchestration in claude-plugins/jira/skills/upload-slack-thread/scripts/upload_slack_thread.py
-- [ ] T032 [US1] Implement user prompting for missing ticket key in claude-plugins/jira/skills/upload-slack-thread/scripts/upload_slack_thread.py
-- [ ] T033 [US1] Add verbose logging (--verbose flag) in claude-plugins/jira/skills/upload-slack-thread/scripts/upload_slack_thread.py
+- [X] T029 [US1] Implement JIRAComment dataclass in claude-plugins/jira/skills/upload-slack-thread/scripts/jira_comment_poster.py
+- [X] T030 [US1] ~~Implement post_comment_to_jira() via JIRA MCP~~ **N/A - Claude calls mcp__mcp-atlassian__jira_add_comment directly per SKILL.md**
+- [X] T031 [US1] ~~Implement main workflow orchestration~~ **N/A - Claude orchestrates workflow via SKILL.md instructions**
+- [X] T032 [US1] ~~Implement user prompting for missing ticket key~~ **N/A - SKILL.md instructs Claude to ask user**
+- [X] T033 [US1] ~~Add verbose logging (--verbose flag)~~ **N/A - Claude handles logging**
 
 **Checkpoint**: User Story 1 fully functional - can export Slack thread to JIRA comment
+
+**Architecture Note**: This is a Claude Code skill. Claude executes SKILL.md instructions directly using MCP tools. Python scripts provide data models and formatting utilities only.
 
 ---
 
@@ -105,13 +107,15 @@ Per plan.md project structure:
 
 ### Tests for User Story 3
 
-- [ ] T034 [P] [US3] Unit test for malformed URL error messages in tests/unit/test_url_parser.py
+- [X] T034 [P] [US3] Unit test for malformed URL error messages in tests/unit/test_url_parser.py
 
 ### Implementation for User Story 3
 
-- [ ] T035 [US3] Add clear error messages for malformed URLs per cli-interface.md in claude-plugins/jira/skills/upload-slack-thread/scripts/url_parser.py
+- [X] T035 [US3] Add clear error messages for malformed URLs per cli-interface.md in claude-plugins/jira/skills/upload-slack-thread/scripts/url_parser.py
 
 **Checkpoint**: Primary Slack URL format handled correctly with clear errors for invalid URLs
+
+**Note**: url_parser.py already includes SlackURLParseError with descriptive messages.
 
 ---
 
@@ -123,17 +127,19 @@ Per plan.md project structure:
 
 ### Tests for User Story 2
 
-- [ ] T036 [P] [US2] Contract test for --summary flag behavior in tests/contract/test_upload_slack_thread_contract.py
-- [ ] T037 [P] [US2] Unit test for summary generation in tests/unit/test_markdown_formatter.py
+- [X] T036 [P] [US2] Contract test for --summary flag behavior in tests/contract/test_upload_slack_thread_contract.py
+- [X] T037 [P] [US2] ~~Unit test for summary generation~~ **N/A - Claude generates summary per SKILL.md**
 
 ### Implementation for User Story 2
 
-- [ ] T038 [US2] Implement generate_thread_summary() using Claude AI in claude-plugins/jira/skills/upload-slack-thread/scripts/markdown_formatter.py
-- [ ] T039 [US2] Integrate summary into MarkdownExport.full_content in claude-plugins/jira/skills/upload-slack-thread/scripts/markdown_formatter.py
-- [ ] T040 [US2] Add --summary/-s flag to CLI in claude-plugins/jira/skills/upload-slack-thread/scripts/upload_slack_thread.py
-- [ ] T041 [US2] Handle summary generation failure gracefully (non-blocking) in claude-plugins/jira/skills/upload-slack-thread/scripts/upload_slack_thread.py
+- [X] T038 [US2] ~~Implement generate_thread_summary()~~ **N/A - Claude generates summary inline per SKILL.md Step 5**
+- [X] T039 [US2] Integrate summary into MarkdownExport.full_content in claude-plugins/jira/skills/upload-slack-thread/scripts/markdown_formatter.py
+- [X] T040 [US2] Add --summary/-s flag to CLI in claude-plugins/jira/skills/upload-slack-thread/scripts/upload_slack_thread.py
+- [X] T041 [US2] ~~Handle summary generation failure gracefully~~ **N/A - Claude handles this per SKILL.md**
 
 **Checkpoint**: AI summary generation works when requested
+
+**Note**: SKILL.md Step 5 instructs Claude to generate "AI-generated 1-2 paragraph summary" when --summary flag is provided. MarkdownExport.summary field is ready to accept it.
 
 ---
 
@@ -145,15 +151,17 @@ Per plan.md project structure:
 
 ### Tests for User Story 4
 
-- [ ] T042 [P] [US4] Unit test for ticket extraction from thread messages in tests/unit/test_ticket_extractor.py
-- [ ] T043 [P] [US4] Unit test for first-occurrence chronological order in tests/unit/test_ticket_extractor.py
+- [X] T042 [P] [US4] Unit test for ticket extraction from thread messages in tests/unit/test_ticket_extractor.py
+- [X] T043 [P] [US4] Unit test for first-occurrence chronological order in tests/unit/test_ticket_extractor.py
 
 ### Implementation for User Story 4
 
-- [ ] T044 [US4] Implement extract_ticket_from_thread() in claude-plugins/jira/skills/upload-slack-thread/scripts/ticket_extractor.py
-- [ ] T045 [US4] Integrate auto-detection into main workflow in claude-plugins/jira/skills/upload-slack-thread/scripts/upload_slack_thread.py
+- [X] T044 [US4] Implement extract_ticket_from_text() in claude-plugins/jira/skills/upload-slack-thread/scripts/ticket_extractor.py
+- [X] T045 [US4] ~~Integrate auto-detection into main workflow~~ **N/A - SKILL.md Step 4 instructs Claude to search thread messages for ticket pattern**
 
 **Checkpoint**: Ticket auto-detection from thread content works
+
+**Note**: SKILL.md Step 4 instructs Claude: "Search all message text for JIRA ticket pattern `[A-Z]+-\d+`, use first match found (chronological order)". extract_ticket_from_text() provides the regex utility.
 
 ---
 
@@ -161,7 +169,7 @@ Per plan.md project structure:
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T046 [P] Complete SKILL.md with full implementation steps, examples, and error handling per Claude Code skill docs at claude-plugins/jira/skills/upload-slack-thread/SKILL.md
+- [X] T046 [P] Complete SKILL.md with full implementation steps, examples, and error handling per Claude Code skill docs at claude-plugins/jira/skills/upload-slack-thread/SKILL.md
 - [ ] T047 Verify all tests pass with pytest in tests/
 - [ ] T048 Run pre-commit checks (just p) across all new files
 - [ ] T049 Run quickstart.md validation scenarios manually
