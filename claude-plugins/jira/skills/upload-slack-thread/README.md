@@ -27,12 +27,17 @@ flowchart TD
     B --> |Extract channel_id, thread_ts| C[Step 2: Fetch Thread via Slack MCP]
     C --> |mcp__slack__conversations_replies| D[Step 3: Resolve User Names]
     D --> E{Ticket key provided?}
-    E --> |Yes| F[Step 5: Format as Markdown]
+    E --> |Yes| F{Summary flags?}
     E --> |No| G[Step 4: Search thread for ticket pattern]
     G --> |Found| F
     G --> |Not found| H[Ask user for ticket key]
     H --> F
-    F --> |merge_consecutive_messages\nformat_slack_text| I[Step 6: Post to JIRA via MCP]
+    F --> |--summary-only| S1[Summary only]
+    F --> |--summary| S2[Summary + Transcript]
+    F --> |No flag| S3[Transcript only]
+    S1 --> I[Step 6: Post to JIRA via MCP]
+    S2 --> I
+    S3 --> I
     I --> |mcp__mcp-atlassian__jira_add_comment| J[Step 7: Confirm Success]
     J --> K[Done]
 
@@ -40,6 +45,9 @@ flowchart TD
     style C fill:#fff3e0
     style I fill:#fff3e0
     style K fill:#c8e6c9
+    style S1 fill:#fff9c4
+    style S2 fill:#fff9c4
+    style S3 fill:#fff9c4
 ```
 
 ## What This Does
