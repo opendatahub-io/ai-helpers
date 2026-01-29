@@ -10,26 +10,28 @@ This document consolidates research findings for implementing a skill that fetch
 
 ## Key Research Areas
 
-### 1. Slack MCP Server Integration
+### 1. Slack Thread Fetching via slackdump
 
-**Decision**: Use Slack MCP server tools for all Slack API interactions  
+**Decision**: Use slackdump CLI tool for all Slack thread fetching
 
-**Rationale**:  
-- MCP (Model Context Protocol) provides standardized interface for Claude Code to interact with Slack  
-- Server already handles authentication (SLACK_XOXC_TOKEN, SLACK_XOXD_TOKEN)  
-- Provides tools for reading messages, posting content, managing reactions  
-- Eliminates need for direct Slack SDK dependency  
-- Matches project requirement (FR-007) to use Slack MCP exclusively  
+**Rationale**:
+- slackdump provides robust Slack export functionality via CLI
+- Handles authentication via workspace configuration
+- Exports messages to JSON format for easy processing
+- Proven pattern used in vllm-slack-summary skill
+- Eliminates need for direct Slack SDK or MCP dependencies
 
-**Alternatives Considered**:  
-- **slack-sdk Python library**: Rejected because spec explicitly requires Slack MCP server usage (FR-007, Out of Scope: "Direct Slack SDK usage")  
-- **Direct Slack API HTTP calls**: Rejected due to added complexity in auth handling and rate limiting  
+**Alternatives Considered**:
+- **Slack MCP server**: Considered but slackdump provides more robust export
+- **slack-sdk Python library**: Rejected to avoid direct SDK dependencies
+- **Direct Slack API HTTP calls**: Rejected due to added complexity in auth handling
 
-**Implementation Notes**:  
-- Slack MCP server exposes tools via MCP protocol  
-- Tools include: `slack_list_channels`, `slack_post_message`, `slack_get_channel_history`, `slack_get_replies`  
-- Authentication tokens (XOXC, XOXD) must be configured in MCP server  
-- URL format: `https://workspace.slack.com/archives/CHANNEL_ID/pTIMESTAMP`  
+**Implementation Notes**:
+- slackdump CLI: <https://github.com/rusq/slackdump>
+- Auth: `slackdump workspace add`
+- Export thread: `slackdump -export-type mattermost -files=false -t "{channel_id}:{thread_ts}" -o /tmp/claude/slack_thread_export`
+- Parse exported JSON for messages and users.json for user resolution
+- URL format: `https://workspace.slack.com/archives/CHANNEL_ID/pTIMESTAMP`
 - Thread timestamp extraction: convert `p` format to decimal timestamp  
 
 ### 2. JIRA Comment Posting (vs Attachments)
@@ -176,8 +178,8 @@ sys.exit(1)
 |-----------|-----------|---------|---------------|
 | Language | Python | 3.13 | Project standard, constitution requirement |
 | Package Manager | UV | latest | Constitution mandate (Principle VI) |
-| Slack Integration | Slack MCP Server | latest | FR-007 requirement, MCP tools |
-| JIRA Integration | JIRA MCP Server | latest | MCP-only pattern, consistent with Slack |
+| Slack Integration | slackdump CLI | latest | Proven pattern from vllm-slack-summary |
+| JIRA Integration | JIRA MCP Server | latest | MCP tools for comment posting |
 | Testing | pytest | latest | Constitution requirement |
 | Type Checking | mypy | latest | Constitution requirement (strict mode) |
 | Linting | ruff | latest | Constitution requirement |
@@ -187,18 +189,18 @@ sys.exit(1)
 | Metric | Target | Strategy |
 |--------|--------|----------|
 | URL Parsing | <200ms | Regex compilation, no network calls |
-| Slack API Calls | <10s | MCP server handles connection pooling |
-| JIRA Comment Post | <5s | Single API call, reuse connection |
+| slackdump Export | <15s | CLI handles connection pooling |
+| JIRA Comment Post | <5s | Single MCP API call |
 | Total Workflow | <30s | Parallel where possible, fail fast |
 | Memory Usage | <100MB | Stream messages, don't load all in memory |
 
 ## Security Considerations
 
-1. **Token Storage**: Read from environment variables only (JIRA_API_TOKEN)  
-2. **Token Logging**: Never log or display token values (FR-020)  
-3. **Input Validation**: Sanitize URLs and ticket keys before API calls  
-4. **Error Messages**: Don't expose internal details in user-facing errors  
-5. **Slack MCP Auth**: Rely on MCP server's authentication handling  
+1. **Token Storage**: Read from environment variables only (JIRA_API_TOKEN)
+2. **Token Logging**: Never log or display token values (FR-020)
+3. **Input Validation**: Sanitize URLs and ticket keys before API calls
+4. **Error Messages**: Don't expose internal details in user-facing errors
+5. **slackdump Auth**: Rely on slackdump's workspace authentication handling  
 
 ## Open Questions (All Resolved)
 
@@ -206,11 +208,11 @@ All technical unknowns have been resolved through clarification session and rese
 
 ## Next Steps
 
-Proceed to Phase 1: Design & Contracts  
-- Create data-model.md (entities: SlackThread, ThreadMessage, MarkdownExport, JIRATicket)  
-- Generate CLI contract in contracts/cli-interface.md  
-- Create quickstart.md with usage examples  
-- Update agent context with Slack MCP patterns  
+Proceed to Phase 1: Design & Contracts
+- Create data-model.md (entities: SlackThread, ThreadMessage, MarkdownExport, JIRATicket)
+- Generate CLI contract in contracts/cli-interface.md
+- Create quickstart.md with usage examples
+- Update agent context with slackdump patterns  
 
 ### 8. JIRA MCP Server Integration
 

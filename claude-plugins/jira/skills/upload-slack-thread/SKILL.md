@@ -4,9 +4,9 @@ name: upload-slack-thread
 description: Export Slack thread conversations to JIRA tickets as formatted markdown comments
 ---
 
-## Name
+# jira:upload-slack-thread
 
-jira:upload-slack-thread
+Export a Slack thread conversation to a JIRA ticket as a formatted markdown comment.
 
 ## Synopsis
 
@@ -14,24 +14,21 @@ jira:upload-slack-thread
 /jira:upload-slack-thread <slack-thread-url> [ticket-key] [--summary]
 ```
 
-## Description
-
-Export a Slack thread conversation to a JIRA ticket as a formatted markdown comment. This skill fetches messages from a Slack thread using the Slack MCP server and posts them as a comment to a JIRA ticket using the JIRA MCP server.
-
 ## Parameters
 
 - `slack-thread-url`: Full Slack thread URL (required)
   - Format: `https://workspace.slack.com/archives/CHANNEL_ID/pTIMESTAMP`
 - `ticket-key`: JIRA ticket key (optional)
   - Format: `PROJECT-NUMBER` (e.g., `JN-1234`, `AIPCC-7354`)
-  - If not provided, will search thread messages for ticket references
+  - If not provided, search thread messages for ticket references
 - `--summary`: Include AI-generated summary before transcript (optional)
 
 ## Prerequisites
 
-- Slack MCP server must be configured and accessible
-- JIRA MCP server must be configured and accessible
-- Appropriate permissions to read Slack channels and comment on JIRA tickets
+- **slackdump** installed and authenticated
+  - Install: <https://github.com/rusq/slackdump>
+  - Auth: Run `slackdump workspace add`
+- JIRA MCP server configured (`mcp__mcp-atlassian__jira_*` tools available)
 
 ## Implementation
 
@@ -39,52 +36,51 @@ Export a Slack thread conversation to a JIRA ticket as a formatted markdown comm
 
 Extract components from the URL:
 
-- URL pattern: `https://<workspace>.slack.com/archives/<CHANNEL_ID>/p<TIMESTAMP>`
-- Extract `channel_id` (e.g., `C09Q8MD1V0Q`)
-- Convert timestamp: `p1769333522823869` → `1769333522.823869` (insert decimal before last 6 digits)
+1. URL pattern: `https://<workspace>.slack.com/archives/<CHANNEL_ID>/p<TIMESTAMP>`
+2. Extract `channel_id` (e.g., `C09Q8MD1V0Q`)
+3. Convert timestamp: `p1769333522823869` → `1769333522.823869` (insert decimal before last 6 digits)
 
 **Validation:**
-
 - URL must match pattern `https://[^/]+\.slack\.com/archives/[A-Z0-9]+/p\d+`
-- If invalid, display error: "Invalid Slack thread URL format. Expected: https://workspace.slack.com/archives/CHANNEL_ID/pTIMESTAMP"
+- If invalid: "Invalid Slack thread URL format. Expected: https://workspace.slack.com/archives/CHANNEL_ID/pTIMESTAMP"
 
-### Step 2: Fetch Thread Messages via Slack MCP
+### Step 2: Fetch Thread Messages via slackdump
 
-Use `slack_get_replies` to fetch all messages in the thread:
+Use slackdump CLI to export the thread:
 
-- Parameters: `channel_id`, `thread_ts` (the converted timestamp)
-- This returns all replies in the thread
+```bash
+slackdump -export-type mattermost -files=false \
+  -t "{channel_id}:{thread_ts}" \
+  -o /tmp/claude/slack_thread_export
+```
 
-**Handling:**
-
-- If thread has >50 messages, truncate to first 50 and warn user
-- Include the parent message (first message in thread)
-- Preserve chronological order
+**Message processing:**
+- Parse the exported JSON files in `/tmp/claude/slack_thread_export/`
+- Load `users.json` for user display name resolution
+- Extract `user`, `text`, `ts`, `files` from each message
+- If thread has >50 messages, truncate to first 50 and note in output
 
 ### Step 3: Resolve User Display Names
 
-For each unique `user_id` in the messages:
-
-- The Slack MCP server typically includes user info in message responses
-- If user info not available, use user_id as fallback display name
-- Cache resolved names to avoid duplicate lookups
+From the slackdump export:
+- Load `users.json` from export directory
+- Map `user_id` → `display_name` or `real_name`
+- If user not found, fallback to user_id
 
 ### Step 4: Determine JIRA Ticket Key
 
 If `ticket-key` argument provided:
-
 - Validate format matches `[A-Z]+-\d+`
 - If invalid, display error with expected format
 
 If `ticket-key` NOT provided:
-
 - Search all message text for JIRA ticket pattern `[A-Z]+-\d+`
-- Use first match found
-- If no match found, ask user: "No JIRA ticket found in thread. Which ticket should this be posted to? (e.g., JN-1234)"
+- Use first match found (chronological order)
+- If no match: ask user "No JIRA ticket found in thread. Which ticket should this be posted to? (e.g., JN-1234)"
 
 ### Step 5: Format Messages as Markdown
 
-Create markdown document with structure:
+Create markdown document:
 
 ```markdown
 # Slack Thread Export - {TICKET_KEY}
@@ -100,32 +96,36 @@ Create markdown document with structure:
 
 ## Full Thread Transcript
 
-### {USER_NAME} - {TIMESTAMP}
-
+**[{TIMESTAMP}] {USER_NAME}:**
 {MESSAGE_TEXT}
 
-### {USER_NAME} - {TIMESTAMP}
-
+**[{TIMESTAMP}] {USER_NAME}:**
 {MESSAGE_TEXT}
 ```
 
-**Message formatting:**
-
-- Convert Slack timestamps to human-readable format
+**Message formatting rules:**
+- Convert Slack timestamps to `YYYY-MM-DD HH:MM:SS` format
 - Merge consecutive messages from same user (combine with double newline)
-- Preserve code blocks and formatting
-- Note attachments: "[Attachment: filename.ext]"
+- Replace user mentions `<@U123>` with `**@username**`
+- Replace channel mentions `<#C123|name>` with `**#name**`
+- Clean URLs: remove `< >` wrapper, keep readable
+- Note file attachments: `📄 *File:* \`filename.ext\` (type)`
+- Note reactions: `*Reactions:* :emoji: (count)`
 
 ### Step 6: Post Comment to JIRA via JIRA MCP
 
-Use `jira_add_comment` to post the formatted markdown:
+Use the JIRA MCP server to post the comment:
 
-- Parameters: `issue_key` (the ticket key), `body` (the markdown content)
+```
+Tool: mcp__mcp-atlassian__jira_add_comment
+Parameters:
+  - issue_key: {TICKET_KEY}
+  - comment: {formatted_markdown_content}
+```
 
 **Error handling:**
-
-- If ticket not found: "Unable to access ticket {KEY}. Verify the ticket exists and you have permission."
-- If permission denied: "Permission denied. Ensure you have comment permission on {KEY}."
+- Ticket not found: "Unable to access ticket {KEY}. Verify it exists and you have permission."
+- Permission denied: "Permission denied. Ensure you have comment permission on {KEY}."
 
 ### Step 7: Confirm Success
 
@@ -133,42 +133,44 @@ Display success message:
 
 ```
 ✓ Successfully posted Slack thread to {TICKET_KEY}
-  View: {JIRA_PROJECT_URL}/browse/{TICKET_KEY}
+  View: https://jounce.atlassian.net/browse/{TICKET_KEY}
   Messages exported: {COUNT}
 ```
 
-If truncated, also show:
-
+If truncated:
 ```
   ⚠️ Thread truncated: showing {EXPORTED} of {TOTAL} messages
 ```
 
-## Error Handling
+## Troubleshooting
 
-- **Invalid URL format**: Display expected format with example
-- **Slack MCP unavailable**: "Unable to connect to Slack MCP server. Verify MCP configuration."
-- **JIRA MCP unavailable**: "Unable to connect to JIRA MCP server. Verify MCP configuration."
-- **Empty thread**: "Thread has no messages to export."
-- **Permission errors**: Provide specific guidance on required permissions
+| Issue | Solution |
+|-------|----------|
+| slackdump not found | Ensure slackdump is in PATH: `which slackdump` |
+| Authentication failed | Run `slackdump workspace add` |
+| Invalid URL format | Display expected format with example |
+| JIRA MCP unavailable | "Unable to connect to JIRA MCP server. Verify MCP configuration." |
+| Empty thread | "Thread has no messages to export." |
+| Permission errors | Provide specific guidance on required permissions |
 
 ## Examples
 
 ### Basic Usage
 
 ```
-User: /jira:upload-slack-thread https://redhat-internal.slack.com/archives/C09Q8MD1V0Q/p1769333522823869 JN-1234
+/jira:upload-slack-thread https://redhat-internal.slack.com/archives/C09Q8MD1V0Q/p1769333522823869 JN-1234
 ```
 
 ### Auto-detect Ticket
 
 ```
-User: /jira:upload-slack-thread https://redhat-internal.slack.com/archives/C09Q8MD1V0Q/p1769333522823869
-(Skill finds "JN-1234" mentioned in thread and uses it)
+/jira:upload-slack-thread https://redhat-internal.slack.com/archives/C09Q8MD1V0Q/p1769333522823869
 ```
+(Skill finds "JN-1234" mentioned in thread and uses it)
 
 ### With Summary
 
 ```
-User: /jira:upload-slack-thread https://redhat-internal.slack.com/archives/C09Q8MD1V0Q/p1769333522823869 JN-1234 --summary
-(Includes AI summary before full transcript)
+/jira:upload-slack-thread https://redhat-internal.slack.com/archives/C09Q8MD1V0Q/p1769333522823869 JN-1234 --summary
 ```
+(Includes AI summary before full transcript)
