@@ -139,6 +139,14 @@
         "allowed_tools": "Bash WebSearch WebFetch"
       },
       {
+        "name": "vllm-compare-reqs",
+        "description": "Compare vllm requirements files between versions",
+        "category": "vllm",
+        "file_path": "helpers/skills/vllm-compare-reqs/SKILL.md",
+        "id": "vllm-compare-reqs",
+        "allowed_tools": "Bash"
+      },
+      {
         "name": "vllm-slack-summary",
         "description": "Generate slack summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team",
         "category": "vllm",
