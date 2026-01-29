@@ -21,7 +21,7 @@ Note: This is NOT a standalone script. Claude executes the skill by:
 from dataclasses import dataclass
 
 
-# Exit codes per specs/001-jira-upload-slack-thread/contracts/cli-interface.md
+# Exit codes for error handling
 EXIT_SUCCESS = 0
 EXIT_INVALID_ARGS = 1
 EXIT_SLACK_ERROR = 2

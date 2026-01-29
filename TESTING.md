@@ -49,59 +49,6 @@ uv run claude-plugins/jira/skills/upload-slack-thread/scripts/upload_slack_threa
   --verbose
 ```
 
-## Testing Levels
-
-### 1. Quick Validation Tests (No MCP Required)
-
-Test core parsing functionality:
-
-```bash
-python3 test_quick.py
-```
-
-This validates:
-- ✓ URL parsing and timestamp conversion
-- ✓ Ticket key extraction from text
-- ✓ Input validation and error handling
-
-### 2. Unit Tests (Mocked MCP)
-
-Run unit tests with mocked MCP interactions:
-
-```bash
-pytest tests/unit/ -v
-```
-
-**Note:** Most unit tests are currently marked as `pytest.skip()` pending full implementation.
-
-### 3. Contract Tests
-
-Test CLI interface compliance:
-
-```bash
-pytest tests/contract/test_upload_slack_thread_contract.py -v
-```
-
-These verify:
-- ✓ Argument parsing
-- ✓ Exit codes
-- ✓ Help output
-- ✓ Error message formatting
-
-### 4. Integration Tests (Requires Live MCP Servers)
-
-Integration tests require configured Slack and JIRA MCP servers:
-
-```bash
-# Skip by default - requires live servers
-pytest tests/integration/ -v --run-integration
-```
-
-**Note:** Integration tests are skipped by default. To enable:
-1. Ensure MCP servers are running
-2. Set environment variables
-3. Update test decorators to enable
-
 ## Manual Testing Scenarios
 
 ### Scenario 1: Basic Upload
@@ -253,6 +200,5 @@ print(f"Found: {ticket.raw_key}")
 
 ## Support
 
-- **Documentation**: See `SKILL.md` and `quickstart.md` in `specs/001-jira-upload-slack-thread/`
-- **Tests**: Run `pytest tests/ -v` to see test coverage
+- **Documentation**: See `SKILL.md` in `claude-plugins/jira/skills/upload-slack-thread/`
 - **Issues**: Check implementation notes in source files for TODOs
