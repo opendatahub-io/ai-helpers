@@ -7,7 +7,7 @@ for upload to JIRA. Inspired by vllm-slack-summary formatting patterns.
 """
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from typing import Any
 
@@ -145,21 +145,26 @@ def merge_consecutive_messages(messages: list[ThreadMessage]) -> list[ThreadMess
     """
     Merge consecutive messages from the same user.
 
+    This function creates new ThreadMessage objects rather than modifying the originals,
+    preventing unintended side effects if the original message list is reused.
+
     Args:
         messages: List of thread messages in chronological order
 
     Returns:
-        List with consecutive same-user messages merged
+        List with consecutive same-user messages merged (new objects)
     """
     if not messages:
         return []
 
-    merged = [messages[0]]
+    # Create a copy of the first message to avoid mutation
+    merged = [replace(messages[0])]
     for msg in messages[1:]:
         if msg.user_id == merged[-1].user_id:
-            merged[-1].text += f"\n\n{msg.text}"
+            # Create a new message with merged text instead of mutating
+            merged[-1] = replace(merged[-1], text=merged[-1].text + f"\n\n{msg.text}")
         else:
-            merged.append(msg)
+            merged.append(replace(msg))
 
     return merged
 

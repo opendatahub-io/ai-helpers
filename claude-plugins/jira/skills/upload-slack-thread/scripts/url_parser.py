@@ -86,10 +86,12 @@ def parse_slack_url(url: str) -> SlackThreadURL:
 
     # Convert p format timestamp to decimal format
     # p1769333522823869 -> 1769333522.823869
-    if len(timestamp_str) < 10:
+    # Slack timestamps are typically 16-17 digits (10 for unix timestamp + 6 for microseconds)
+    # Minimum viable: 7 digits (1 second + 6 microseconds)
+    if len(timestamp_str) < 7:
         raise InvalidURLError(
             f"Invalid timestamp format: p{timestamp_str}\n"
-            f"Timestamp too short"
+            f"Timestamp must be at least 7 digits (unix_timestamp + 6-digit microseconds)"
         )
 
     # Insert decimal point before last 6 digits
