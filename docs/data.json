@@ -147,7 +147,7 @@
           {
             "name": "upload-slack-thread",
             "id": "upload-slack-thread",
-            "description": "Export Slack thread conversations to JIRA tickets as formatted markdown comments.",
+            "description": "Export Slack thread conversations to JIRA tickets as formatted markdown comments",
             "file_path": "claude-plugins/jira/skills/upload-slack-thread/SKILL.md"
           }
         ],

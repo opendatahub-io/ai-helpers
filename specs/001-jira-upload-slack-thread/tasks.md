@@ -141,6 +141,16 @@ Per plan.md project structure:
 
 **Note**: SKILL.md Step 5 instructs Claude to generate "AI-generated 1-2 paragraph summary" when --summary flag is provided. MarkdownExport.summary field is ready to accept it.
 
+### Implementation for User Story 2a (--summary-only flag)
+
+- [X] T050 [P] [US2] Add --summary-only parameter documentation to SKILL.md synopsis and parameters
+- [X] T051 [P] [US2] Update Step 5 formatting logic in SKILL.md for --summary-only output format
+- [X] T052 [P] [US2] Update skill README.md with --summary-only usage example
+- [X] T053 [P] [US2] Update claude-plugins/jira/README.md with --summary-only parameter
+- [X] T054 [P] [US2] Update spec.md with --summary-only acceptance scenarios (US2 scenarios 4-5) and FR-012a
+
+**Checkpoint**: --summary-only flag documented and ready for use
+
 ---
 
 ## Phase 6: User Story 4 - Search Conversation Context for JIRA Ticket (Priority: P3)
@@ -257,9 +267,10 @@ Task: "Unit test for JIRA comment poster in tests/unit/test_jira_comment_poster.
 | Phase 3 | User Story 1 (P1) - Core Export | 21 |
 | Phase 4 | User Story 3 (P1) - Primary URL Format | 2 |
 | Phase 5 | User Story 2 (P2) - AI Summary | 6 |
+| Phase 5a | User Story 2a - --summary-only flag | 5 |
 | Phase 6 | User Story 4 (P3) - Auto-Detection | 4 |
 | Phase 7 | Polish | 4 |
-| **Total** | | **49** |
+| **Total** | | **54** |
 
 ---
 

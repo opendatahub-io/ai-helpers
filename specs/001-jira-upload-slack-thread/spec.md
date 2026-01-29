@@ -42,13 +42,14 @@ A team member wants to quickly understand the key points of a lengthy Slack disc
 
 **Independent Test**: Can be tested by providing a multi-message Slack thread and verifying the generated markdown includes a concise summary section at the top that captures main topics, decisions, and action items.  
 
-**Acceptance Scenarios**:  
-1. **Given** a Slack thread with 10+ messages AND user enables summary flag, **When** the export completes, **Then** the markdown includes a summary section with 1-2 paragraphs covering main topics, key decisions, and participants  
-2. **Given** a thread mentioning specific action items AND user enables summary flag, **When** the summary is generated, **Then** those action items are highlighted in the summary  
-3. **Given** a Slack thread export WITHOUT summary flag enabled, **When** the export completes, **Then** the markdown contains only the full transcript without an AI-generated summary section  
-2. **Given** a thread mentioning specific action items, **When** the summary is generated, **Then** those action items are highlighted in the summary  
+**Acceptance Scenarios**:
+1. **Given** a Slack thread with 10+ messages AND user enables summary flag, **When** the export completes, **Then** the markdown includes a summary section with 1-2 paragraphs covering main topics, key decisions, and participants
+2. **Given** a thread mentioning specific action items AND user enables summary flag, **When** the summary is generated, **Then** those action items are highlighted in the summary
+3. **Given** a Slack thread export WITHOUT summary flag enabled, **When** the export completes, **Then** the markdown contains only the full transcript without an AI-generated summary section
+4. **Given** a Slack thread AND user enables `--summary-only` flag, **When** the export completes, **Then** the markdown includes ONLY the summary section without the full transcript
+5. **Given** both `--summary` and `--summary-only` flags, **When** the export runs, **Then** `--summary-only` takes precedence (summary only, no transcript)
 
----  
+---
 
 ### User Story 3 - Handle Primary Slack Thread Format (Priority: P1)
 
@@ -115,7 +116,8 @@ When a user doesn't provide a JIRA ticket key, the system searches the current c
 - **FR-009a**: System MUST limit thread export to maximum 50 messages; if thread exceeds 50 messages, truncate and include warning message in markdown output indicating truncation and total message count  
 - **FR-010**: System MUST resolve Slack user IDs to display names for all message authors  
 - **FR-011**: System MUST format thread content as markdown with structure: header (metadata), optional AI summary (if enabled), full transcript with user names and timestamps  
-- **FR-012**: System MUST accept an optional summary flag/parameter to enable AI-generated summary (default: disabled)  
+- **FR-012**: System MUST accept an optional summary flag/parameter to enable AI-generated summary (default: disabled)
+- **FR-012a**: System MUST accept an optional `--summary-only` flag to enable AI-generated summary without full transcript; when both `--summary` and `--summary-only` are provided, `--summary-only` takes precedence
 - **FR-013**: System MUST generate AI summary when summary flag is enabled, including main topics, key decisions, action items, and participants (1-2 paragraphs maximum)  
 - **FR-014**: System MUST save formatted markdown to temporary file named `slack-thread-{ticket-key}-{timestamp}.md` in `/tmp/claude/` directory  
 - **FR-015**: System MUST post markdown content as a comment to the specified JIRA ticket  

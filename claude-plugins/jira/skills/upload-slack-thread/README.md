@@ -87,13 +87,27 @@ upload-slack-thread/
 /jira:upload-slack-thread https://myworkspace.slack.com/archives/C09Q8MD1V0Q/p1769333522823869 JN-1234 --summary
 ```
 
+### Summary Only (no transcript)
+
+```
+/jira:upload-slack-thread https://myworkspace.slack.com/archives/C09Q8MD1V0Q/p1769333522823869 JN-1234 --summary-only
+```
+(Posts only the AI-generated summary, without the full thread transcript)
+
 ## Output
 
-The skill creates a JIRA comment with:
+The skill creates a JIRA comment with content based on flags:
 
+| Flag | Output Content |
+|------|---------------|
+| (none) | Header + Full transcript |
+| `--summary` | Header + Summary + Full transcript |
+| `--summary-only` | Header + Summary only |
+
+Components:
 - **Header**: Export timestamp, Slack URL, channel name, message count
-- **Summary** (optional): AI-generated summary of main topics
-- **Transcript**: Full thread messages with timestamps and usernames
+- **Summary** (with `--summary` or `--summary-only`): AI-generated summary of main topics
+- **Transcript** (without `--summary-only`): Full thread messages with timestamps and usernames
 
 ## Troubleshooting
 

@@ -1,8 +1,9 @@
-# Edited by Claude Code
 ---
 name: upload-slack-thread
 description: Export Slack thread conversations to JIRA tickets as formatted markdown comments
 ---
+
+<!-- Edited by Claude Code -->
 
 # jira:upload-slack-thread
 
@@ -11,7 +12,7 @@ Export a Slack thread conversation to a JIRA ticket as a formatted markdown comm
 ## Synopsis
 
 ```
-/jira:upload-slack-thread <slack-thread-url> [ticket-key] [--summary]
+/jira:upload-slack-thread <slack-thread-url> [ticket-key] [--summary] [--summary-only]
 ```
 
 ## Parameters
@@ -22,6 +23,8 @@ Export a Slack thread conversation to a JIRA ticket as a formatted markdown comm
   - Format: `PROJECT-NUMBER` (e.g., `JN-1234`, `AIPCC-7354`)
   - If not provided, search thread messages for ticket references
 - `--summary`: Include AI-generated summary before transcript (optional)
+- `--summary-only`: Post only AI-generated summary without transcript (optional)
+  - If both `--summary` and `--summary-only` are provided, `--summary-only` takes precedence
 
 ## Prerequisites
 
@@ -78,7 +81,32 @@ If `ticket-key` NOT provided:
 
 ### Step 5: Format Messages as Markdown
 
-Create markdown document:
+Create markdown document based on flags:
+
+**Flag behavior:**
+- No flags: Full transcript only
+- `--summary`: Summary + Full transcript
+- `--summary-only`: Summary only (no transcript)
+
+#### Format with `--summary-only`:
+
+```markdown
+# Slack Thread Export - {TICKET_KEY}
+
+**Exported**: {ISO_TIMESTAMP}
+**Slack Thread**: {ORIGINAL_URL}
+**Channel**: #{CHANNEL_NAME}
+**Messages**: {COUNT} (summary only)
+
+## Summary
+
+{AI-generated 1-2 paragraph summary of main topics, decisions, action items}
+
+---
+*Full thread transcript available at original Slack link above.*
+```
+
+#### Format with `--summary` (or no flag for transcript only):
 
 ```markdown
 # Slack Thread Export - {TICKET_KEY}
@@ -172,3 +200,10 @@ If truncated:
 /jira:upload-slack-thread https://redhat-internal.slack.com/archives/C09Q8MD1V0Q/p1769333522823869 JN-1234 --summary
 ```
 (Includes AI summary before full transcript)
+
+### Summary Only (no transcript)
+
+```
+/jira:upload-slack-thread https://redhat-internal.slack.com/archives/C09Q8MD1V0Q/p1769333522823869 JN-1234 --summary-only
+```
+(Posts only the AI-generated summary, without the full thread transcript)
