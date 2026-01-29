@@ -17,15 +17,25 @@ from slack_fetcher import AttachmentMetadata, SlackThread, ThreadMessage
 logger = logging.getLogger(__name__)
 
 # Edited by Claude Code
-# Pre-compiled regex patterns for performance
-_CODE_BLOCK_START = re.compile(r"(?<!\n)(```)")
-_CODE_BLOCK_END = re.compile(r"(```[^`]*```)(?!\n)")
-_USER_MENTION = re.compile(r"<@([A-Z0-9]+)>")
-_CHANNEL_MENTION = re.compile(r"<#[A-Z0-9]+\|([^>]+)>")
-_URL_WRAPPER = re.compile(r"<(https?://[^|>]+)(?:\|[^>]+)?>")
-_SLACK_BOLD = re.compile(r"(?<!\*)\*(?!\*)([^\*]+)\*(?!\*)")
-_SLACK_ITALIC = re.compile(r"(?<!_)_(?!_)([^_]+)_(?!_)")
-_SLACK_STRIKETHROUGH = re.compile(r"~([^~]+)~")
+# Pre-compiled regex patterns for performance optimization
+# These patterns handle Slack-specific markup conversion to markdown
+
+# Ensure code blocks have newlines around them for proper markdown rendering
+_CODE_BLOCK_START = re.compile(r"(?<!\n)(```)")  # Add newline before ``` if missing
+_CODE_BLOCK_END = re.compile(r"(```[^`]*```)(?!\n)")  # Add newline after ``` if missing
+
+# Convert Slack mentions to markdown bold
+_USER_MENTION = re.compile(r"<@([A-Z0-9]+)>")  # <@U123456> → user_id for lookup
+_CHANNEL_MENTION = re.compile(r"<#[A-Z0-9]+\|([^>]+)>")  # <#C123|channel-name> → **#channel-name**
+
+# Remove Slack's URL wrapper syntax, keeping just the URL
+_URL_WRAPPER = re.compile(r"<(https?://[^|>]+)(?:\|[^>]+)?>")  # <url|text> or <url> → url
+
+# Convert Slack formatting to markdown equivalents
+# Negative lookbehind/ahead ensure we don't match already-converted markdown
+_SLACK_BOLD = re.compile(r"(?<!\*)\*(?!\*)([^\*]+)\*(?!\*)")  # *text* → **text** (avoid ****)
+_SLACK_ITALIC = re.compile(r"(?<!_)_(?!_)([^_]+)_(?!_)")  # _text_ → *text* (avoid __)
+_SLACK_STRIKETHROUGH = re.compile(r"~([^~]+)~")  # ~text~ → ~~text~~
 
 
 @dataclass
@@ -197,7 +207,15 @@ def merge_consecutive_messages(messages: list[ThreadMessage]) -> list[ThreadMess
 
 
 def format_timestamp(ts: str) -> str:
-    """Convert Slack timestamp to human-readable format."""
+    """
+    Convert Slack timestamp to human-readable format.
+
+    Args:
+        ts: Slack timestamp in decimal format (e.g., "1769333522.823869")
+
+    Returns:
+        Formatted timestamp string in UTC (e.g., "2026-01-27 14:32:02")
+    """
     ts_parts = ts.split('.')
     dt = datetime.fromtimestamp(int(ts_parts[0]), tz=timezone.utc)
     return dt.strftime("%Y-%m-%d %H:%M:%S")

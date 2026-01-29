@@ -60,7 +60,8 @@ def extract_ticket_from_text(text: str) -> JIRATicketKey | None:
         >>> extract_ticket_from_text("No ticket here")
         None
     """
-    # Pattern: [A-Z]+-\d+
+    # Pattern: [A-Z]+-\d+ (e.g., JN-1234, PROJ-567)
+    # Matches JIRA ticket format: uppercase letters, hyphen, numbers
     pattern = r'[A-Z]+-\d+'
     match = re.search(pattern, text)
 

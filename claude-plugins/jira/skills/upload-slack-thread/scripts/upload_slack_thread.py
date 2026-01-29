@@ -21,7 +21,7 @@ Note: This is NOT a standalone script. Claude executes the skill by:
 from dataclasses import dataclass
 
 
-# Exit codes per cli-interface.md
+# Exit codes per specs/001-jira-upload-slack-thread/contracts/cli-interface.md
 EXIT_SUCCESS = 0
 EXIT_INVALID_ARGS = 1
 EXIT_SLACK_ERROR = 2
@@ -38,12 +38,17 @@ class SkillArguments:
     Attributes:
         slack_thread_url: Full Slack thread URL
         ticket_key: JIRA ticket key (optional, auto-detected if not provided)
-        summary: Whether to include AI-generated summary
+        summary: Whether to include AI-generated summary before transcript
+        summary_only: Whether to post only summary without transcript
         verbose: Whether to enable verbose logging
+
+    Note:
+        If both summary and summary_only are True, summary_only takes precedence.
     """
     slack_thread_url: str
     ticket_key: str | None = None
     summary: bool = False
+    summary_only: bool = False
     verbose: bool = False
 
 
@@ -51,21 +56,40 @@ def parse_skill_arguments(args_str: str) -> SkillArguments:
     """
     Parse skill arguments from string.
 
+    Supported formats:
+        /jira:upload-slack-thread <url> [ticket-key] [--summary] [--summary-only] [--verbose]
+
     Args:
         args_str: Raw arguments string from skill invocation
 
     Returns:
         SkillArguments with parsed values
 
-    Example:
+    Raises:
+        ValueError: If arguments are invalid or unknown flags are provided
+
+    Examples:
+        >>> # With summary flag
         >>> args = parse_skill_arguments(
         ...     "https://workspace.slack.com/archives/C123/p456 JN-1234 --summary"
         ... )
-        >>> args.slack_thread_url
-        'https://workspace.slack.com/archives/C123/p456'
-        >>> args.ticket_key
-        'JN-1234'
         >>> args.summary
+        True
+        >>> args.summary_only
+        False
+
+        >>> # With summary-only flag (takes precedence over --summary)
+        >>> args = parse_skill_arguments(
+        ...     "https://workspace.slack.com/archives/C123/p456 --summary-only"
+        ... )
+        >>> args.summary_only
+        True
+
+        >>> # Auto-detect ticket key (no ticket_key provided)
+        >>> args = parse_skill_arguments(
+        ...     "https://workspace.slack.com/archives/C123/p456 --verbose"
+        ... )
+        >>> args.ticket_key is None
         True
     """
     parts = args_str.split()
@@ -75,10 +99,13 @@ def parse_skill_arguments(args_str: str) -> SkillArguments:
     url = parts[0]
     ticket_key = None
     summary = False
+    summary_only = False
     verbose = False
 
     for i, part in enumerate(parts[1:], 1):
-        if part in ("--summary", "-s"):
+        if part == "--summary-only":
+            summary_only = True
+        elif part in ("--summary", "-s"):
             summary = True
         elif part in ("--verbose", "-v"):
             verbose = True
@@ -86,7 +113,7 @@ def parse_skill_arguments(args_str: str) -> SkillArguments:
             # Unknown flag - raise error for better user experience
             raise ValueError(
                 f"Unknown flag: {part}\n"
-                f"Valid flags: --summary (-s), --verbose (-v)"
+                f"Valid flags: --summary (-s), --summary-only, --verbose (-v)"
             )
         elif ticket_key is None:
             ticket_key = part
@@ -101,5 +128,6 @@ def parse_skill_arguments(args_str: str) -> SkillArguments:
         slack_thread_url=url,
         ticket_key=ticket_key,
         summary=summary,
+        summary_only=summary_only,
         verbose=verbose
     )

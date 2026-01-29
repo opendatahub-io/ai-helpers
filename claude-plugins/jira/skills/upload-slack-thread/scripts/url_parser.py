@@ -9,6 +9,11 @@ extracting channel IDs and timestamps.
 import re
 from dataclasses import dataclass
 
+# Slack timestamp format constants
+# Slack uses Unix timestamps with microsecond precision
+SLACK_TIMESTAMP_MICROSECOND_DIGITS = 6  # Last 6 digits are microseconds
+SLACK_TIMESTAMP_MIN_LENGTH = 7  # Minimum: 1 digit seconds + 6 digits microseconds
+
 
 class InvalidURLError(ValueError):
     """Raised when a Slack thread URL is invalid."""
@@ -87,15 +92,16 @@ def parse_slack_url(url: str) -> SlackThreadURL:
     # Convert p format timestamp to decimal format
     # p1769333522823869 -> 1769333522.823869
     # Slack timestamps are typically 16-17 digits (10 for unix timestamp + 6 for microseconds)
-    # Minimum viable: 7 digits (1 second + 6 microseconds)
-    if len(timestamp_str) < 7:
+    if len(timestamp_str) < SLACK_TIMESTAMP_MIN_LENGTH:
         raise InvalidURLError(
             f"Invalid timestamp format: p{timestamp_str}\n"
-            f"Timestamp must be at least 7 digits (unix_timestamp + 6-digit microseconds)"
+            f"Timestamp must be at least {SLACK_TIMESTAMP_MIN_LENGTH} digits "
+            f"(unix_timestamp + {SLACK_TIMESTAMP_MICROSECOND_DIGITS}-digit microseconds)"
         )
 
-    # Insert decimal point before last 6 digits
-    thread_ts = f"{timestamp_str[:-6]}.{timestamp_str[-6:]}"
+    # Insert decimal point before last 6 digits (microseconds)
+    microsec_offset = SLACK_TIMESTAMP_MICROSECOND_DIGITS
+    thread_ts = f"{timestamp_str[:-microsec_offset]}.{timestamp_str[-microsec_offset:]}"
 
     return SlackThreadURL(
         raw_url=url,
