@@ -82,8 +82,20 @@ def parse_skill_arguments(args_str: str) -> SkillArguments:
             summary = True
         elif part in ("--verbose", "-v"):
             verbose = True
-        elif not part.startswith("-") and ticket_key is None:
+        elif part.startswith("-"):
+            # Unknown flag - raise error for better user experience
+            raise ValueError(
+                f"Unknown flag: {part}\n"
+                f"Valid flags: --summary (-s), --verbose (-v)"
+            )
+        elif ticket_key is None:
             ticket_key = part
+        else:
+            # Multiple non-flag arguments
+            raise ValueError(
+                f"Unexpected argument: {part}\n"
+                f"Expected: <slack-url> [ticket-key] [flags]"
+            )
 
     return SkillArguments(
         slack_thread_url=url,

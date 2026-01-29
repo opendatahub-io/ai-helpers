@@ -6,7 +6,14 @@ This module provides data models for Slack thread messages.
 Actual fetching is handled by Claude using the Slack MCP server tools.
 """
 
+import logging
 from dataclasses import dataclass
+
+logger = logging.getLogger(__name__)
+
+# Maximum number of messages to include in a thread export
+# Threads longer than this will be truncated with a warning
+MAX_THREAD_MESSAGES = 50
 
 
 class EmptyThreadError(ValueError):
@@ -68,6 +75,10 @@ class ThreadMessage:
 
         # Default user_name to user_id if resolution failed
         if not self.user_name:
+            logger.warning(
+                f"Could not resolve user_id {self.user_id} to display name. "
+                f"Using user_id as fallback. This may indicate insufficient Slack permissions."
+            )
             self.user_name = self.user_id
 
         # Ensure attachments is a list
@@ -109,6 +120,16 @@ class SlackThread:
                 f"included messages ({len(self.messages)})"
             )
 
-        # Validate truncation logic
-        if self.is_truncated and len(self.messages) > 50:
-            raise ValueError("Truncated threads should have at most 50 messages")
+        # Validate message count limits
+        if len(self.messages) > MAX_THREAD_MESSAGES:
+            raise ValueError(
+                f"Message list cannot exceed {MAX_THREAD_MESSAGES} items "
+                f"(got {len(self.messages)})"
+            )
+
+        # Validate truncation consistency
+        if self.is_truncated and self.total_message_count <= len(self.messages):
+            raise ValueError(
+                f"Truncated threads must have total_message_count > included messages "
+                f"(got total={self.total_message_count}, included={len(self.messages)})"
+            )

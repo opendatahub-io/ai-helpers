@@ -6,12 +6,26 @@ This module handles formatting Slack thread messages as markdown
 for upload to JIRA. Inspired by vllm-slack-summary formatting patterns.
 """
 
+import logging
 import re
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from typing import Any
 
-from slack_fetcher import SlackThread, ThreadMessage
+from slack_fetcher import AttachmentMetadata, SlackThread, ThreadMessage
+
+logger = logging.getLogger(__name__)
+
+# Edited by Claude Code
+# Pre-compiled regex patterns for performance
+_CODE_BLOCK_START = re.compile(r"(?<!\n)(```)")
+_CODE_BLOCK_END = re.compile(r"(```[^`]*```)(?!\n)")
+_USER_MENTION = re.compile(r"<@([A-Z0-9]+)>")
+_CHANNEL_MENTION = re.compile(r"<#[A-Z0-9]+\|([^>]+)>")
+_URL_WRAPPER = re.compile(r"<(https?://[^|>]+)(?:\|[^>]+)?>")
+_SLACK_BOLD = re.compile(r"(?<!\*)\*(?!\*)([^\*]+)\*(?!\*)")
+_SLACK_ITALIC = re.compile(r"(?<!_)_(?!_)([^_]+)_(?!_)")
+_SLACK_STRIKETHROUGH = re.compile(r"~([^~]+)~")
 
 
 @dataclass
@@ -98,8 +112,8 @@ def format_slack_text(
     user_lookup = user_lookup or {}
 
     # Ensure code blocks have newlines around them
-    text = re.sub(r"(?<!\n)(```)", r"\n\1", text)
-    text = re.sub(r"(```[^`]*```)(?!\n)", r"\1\n", text)
+    text = _CODE_BLOCK_START.sub(r"\n\1", text)
+    text = _CODE_BLOCK_END.sub(r"\1\n", text)
 
     # Replace user mentions <@U123456> with **@username**
     def replace_mention(match: re.Match[str]) -> str:
@@ -107,36 +121,49 @@ def format_slack_text(
         user_name = user_lookup.get(user_id, user_id)
         return f"**@{user_name}**"
 
-    text = re.sub(r"<@([A-Z0-9]+)>", replace_mention, text)
+    text = _USER_MENTION.sub(replace_mention, text)
 
     # Replace channel mentions <#C123456|channel-name> with **#channel-name**
-    text = re.sub(r"<#[A-Z0-9]+\|([^>]+)>", r"**#\1**", text)
+    text = _CHANNEL_MENTION.sub(r"**#\1**", text)
 
     # Clean up URLs - keep them but remove the < > wrapper
-    text = re.sub(r"<(https?://[^|>]+)(?:\|[^>]+)?>", r"\1", text)
+    text = _URL_WRAPPER.sub(r"\1", text)
 
     # Convert Slack's bold *text* to markdown **text**
-    text = re.sub(r"(?<!\*)\*(?!\*)([^\*]+)\*(?!\*)", r"**\1**", text)
+    text = _SLACK_BOLD.sub(r"**\1**", text)
 
     # Convert Slack's italic _text_ to markdown *text*
-    text = re.sub(r"(?<!_)_(?!_)([^_]+)_(?!_)", r"*\1*", text)
+    text = _SLACK_ITALIC.sub(r"*\1*", text)
 
     # Convert Slack's strikethrough ~text~ to markdown ~~text~~
-    text = re.sub(r"~([^~]+)~", r"~~\1~~", text)
+    text = _SLACK_STRIKETHROUGH.sub(r"~~\1~~", text)
 
     return text
 
 
-def format_attachments(attachments: list[Any] | None) -> str:
-    """Format Slack attachments as markdown notes."""
+def format_attachments(attachments: list[AttachmentMetadata] | None) -> str:
+    """
+    Format Slack attachments as markdown notes.
+
+    Args:
+        attachments: List of attachment metadata objects
+
+    Returns:
+        Formatted markdown string representing file attachments
+    """
     if not attachments:
         return ""
 
     lines = []
     for att in attachments:
-        filename = getattr(att, 'filename', None) or 'unnamed'
-        filetype = getattr(att, 'filetype', None) or 'file'
-        lines.append(f"📄 *File:* `{filename}` ({filetype})")
+        try:
+            filename = att.filename or 'unnamed'
+            filetype = att.filetype or 'file'
+            lines.append(f"📄 *File:* `{filename}` ({filetype})")
+        except AttributeError as e:
+            logger.warning(f"Malformed attachment metadata: {att}. Error: {e}")
+            # Fallback to generic file indicator
+            lines.append("📄 *File:* `unnamed` (unknown)")
 
     return "\n".join(lines)
 
