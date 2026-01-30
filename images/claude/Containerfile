@@ -64,8 +64,11 @@ USER claude
 # Install Claude Code CLI as the claude user
 RUN curl -fsSL https://claude.ai/install.sh | bash
 
-# Add Claude Code to PATH
-ENV PATH="/home/claude/.local/bin:${PATH}"
+# Copy Claude Code binary to system location and make it available system-wide
+USER root
+RUN cp /home/claude/.local/bin/claude /usr/bin/claude && \
+    chmod +x /usr/bin/claude
+USER claude
 
 # Set Claude Code as the default command
 ENTRYPOINT ["claude"]
