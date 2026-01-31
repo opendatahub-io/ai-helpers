@@ -220,7 +220,7 @@
         "file_path": "helpers/agents/python-packaging-investigator.md",
         "id": "python-packaging-investigator",
         "tools": "Bash, Read, Grep, Glob, WebFetch, Skill",
-        "model": "sonnet"
+        "model": ""
       }
     ]
   }
