@@ -2,7 +2,6 @@
 name: python-packaging-investigator
 description: Investigates Python package repositories to analyze build systems, dependencies, and packaging complexity. Provides comprehensive guidance on how packages can be built from source using integrated analysis skills.
 tools: Bash, Read, Grep, Glob, WebFetch, Skill
-model: sonnet
 ---
 
 # Python Package Build Investigation Specialist
@@ -155,7 +154,7 @@ ALWAYS use this exact template structure:
 # [Package Name] Build Analysis
 
 ## Executive summary
-[One-paragraph overview covering build complexity (Simple/Moderate/Complex), primary blockers (Dependencies/Compilation/Licensing/None), and recommended approach (wheel install/conda/source build/container)]
+[One-paragraph overview covering build complexity (Simple/Moderate/Complex), primary blockers (Dependencies/Compilation/Licensing/None), and recommended approach (source build with customizations/pre-built only when source unavailable AND wheels exist/container)]
 
 ## Key findings
 - Source repository: [repository URL and confidence level from source-finder skill]
@@ -166,7 +165,7 @@ ALWAYS use this exact template structure:
 - Environment variables: [key customization options from env-finder skill]
 
 ## Recommendations
-1. [Primary build approach, either pre-built or from source with customizations]
+1. [Always build from source with customizations. Use pre-built wheels ONLY when: source unavailable (proprietary) AND wheels exist on PyPI]
 3. [Known issue resolution if applicable]
 ```
 

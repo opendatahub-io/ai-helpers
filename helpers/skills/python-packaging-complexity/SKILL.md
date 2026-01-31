@@ -87,14 +87,14 @@ Based on the analysis, provide specific guidance:
 
 ### For High Complexity Packages
 - "This package requires significant compilation infrastructure"
-- "Consider using pre-built wheels when available"
+- "Building from source with customizations is recommended"
 - "Building from source will need: [specific tools]"
-- "Estimated build time: [timeframe]"
+- "Use pre-built wheels only when: source unavailable (proprietary) AND wheels exist on PyPI"
 
 ### For Wheel Building Strategies
-- "Universal wheels available - use those for maximum compatibility"
+- "Always build from source with customizations for maximum control"
 - "Platform-specific wheels needed for: [platforms]"
-- "Source build recommended for: [specific scenarios]"
+- "Use pre-built wheels only when: source unavailable (proprietary) AND wheels exist on PyPI"
 - "Dependencies that complicate building: [list]"
 
 ### For Development Planning
