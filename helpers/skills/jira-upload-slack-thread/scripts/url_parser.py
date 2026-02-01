@@ -74,8 +74,9 @@ def parse_slack_url(url: str) -> SlackThreadURL:
         >>> parsed.thread_ts
         '1769333522.823869'
     """
-    # Pattern: https://<workspace>.slack.com/archives/<CHANNEL_ID>/p<TIMESTAMP>
-    pattern = r'https://([^/]+)\.slack\.com/archives/([A-Z0-9]+)/p(\d+)'
+    
+   # Pattern: https://<workspace>.slack.com/archives/<CHANNEL_ID>/p<TIMESTAMP>[?#...]
+    pattern = r'https://([^/]+)\.slack\.com/archives/([A-Z0-9]+)/p(\d+)(?:[?#].*)?$'
     match = re.match(pattern, url)
 
     if not match:
