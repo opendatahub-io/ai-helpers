@@ -4,7 +4,6 @@ FROM quay.io/fedora/fedora:latest
 RUN dnf install -y nodejs \
 	npm \
     python3 \
-    python3-pip \
     python3-devel \
     fedora-packager \
     fedora-review \
@@ -13,10 +12,21 @@ RUN dnf install -y nodejs \
     rpmdevtools \
     curl \
     git \
+    make \
+    shellcheck \
+    which \
     && dnf clean all
 
-# Install Claude Code CLI globally
-RUN npm install -g @anthropic-ai/claude-code
+
+RUN echo '[google-cloud-cli]' > /etc/yum.repos.d/google-cloud-sdk.repo && \
+echo 'name=Google Cloud CLI' >> /etc/yum.repos.d/google-cloud-sdk.repo && \
+echo 'baseurl=https://packages.cloud.google.com/yum/repos/cloud-sdk-el10-$basearch' >> /etc/yum.repos.d/google-cloud-sdk.repo && \
+echo 'enabled=1' >> /etc/yum.repos.d/google-cloud-sdk.repo && \
+echo 'gpgcheck=1' >> /etc/yum.repos.d/google-cloud-sdk.repo && \
+echo 'repo_gpgcheck=0' >> /etc/yum.repos.d/google-cloud-sdk.repo && \
+echo 'gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key-v10.gpg' >> /etc/yum.repos.d/google-cloud-sdk.repo && \
+dnf install -y google-cloud-cli && \
+dnf clean all
 
 # Install uv for PEP 723 script dependency management
 RUN curl -LsSf https://astral.sh/uv/install.sh | UV_INSTALL_DIR="/usr/local/bin/" INSTALLER_NO_MODIFY_PATH=1 sh
@@ -26,10 +36,13 @@ RUN curl -LsSf https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/
     && chmod +x /usr/local/bin/oc
 
 # Install common Python tools
-RUN pip3 install --no-cache-dir \
+RUN uv pip install --system --no-cache \
     pytest \
     requests \
-    pyyaml
+    pyyaml \
+    ruff \
+    tox \
+    tox-uv
 
 # Create claude user
 RUN useradd -m -u 1000 -s /bin/bash claude
@@ -45,11 +58,16 @@ COPY ./images/claude/claude-settings.json /home/claude/.claude/settings.json
 COPY ./images/claude/known_marketplaces.json /home/claude/.claude/plugins/known_marketplaces.json
 RUN chown -R claude:claude /home/claude/.claude
 
-# Create workspace directory
-RUN mkdir -p /workspace && chown -R claude:claude /workspace
-WORKDIR /workspace
-
 # Switch to claude user
+USER claude
+
+# Install Claude Code CLI as the claude user
+RUN curl -fsSL https://claude.ai/install.sh | bash
+
+# Copy Claude Code binary to system location and make it available system-wide
+USER root
+RUN cp /home/claude/.local/bin/claude /usr/bin/claude && \
+    chmod +x /usr/bin/claude
 USER claude
 
 # Set Claude Code as the default command

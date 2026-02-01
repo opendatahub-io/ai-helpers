@@ -362,11 +362,6 @@
             border: 1px solid var(--border);
         }
 
-        .autocomplete-item-icon.hook {
-            background: var(--bg-code);
-            color: var(--secondary);
-            border: 1px solid var(--border);
-        }
 
         .autocomplete-item-content {
             flex: 1;
@@ -542,32 +537,6 @@
             color: var(--text-muted);
         }
 
-        .hook-item {
-            margin-bottom: 1rem;
-            padding: 0.75rem;
-            background: var(--bg-code);
-            border-radius: 8px;
-            border-left: 3px solid var(--secondary);
-        }
-
-        .hook-name {
-            font-size: 0.95rem;
-            color: var(--secondary);
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .hook-type {
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-bottom: 0.5rem;
-        }
-
-        .hook-description {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-        }
 
         .file-link {
             margin-top: 0.5rem;
@@ -1037,7 +1006,7 @@
             <div class="navbar-brand">
                 <div class="navbar-title">
                     <h1>AI Helpers Marketplace</h1>
-                    <p class="subtitle">Claude Code & Cursor Tools</p>
+                    <p class="subtitle">Skills, Commands, Agents & Gems</p>
                 </div>
                 <div class="navbar-stats">
                     <div class="stat">
@@ -1053,10 +1022,6 @@
                         <div class="stat-label">Skills</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-value" id="hook-count">0</div>
-                        <div class="stat-label">Hooks</div>
-                    </div>
-                    <div class="stat">
                         <div class="stat-value" id="agent-count">0</div>
                         <div class="stat-label">Agents</div>
                     </div>
@@ -1068,9 +1033,7 @@
             </div>
             <div class="navbar-links">
                 <a href="#install" class="nav-link primary">How to Install</a>
-                <a href="https://github.com/opendatahub-io/ai-helpers" class="nav-link" target="_blank">AI Helpers</a>
-                <a href="https://docs.claude.com/en/docs/claude-code/overview" class="nav-link" target="_blank">Claude Code Docs</a>
-                <a href="https://cursor.com/docs" class="nav-link" target="_blank">Cursor Docs</a>
+                <a href="https://github.com/opendatahub-io/ai-helpers" class="nav-link" target="_blank" rel="noopener noreferrer">AI Helpers</a>
             </div>
         </div>
     </div>
@@ -1081,7 +1044,7 @@
                 type="text"
                 id="search"
                 class="search-input"
-                placeholder="Search tools, commands, and skills..."
+                placeholder="Search skills, commands, agents, and gems..."
                 autocomplete="off"
             >
             <div id="autocomplete" class="autocomplete-dropdown"></div>
@@ -1092,14 +1055,19 @@
                 <div class="filter-title">Filter by Tool Type:</div>
                 <div class="filter-checkboxes">
                     <label class="filter-checkbox">
-                        <input type="checkbox" id="filter-claude" value="claude_code" checked>
+                        <input type="checkbox" id="filter-skills" value="skills" checked>
                         <span class="checkbox-custom"></span>
-                        <span class="checkbox-label claude-code">Claude Code</span>
+                        <span class="checkbox-label claude-code">Skills</span>
                     </label>
                     <label class="filter-checkbox">
-                        <input type="checkbox" id="filter-cursor" value="cursor" checked>
+                        <input type="checkbox" id="filter-commands" value="commands" checked>
                         <span class="checkbox-custom"></span>
-                        <span class="checkbox-label cursor">Cursor</span>
+                        <span class="checkbox-label cursor">Commands</span>
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" id="filter-agents" value="agents" checked>
+                        <span class="checkbox-custom"></span>
+                        <span class="checkbox-label gemini">Agents</span>
                     </label>
                     <label class="filter-checkbox">
                         <input type="checkbox" id="filter-gemini" value="gemini" checked>
@@ -1167,13 +1135,15 @@
         let filteredTools = [];
 
         function getSelectedToolTypes() {
-            const claudeChecked = document.getElementById('filter-claude').checked;
-            const cursorChecked = document.getElementById('filter-cursor').checked;
+            const skillsChecked = document.getElementById('filter-skills').checked;
+            const commandsChecked = document.getElementById('filter-commands').checked;
+            const agentsChecked = document.getElementById('filter-agents').checked;
             const geminiChecked = document.getElementById('filter-gemini').checked;
 
             const selected = [];
-            if (claudeChecked) selected.push('claude_code');
-            if (cursorChecked) selected.push('cursor');
+            if (skillsChecked) selected.push('skills');
+            if (commandsChecked) selected.push('commands');
+            if (agentsChecked) selected.push('agents');
             if (geminiChecked) selected.push('gemini');
 
             return selected;
@@ -1188,12 +1158,12 @@
             const container = document.getElementById('category-checkboxes');
             const filterBox = document.getElementById('category-filter-box');
 
-            if (!categoriesData || !categoriesData.categories) {
+            if (!categoriesData) {
                 filterBox.style.display = 'none';
                 return;
             }
 
-            const categories = categoriesData.categories;
+            const categories = categoriesData;
             const categoryKeys = Object.keys(categories);
 
             if (categoryKeys.length <= 1) {
@@ -1260,22 +1230,39 @@
                 // Populate category filters
                 populateCategoryFilters(data.categories);
 
-                // Combine all tools from both Claude Code and Cursor, adding tool type
+                // Combine all tools from the new structure, adding tool type
                 allTools = [];
 
-                if (toolsData.claude_code) {
-                    allTools.push(...toolsData.claude_code.map(tool => ({
+                if (toolsData.skills) {
+                    allTools.push(...toolsData.skills.map(tool => ({
                         ...tool,
-                        tool_type: 'claude_code',
-                        display_name: `${tool.name} (Claude Code)`
+                        tool_type: 'skills',
+                        display_name: tool.name,
+                        commands: [], // Skills don't have commands
+                        skills: [tool], // The tool itself is a skill
+                        agents: []
                     })));
                 }
 
-                if (toolsData.cursor) {
-                    allTools.push(...toolsData.cursor.map(tool => ({
+                if (toolsData.commands) {
+                    allTools.push(...toolsData.commands.map(tool => ({
                         ...tool,
-                        tool_type: 'cursor',
-                        display_name: `${tool.name} (Cursor)`
+                        tool_type: 'commands',
+                        display_name: tool.name,
+                        commands: [tool], // The tool itself is a command
+                        skills: [],
+                        agents: []
+                    })));
+                }
+
+                if (toolsData.agents) {
+                    allTools.push(...toolsData.agents.map(tool => ({
+                        ...tool,
+                        tool_type: 'agents',
+                        display_name: tool.name,
+                        commands: [], // Agents don't have commands
+                        skills: [],
+                        agents: [tool] // The tool itself is an agent
                     })));
                 }
 
@@ -1283,7 +1270,10 @@
                     allTools.push(...toolsData.gemini.map(tool => ({
                         ...tool,
                         tool_type: 'gemini',
-                        display_name: tool.display_name || tool.name
+                        display_name: tool.display_name || tool.name,
+                        commands: [],
+                        skills: [],
+                        agents: []
                     })));
                 }
 
@@ -1291,17 +1281,15 @@
                 allTools.sort((a, b) => a.name.localeCompare(b.name));
 
                 // Update stats
-                const totalPlugins = allTools.length;
-                document.getElementById('plugin-count').textContent = totalPlugins;
-                const totalCommands = allTools.reduce((sum, p) => sum + p.commands.length, 0);
+                const totalTools = allTools.length;
+                document.getElementById('plugin-count').textContent = totalTools;
+                const totalCommands = toolsData.commands ? toolsData.commands.length : 0;
                 document.getElementById('command-count').textContent = totalCommands;
-                const totalSkills = allTools.reduce((sum, p) => sum + (p.skills || []).length, 0);
+                const totalSkills = toolsData.skills ? toolsData.skills.length : 0;
                 document.getElementById('skill-count').textContent = totalSkills;
-                const totalHooks = allTools.reduce((sum, p) => sum + (p.hooks || []).length, 0);
-                document.getElementById('hook-count').textContent = totalHooks;
-                const totalAgents = allTools.reduce((sum, p) => sum + (p.agents || []).length, 0);
+                const totalAgents = toolsData.agents ? toolsData.agents.length : 0;
                 document.getElementById('agent-count').textContent = totalAgents;
-                const totalGems = allTools.filter(tool => tool.tool_type === 'gemini').length;
+                const totalGems = toolsData.gemini ? toolsData.gemini.length : 0;
                 document.getElementById('gem-count').textContent = totalGems;
 
                 applyFilters();
@@ -1327,25 +1315,21 @@
             noResults.classList.remove('show');
 
             grid.innerHTML = tools.map(tool => {
-                const skills = tool.skills || [];
-                const hooks = tool.hooks || [];
-                const agents = tool.agents || [];
-                const commandCount = tool.commands.length;
-                const skillCount = skills.length;
-                const hookCount = hooks.length;
-                const agentCount = agents.length;
 
                 // Tool type badge color
                 let toolTypeColor, toolTypeLabel;
-                if (tool.tool_type === 'claude_code') {
-                    toolTypeColor = 'var(--primary)';
-                    toolTypeLabel = 'Claude Code';
-                } else if (tool.tool_type === 'cursor') {
+                if (tool.tool_type === 'skills') {
                     toolTypeColor = 'var(--accent)';
-                    toolTypeLabel = 'Cursor';
+                    toolTypeLabel = 'Skill';
+                } else if (tool.tool_type === 'commands') {
+                    toolTypeColor = 'var(--primary)';
+                    toolTypeLabel = 'Command';
+                } else if (tool.tool_type === 'agents') {
+                    toolTypeColor = 'var(--secondary)';
+                    toolTypeLabel = 'Agent';
                 } else if (tool.tool_type === 'gemini') {
                     toolTypeColor = 'var(--success)';
-                    toolTypeLabel = 'Gemini Gems';
+                    toolTypeLabel = 'Gemini Gem';
                 }
 
                 return `
@@ -1359,32 +1343,6 @@
                         </div>
                     </div>
                     <div class="plugin-description">${tool.description}</div>
-                    <div class="item-counts">
-                        ${commandCount > 0 ? `
-                        <div class="item-count">
-                            <span class="item-count-badge">${commandCount}</span>
-                            <span>command${commandCount !== 1 ? 's' : ''}</span>
-                        </div>
-                        ` : ''}
-                        ${skillCount > 0 ? `
-                        <div class="item-count">
-                            <span class="item-count-badge">${skillCount}</span>
-                            <span>skill${skillCount !== 1 ? 's' : ''}</span>
-                        </div>
-                        ` : ''}
-                        ${hookCount > 0 ? `
-                        <div class="item-count">
-                            <span class="item-count-badge">${hookCount}</span>
-                            <span>hook${hookCount !== 1 ? 's' : ''}</span>
-                        </div>
-                        ` : ''}
-                        ${agentCount > 0 ? `
-                        <div class="item-count">
-                            <span class="item-count-badge">${agentCount}</span>
-                            <span>agent${agentCount !== 1 ? 's' : ''}</span>
-                        </div>
-                        ` : ''}
-                    </div>
                 </div>
             `;
             }).join('');
@@ -1394,25 +1352,21 @@
             const tool = allTools.find(t => t.name === toolName && t.tool_type === toolType);
             if (!tool) return;
 
-            const skills = tool.skills || [];
-            const hooks = tool.hooks || [];
-            const agents = tool.agents || [];
-            const commandCount = tool.commands.length;
-            const skillCount = skills.length;
-            const hookCount = hooks.length;
-            const agentCount = agents.length;
 
             // Tool type styling
             let toolTypeColor, toolTypeLabel;
-            if (tool.tool_type === 'claude_code') {
-                toolTypeColor = 'var(--primary)';
-                toolTypeLabel = 'Claude Code';
-            } else if (tool.tool_type === 'cursor') {
+            if (tool.tool_type === 'skills') {
                 toolTypeColor = 'var(--accent)';
-                toolTypeLabel = 'Cursor';
+                toolTypeLabel = 'Skill';
+            } else if (tool.tool_type === 'commands') {
+                toolTypeColor = 'var(--primary)';
+                toolTypeLabel = 'Command';
+            } else if (tool.tool_type === 'agents') {
+                toolTypeColor = 'var(--secondary)';
+                toolTypeLabel = 'Agent';
             } else if (tool.tool_type === 'gemini') {
                 toolTypeColor = 'var(--success)';
-                toolTypeLabel = 'Gemini Gems';
+                toolTypeLabel = 'Gemini Gem';
             }
 
             // Build header with title, metadata, and version
@@ -1421,79 +1375,56 @@
                     <div class="modal-title">${tool.tool_type === 'gemini' ? (tool.display_name || tool.name) : tool.name}</div>
                     <div class="modal-meta">
                         <div class="plugin-version" style="background: ${toolTypeColor}; color: white;">${toolTypeLabel}</div>
-                        ${commandCount > 0 ? `
-                        <div class="item-count">
-                            <span class="item-count-badge">${commandCount}</span>
-                            <span>command${commandCount !== 1 ? 's' : ''}</span>
-                        </div>
-                        ` : ''}
-                        ${skillCount > 0 ? `
-                        <div class="item-count">
-                            <span class="item-count-badge">${skillCount}</span>
-                            <span>skill${skillCount !== 1 ? 's' : ''}</span>
-                        </div>
-                        ` : ''}
-                        ${hookCount > 0 ? `
-                        <div class="item-count">
-                            <span class="item-count-badge">${hookCount}</span>
-                            <span>hook${hookCount !== 1 ? 's' : ''}</span>
-                        </div>
-                        ` : ''}
-                        ${agentCount > 0 ? `
-                        <div class="item-count">
-                            <span class="item-count-badge">${agentCount}</span>
-                            <span>agent${agentCount !== 1 ? 's' : ''}</span>
-                        </div>
-                        ` : ''}
                     </div>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end;">
-                    <div style="display: flex; gap: 1rem; align-items: flex-start;">
-                        <button class="close-button" onclick="closeModal()">&times;</button>
-                    </div>
-                    ${tool.has_readme ? `
-                    <a href="https://github.com/opendatahub-io/ai-helpers/blob/main/${tool.tool_type === 'claude_code' ? 'claude-plugins/' + tool.name : tool.tool_type === 'gemini' ? 'gemini-gems' : 'cursor'}/README.md"
-                       target="_blank"
-                       class="readme-button">
-                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 3h10v10H3V3z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                            <path d="M5 6h6 M5 8h6 M5 10h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                        </svg>
-                        README
-                    </a>
-                    ` : ''}
                 </div>
             `;
 
             let content = `
                 <div class="plugin-description" style="margin-bottom: 1.5rem;">${tool.description}</div>
+
                 ${tool.tool_type !== 'gemini' ? `
                 <div style="margin-bottom: 1.5rem;">
-                    <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Installation:</div>
-                    <div style="position: relative;">
-                        ${tool.tool_type === 'claude_code' ? `
-                        <div class="code-block" style="padding-right: 5rem;">/plugin install ${tool.name}@odh-ai-helpers</div>
-                        <button class="copy-button" onclick="copyInstallCommand('${tool.name}', '${tool.tool_type}', event)" title="Copy to clipboard">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M5.75 4.75H10.25V1.75H5.75V4.75ZM5.75 4.75H2.75V14.25H10.25V11.25M5.75 4.75V7.75H13.25V14.25H10.25V11.25M10.25 11.25H13.25V7.75H5.75V4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <span class="copy-button-text">Copy</span>
-                        </button>
+                    <div style="margin-bottom: 1rem;">
+                        <div style="font-weight: 600; margin-bottom: 0.5rem;">Claude Code</div>
+                        <div style="font-size: 0.875rem; color: var(--text-secondary);">Available through the odh-ai-helpers plugin loaded by marketplace as instructed.</div>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <div style="font-weight: 600; margin-bottom: 0.5rem;">Cursor</div>
+                        ${tool.tool_type === 'skills' ? `
+                        <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                            See <a href="https://cursor.com/docs/context/skills" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">Cursor Skills documentation</a>
+                        </div>
+                        ` : tool.tool_type === 'commands' ? `
+                        <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                            See <a href="https://cursor.com/docs/context/commands" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">Cursor Commands documentation</a>
+                        </div>
                         ` : `
-                        <div class="code-block" style="padding-right: 5rem;">ln -sf $(pwd)/cursor/commands/* ~/.cursor/commands/</div>
-                        <button class="copy-button" onclick="copyInstallCommand('${tool.name}', '${tool.tool_type}', event)" title="Copy to clipboard">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M5.75 4.75H10.25V1.75H5.75V4.75ZM5.75 4.75H2.75V14.25H10.25V11.25M5.75 4.75V7.75H13.25V14.25H10.25V11.25M10.25 11.25H13.25V7.75H5.75V4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <span class="copy-button-text">Copy</span>
-                        </button>
+                        <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                            See <a href="https://cursor.com/docs/context/subagents" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">Cursor Sub-agents documentation</a>
+                        </div>
+                        `}
+                    </div>
+
+                    <div>
+                        <div style="font-weight: 600; margin-bottom: 0.5rem;">OpenCode.ai</div>
+                        ${tool.tool_type === 'skills' ? `
+                        <div style="font-size: 0.875rem; color: var(--text-secondary);">Install as skills in ~/.config/opencode/skills/</div>
+                        ` : tool.tool_type === 'commands' ? `
+                        <div style="font-size: 0.875rem; color: var(--text-secondary);">Install as commands in ~/.config/opencode/commands/</div>
+                        ` : tool.tool_type === 'agents' ? `
+                        <div style="font-size: 0.875rem; color: var(--text-secondary);">⚠️ Not currently compatible with OpenCode.ai</div>
+                        ` : `
+                        <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                            See <a href="https://opencode.ai/docs" target="_blank" rel="noopener noreferrer" style="color: #FF6B35;">OpenCode.ai documentation</a>
+                        </div>
                         `}
                     </div>
                 </div>
                 ` : `
                 <div style="margin-bottom: 1.5rem; text-align: center;">
                     ${tool.link ? `
-                    <a href="${tool.link}" target="_blank" class="install-button" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <a href="${tool.link}" target="_blank" rel="noopener noreferrer" class="install-button" style="display: inline-flex; align-items: center; gap: 0.5rem;">
                         <span>🔗</span>
                         Open ${tool.display_name || tool.name}
                     </a>
@@ -1502,63 +1433,32 @@
                 `}
             `;
 
-            // Only show commands/skills/hooks for non-Gemini tools
-            if (tool.tool_type !== 'gemini') {
-                if (commandCount > 0) {
-                    content += `
-                        <div class="section-title">Commands</div>
-                        ${tool.commands.map(cmd => `
-                            <div class="command-item">
-                                ${cmd.synopsis ? `<div class="command-synopsis">${cmd.synopsis}</div>` : ''}
-                                ${cmd.description ? `<div class="command-description">${cmd.description}</div>` : ''}
-                                ${cmd.file_path ? `<div class="file-link"><a href="https://github.com/opendatahub-io/ai-helpers/blob/main/${cmd.file_path}" target="_blank" class="source-link">📄 View Source</a></div>` : ''}
-                            </div>
-                        `).join('')}
-                    `;
-                }
-
-                if (skillCount > 0) {
-                    content += `
-                        <div class="section-title">Skills</div>
-                        ${skills.map(skill => `
-                            <div class="skill-item">
-                                <div class="skill-name">${skill.name}</div>
-                                <div class="skill-id">${tool.name}:${skill.id}</div>
-                                ${skill.description ? `<div class="skill-description">${skill.description}</div>` : ''}
-                                ${skill.file_path ? `<div class="file-link"><a href="https://github.com/opendatahub-io/ai-helpers/blob/main/${skill.file_path}" target="_blank" class="source-link">📄 View Source</a></div>` : ''}
-                            </div>
-                        `).join('')}
-                    `;
-                }
-
-                if (hookCount > 0) {
-                    content += `
-                        <div class="section-title">Hooks</div>
-                        ${hooks.map(hook => `
-                            <div class="hook-item">
-                                <div class="hook-name">${hook.name}</div>
-                                <div class="hook-type">Type: ${hook.type}</div>
-                                ${hook.description ? `<div class="hook-description">${hook.description}</div>` : ''}
-                            </div>
-                        `).join('')}
-                    `;
-                }
-
-                if (agentCount > 0) {
-                    content += `
-                        <div class="section-title">Agents</div>
-                        ${agents.map(agent => `
-                            <div class="skill-item">
-                                <div class="skill-name">${agent.name}</div>
-                                <div class="skill-id">${tool.name}:${agent.id}</div>
-                                ${agent.description ? `<div class="skill-description">${agent.description}</div>` : ''}
-                                ${agent.tools ? `<div class="skill-description"><strong>Tools:</strong> ${agent.tools}</div>` : ''}
-                                ${agent.model ? `<div class="skill-description"><strong>Model:</strong> ${agent.model}</div>` : ''}
-                                ${agent.file_path ? `<div class="file-link"><a href="https://github.com/opendatahub-io/ai-helpers/blob/main/${agent.file_path}" target="_blank" class="source-link">📄 View Source</a></div>` : ''}
-                            </div>
-                        `).join('')}
-                    `;
-                }
+            // Show additional details based on tool type
+            if (tool.tool_type === 'skills') {
+                content += `
+                    <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-code); border-radius: 8px; border-left: 3px solid var(--accent);">
+                        ${tool.id ? `<div style="font-family: monospace; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Skill ID: ${tool.id}</div>` : ''}
+                        ${tool.allowed_tools ? `<div style="font-size: 0.875rem; color: var(--text-secondary);"><strong>Allowed Tools:</strong> ${tool.allowed_tools}</div>` : ''}
+                        ${tool.file_path ? `<div class="file-link" style="margin-top: 0.5rem;"><a href="https://github.com/opendatahub-io/ai-helpers/blob/main/${tool.file_path}" target="_blank" rel="noopener noreferrer" class="source-link">📄 View Source</a></div>` : ''}
+                    </div>
+                `;
+            } else if (tool.tool_type === 'commands') {
+                content += `
+                    <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-code); border-radius: 8px;">
+                        ${tool.synopsis ? `<div style="font-family: monospace; font-size: 0.85rem; color: var(--success); margin-bottom: 0.5rem;">${tool.synopsis}</div>` : ''}
+                        ${tool.argument_hint ? `<div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;"><strong>Arguments:</strong> ${tool.argument_hint}</div>` : ''}
+                        ${tool.file_path ? `<div class="file-link" style="margin-top: 0.5rem;"><a href="https://github.com/opendatahub-io/ai-helpers/blob/main/${tool.file_path}" target="_blank" rel="noopener noreferrer" class="source-link">📄 View Source</a></div>` : ''}
+                    </div>
+                `;
+            } else if (tool.tool_type === 'agents') {
+                content += `
+                    <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-code); border-radius: 8px; border-left: 3px solid var(--secondary);">
+                        ${tool.id ? `<div style="font-family: monospace; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Agent ID: ${tool.id}</div>` : ''}
+                        ${tool.tools ? `<div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;"><strong>Tools:</strong> ${tool.tools}</div>` : ''}
+                        ${tool.model ? `<div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;"><strong>Model:</strong> ${tool.model}</div>` : ''}
+                        ${tool.file_path ? `<div class="file-link" style="margin-top: 0.5rem;"><a href="https://github.com/opendatahub-io/ai-helpers/blob/main/${tool.file_path}" target="_blank" rel="noopener noreferrer" class="source-link">📄 View Source</a></div>` : ''}
+                    </div>
+                `;
             }
 
             showModal(headerContent, content);
@@ -1580,7 +1480,6 @@
                 tools: [],
                 commands: [],
                 skills: [],
-                hooks: [],
                 agents: []
             };
 
@@ -1616,18 +1515,6 @@
                     }
                 });
 
-                // Check hook matches
-                const hooks = tool.hooks || [];
-                hooks.forEach(hook => {
-                    if (hook.name.toLowerCase().includes(lowerQuery) ||
-                        hook.type.toLowerCase().includes(lowerQuery) ||
-                        (hook.description && hook.description.toLowerCase().includes(lowerQuery))) {
-                        results.hooks.push({
-                            tool: tool,
-                            hook: hook
-                        });
-                    }
-                });
 
                 // Check agent matches
                 const agents = tool.agents || [];
@@ -1653,7 +1540,6 @@
                 ...results.tools.map(t => `${t.name}-${t.tool_type}`),
                 ...results.commands.map(c => `${c.tool.name}-${c.tool.tool_type}`),
                 ...results.skills.map(s => `${s.tool.name}-${s.tool.tool_type}`),
-                ...results.hooks.map(h => `${h.tool.name}-${h.tool.tool_type}`),
                 ...results.agents.map(a => `${a.tool.name}-${a.tool.tool_type}`)
             ]);
             const filtered = filteredTools.filter(t => matchedToolIds.has(`${t.name}-${t.tool_type}`));
@@ -1662,7 +1548,7 @@
 
         function updateAutocomplete(results) {
             const autocomplete = document.getElementById('autocomplete');
-            const hasResults = results.tools.length > 0 || results.commands.length > 0 || results.skills.length > 0 || results.hooks.length > 0 || results.agents.length > 0;
+            const hasResults = results.tools.length > 0 || results.commands.length > 0 || results.skills.length > 0 || results.agents.length > 0;
 
             if (!hasResults) {
                 autocomplete.innerHTML = '<div class="autocomplete-empty">No matches found</div>';
@@ -1681,7 +1567,7 @@
                             <div class="autocomplete-item" onclick="showPluginModal('${tool.name}', '${tool.tool_type}')">
                                 <div class="autocomplete-item-icon plugin">${tool.name.charAt(0).toUpperCase()}</div>
                                 <div class="autocomplete-item-content">
-                                    <div class="autocomplete-item-title">${tool.name} (${tool.tool_type === 'claude_code' ? 'Claude Code' : 'Cursor'})</div>
+                                    <div class="autocomplete-item-title">${tool.name} (${tool.tool_type === 'skills' ? 'Skill' : tool.tool_type === 'commands' ? 'Command' : tool.tool_type === 'agents' ? 'Agent' : 'Gemini Gem'})</div>
                                     <div class="autocomplete-item-subtitle">${tool.description}</div>
                                 </div>
                             </div>
@@ -1699,7 +1585,7 @@
                             <div class="autocomplete-item" onclick="showPluginModal('${item.tool.name}', '${item.tool.tool_type}')">
                                 <div class="autocomplete-item-icon command">$</div>
                                 <div class="autocomplete-item-content">
-                                    <div class="autocomplete-item-title">${item.tool.tool_type === 'cursor' ? '/' + item.command.full_command_name : '/' + item.tool.name + ':' + item.command.name}</div>
+                                    <div class="autocomplete-item-title">${item.command.synopsis || '/' + item.command.name}</div>
                                     <div class="autocomplete-item-subtitle">${item.command.description || item.command.synopsis || ''}</div>
                                 </div>
                             </div>
@@ -1726,23 +1612,6 @@
                 `;
             }
 
-            // Hooks section
-            if (results.hooks.length > 0) {
-                html += `
-                    <div class="autocomplete-section">
-                        <div class="autocomplete-section-title">Hooks</div>
-                        ${results.hooks.slice(0, 10).map(item => `
-                            <div class="autocomplete-item" onclick="showPluginModal('${item.tool.name}', '${item.tool.tool_type}')">
-                                <div class="autocomplete-item-icon hook">🪝</div>
-                                <div class="autocomplete-item-content">
-                                    <div class="autocomplete-item-title">${item.hook.name}</div>
-                                    <div class="autocomplete-item-subtitle">${item.hook.type}</div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            }
 
             // Agents section
             if (results.agents.length > 0) {
@@ -1788,16 +1657,6 @@
             });
         }
 
-        // Copy install command to clipboard
-        function copyInstallCommand(toolName, toolType, event) {
-            let command;
-            if (toolType === 'claude_code') {
-                command = `/plugin install ${toolName}@odh-ai-helpers`;
-            } else {
-                command = `ln -sf $(pwd)/cursor/commands/* ~/.cursor/commands/`;
-            }
-            copyToClipboard(command, event);
-        }
 
         // Search functionality
         document.getElementById('search').addEventListener('input', (e) => {
@@ -1805,7 +1664,7 @@
         });
 
         // Filter functionality
-        document.getElementById('filter-claude').addEventListener('change', () => {
+        document.getElementById('filter-skills').addEventListener('change', () => {
             applyFilters();
             const currentQuery = document.getElementById('search').value;
             if (currentQuery.trim()) {
@@ -1815,7 +1674,17 @@
             }
         });
 
-        document.getElementById('filter-cursor').addEventListener('change', () => {
+        document.getElementById('filter-commands').addEventListener('change', () => {
+            applyFilters();
+            const currentQuery = document.getElementById('search').value;
+            if (currentQuery.trim()) {
+                searchAndShowAutocomplete(currentQuery);
+            } else {
+                renderPlugins(filteredTools);
+            }
+        });
+
+        document.getElementById('filter-agents').addEventListener('change', () => {
             applyFilters();
             const currentQuery = document.getElementById('search').value;
             if (currentQuery.trim()) {
@@ -1884,9 +1753,9 @@
 
         function showInstallModal() {
             const content = `
-                <h3 style="margin-bottom: 1rem; color: var(--primary); display: flex; align-items: center; gap: 0.5rem;">
-                    <span style="background: var(--primary); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Claude Code</span>
-                    Installation
+                <h3 style="margin-bottom: 1rem; color: #8A2BE2; display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="background: #8A2BE2; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Claude Code</span>
+                    <a href="https://docs.claude.com/en/docs/claude-code/overview" target="_blank" rel="noopener noreferrer" style="color: #8A2BE2; font-size: 0.875rem; text-decoration: none;">📖 Docs</a>
                 </h3>
 
                 <p style="margin-bottom: 1rem; color: var(--text-secondary);">
@@ -1903,34 +1772,28 @@
                     </button>
                 </div>
 
-                <div style="background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; color: var(--text-secondary); font-size: 0.875rem;">
-                    <strong style="color: var(--primary);">⚠️ Important:</strong> Changes take effect the next time you start Claude Code. If Claude Code is already running, restart it to load the updates.
+                <div style="position: relative; margin-bottom: 1rem;">
+                    <div class="code-block" style="padding-right: 5rem;">/plugin install odh-ai-helpers</div>
+                    <button class="copy-button" onclick="copyToClipboard('/plugin install odh-ai-helpers', event)" title="Copy to clipboard">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5.75 4.75H10.25V1.75H5.75V4.75ZM5.75 4.75H2.75V14.25H10.25V11.25M5.75 4.75V7.75H13.25V14.25H10.25V11.25M10.25 11.25H13.25V7.75H5.75V4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="copy-button-text">Copy</span>
+                    </button>
                 </div>
-
-                <p style="margin: 1rem 0 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">
-                    Install a specific plugin:
-                </p>
-
-                <div class="code-block" style="margin-bottom: 1rem;">/plugin install git@odh-ai-helpers</div>
-
-                <p style="margin: 1rem 0 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">
-                    Use a plugin command:
-                </p>
-
-                <div class="code-block" style="margin-bottom: 2rem;">/git:commit-suggest</div>
 
                 <hr style="border: none; border-top: 1px solid var(--border); margin: 2rem 0;">
 
-                <h3 style="margin-bottom: 1rem; color: var(--accent); display: flex; align-items: center; gap: 0.5rem;">
-                    <span style="background: var(--accent); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Cursor</span>
-                    Installation
+                <h3 style="margin-bottom: 1rem; color: #4A90E2; display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="background: #4A90E2; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Cursor</span>
+                    <a href="https://cursor.com/docs" target="_blank" rel="noopener noreferrer" style="color: #4A90E2; font-size: 0.875rem; text-decoration: none;">📖 Docs</a>
                 </h3>
 
                 <p style="margin-bottom: 1rem; color: var(--text-secondary);">
-                    Clone the repository and link Cursor commands:
+                    Clone the repository:
                 </p>
 
-                <div style="position: relative; margin-bottom: 0.75rem;">
+                <div style="position: relative; margin-bottom: 1.5rem;">
                     <div class="code-block" style="padding-right: 5rem;">git clone git@github.com:opendatahub-io/ai-helpers.git</div>
                     <button class="copy-button" onclick="copyToClipboard('git clone git@github.com:opendatahub-io/ai-helpers.git', event)" title="Copy to clipboard">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1940,9 +1803,13 @@
                     </button>
                 </div>
 
-                <div style="position: relative; margin-bottom: 1rem;">
-                    <div class="code-block" style="padding-right: 5rem;">mkdir -p ~/.cursor/commands && cd ai-helpers && ln -sf $(pwd)/cursor/commands/* ~/.cursor/commands/</div>
-                    <button class="copy-button" onclick="copyToClipboard('mkdir -p ~/.cursor/commands && cd ai-helpers && ln -sf $(pwd)/cursor/commands/* ~/.cursor/commands/', event)" title="Copy to clipboard">
+                <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+		    Quick Setup using symlinks:
+                </p>
+
+                <div style="position: relative; margin-bottom: 1.5rem;">
+                    <div class="code-block" style="padding-right: 5rem;">cd ai-helpers && mkdir -p ~/.cursor/commands ~/.cursor/skills ~/.cursor/agents</div>
+                    <button class="copy-button" onclick="copyToClipboard('cd ai-helpers && mkdir -p ~/.cursor/commands ~/.cursor/skills ~/.cursor/agents', event)" title="Copy to clipboard">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M5.75 4.75H10.25V1.75H5.75V4.75ZM5.75 4.75H2.75V14.25H10.25V11.25M5.75 4.75V7.75H13.25V14.25H10.25V11.25M10.25 11.25H13.25V7.75H5.75V4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
@@ -1950,20 +1817,62 @@
                     </button>
                 </div>
 
-                <p style="margin: 1rem 0 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">
-                    Use a Cursor command:
+                <div style="position: relative; margin-bottom: 1.5rem;">
+                    <div class="code-block" style="padding-right: 5rem;">ln -sf $(pwd)/helpers/commands/* ~/.cursor/commands/ && ln -sf $(pwd)/helpers/skills/* ~/.cursor/skills/ && ln -sf $(pwd)/helpers/agents/* ~/.cursor/agents/</div>
+                    <button class="copy-button" onclick="copyToClipboard('ln -sf $(pwd)/helpers/commands/* ~/.cursor/commands/ && ln -sf $(pwd)/helpers/skills/* ~/.cursor/skills/ && ln -sf $(pwd)/helpers/agents/* ~/.cursor/agents/', event)" title="Copy to clipboard">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5.75 4.75H10.25V1.75H5.75V4.75ZM5.75 4.75H2.75V14.25H10.25V11.25M5.75 4.75V7.75H13.25V14.25H10.25V11.25M10.25 11.25H13.25V7.75H5.75V4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="copy-button-text">Copy</span>
+                    </button>
+                </div>
+
+                <hr style="border: none; border-top: 1px solid var(--border); margin: 2rem 0;">
+
+                <h3 style="margin-bottom: 1rem; color: #FF6B35; display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="background: #FF6B35; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">OpenCode.ai</span>
+                    <a href="https://opencode.ai/docs" target="_blank" rel="noopener noreferrer" style="color: #FF6B35; font-size: 0.875rem; text-decoration: none;">📖 Docs</a>
+                </h3>
+
+                <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+                    Clone the AI helpers repository:
                 </p>
 
-                <div class="code-block" style="margin-bottom: 1.5rem;">/git:commit-suggest</div>
-
-                <div style="display: flex; gap: 1rem; margin-top: 1.5rem; color: var(--text-muted); font-size: 0.875rem; flex-wrap: wrap;">
-                    <div>
-                        📖 <a href="https://docs.claude.com/en/docs/claude-code" style="color: var(--primary);">Claude Code Docs</a>
-                    </div>
-                    <div>
-                        📖 <a href="https://cursor.com/docs" style="color: var(--accent);">Cursor Docs</a>
-                    </div>
+                <div style="position: relative; margin-bottom: 1.5rem;">
+                    <div class="code-block" style="padding-right: 5rem;">git clone https://github.com/opendatahub-io/ai-helpers.git && cd ai-helpers</div>
+                    <button class="copy-button" onclick="copyToClipboard('git clone https://github.com/opendatahub-io/ai-helpers.git && cd ai-helpers', event)" title="Copy to clipboard">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5.75 4.75H10.25V1.75H5.75V4.75ZM5.75 4.75H2.75V14.25H10.25V11.25M5.75 4.75V7.75H13.25V14.25H10.25V11.25M10.25 11.25H13.25V7.75H5.75V4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="copy-button-text">Copy</span>
+                    </button>
                 </div>
+
+                <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+                    Install globally:
+                </p>
+
+                <div style="position: relative; margin-bottom: 1.5rem;">
+                    <div class="code-block" style="padding-right: 5rem;">mkdir -p ~/.config/opencode/skills ~/.config/opencode/commands</div>
+                    <button class="copy-button" onclick="copyToClipboard('mkdir -p ~/.config/opencode/skills ~/.config/opencode/commands', event)" title="Copy to clipboard">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5.75 4.75H10.25V1.75H5.75V4.75ZM5.75 4.75H2.75V14.25H10.25V11.25M5.75 4.75V7.75H13.25V14.25H10.25V11.25M10.25 11.25H13.25V7.75H5.75V4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="copy-button-text">Copy</span>
+                    </button>
+                </div>
+
+                <div style="position: relative; margin-bottom: 1.5rem;">
+                    <div class="code-block" style="padding-right: 5rem;">ln -sf $(pwd)/helpers/skills/* ~/.config/opencode/skills/ && ln -sf $(pwd)/helpers/commands/* ~/.config/opencode/commands/</div>
+                    <button class="copy-button" onclick="copyToClipboard('ln -sf $(pwd)/helpers/skills/* ~/.config/opencode/skills/ && ln -sf $(pwd)/helpers/commands/* ~/.config/opencode/commands/', event)" title="Copy to clipboard">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5.75 4.75H10.25V1.75H5.75V4.75ZM5.75 4.75H2.75V14.25H10.25V11.25M5.75 4.75V7.75H13.25V14.25H10.25V11.25M10.25 11.25H13.25V7.75H5.75V4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="copy-button-text">Copy</span>
+                    </button>
+                </div>
+
+
             `;
             showModal('Installation Instructions', content);
             window.location.hash = 'install';
@@ -1989,7 +1898,7 @@
                         const toolType = parts[parts.length - 1];
                         const toolName = parts.slice(0, -1).join('-');
 
-                        if (toolType === 'claude_code' || toolType === 'cursor') {
+                        if (toolType === 'skills' || toolType === 'commands' || toolType === 'agents' || toolType === 'gemini') {
                             const tool = allTools.find(t => t.name === toolName && t.tool_type === toolType);
                             if (tool) {
                                 showPluginModal(toolName, toolType);

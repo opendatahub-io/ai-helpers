@@ -1,0 +1,26 @@
+{
+	"name": "MVP Container for dev container workflow",
+	"build": {
+		"context": "..",
+		"dockerfile": "../images/claude/Containerfile"
+	},
+	"mounts": [
+		"type=bind,source=${localEnv:HOME}/.gitconfig,target=/home/claude/.gitconfig,readonly",
+		"type=bind,source=${localEnv:HOME}/.config/gcloud,target=/home/claude/.config/gcloud"
+	],
+	"containerEnv": {
+		"CLAUDE_CODE_USE_VERTEX": "1",
+		"CLOUD_ML_REGION": "region",
+		"ANTHROPIC_VERTEX_PROJECT_ID": "project",
+		"DISABLE_AUTOUPDATER": "1",
+		"GOOGLE_APPLICATION_CREDENTIALS": "/home/claude/.config/gcloud/application_default_credentials.json",
+		"CLAUDE_PROJECT_DIR": "${containerWorkspaceFolder}"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"anthropic.claude-code"
+			]
+		}
+	}
+}

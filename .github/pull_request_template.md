@@ -5,10 +5,9 @@
 
 ## Type of Contribution
 <!-- Check all that apply -->
-- [ ] 🔧 New Claude Code plugin
-- [ ] 📝 New Claude Code command
-- [ ] 🤖 New Claude Code skill/agent
-- [ ] 🎯 New Cursor AI command
+- [ ] 📝 New command
+- [ ] 🎯 New skill
+- [ ] 🤖 New agent
 - [ ] 💎 New Gemini Gem
 - [ ] 📚 Documentation update
 - [ ] 🐛 Bug fix
@@ -19,19 +18,23 @@
 ## Changes Made
 <!-- Describe the changes in detail -->
 
-## Platform-Specific Details
+## Tool Details
 <!-- Fill out the relevant section(s); remove unused ones -->
 
-### Claude Code Plugin
-- **Plugin name**:
-- **Commands added**:
-- **Skills added**:
-- **Agents added**:
-- **Dependencies required**:
-
-### Cursor AI Command
+### Command
 - **Command name**:
 - **Primary use case**:
+- **Dependencies required**:
+
+### Skill
+- **Skill name**:
+- **Primary use case**:
+- **Dependencies required**:
+
+### Agent
+- **Agent name**:
+- **Primary use case**:
+- **Dependencies required**:
 
 ### Gemini Gem
 - **Gem title**:
@@ -47,13 +50,12 @@
 
 ### Platform Testing
 <!-- Check all that were tested -->
-- [ ] Claude Code: Installed plugin locally and tested commands/skills/agents
-- [ ] Cursor AI: Linked command to ~/.cursor/commands and tested in Cursor
-- [ ] Gemini: Created Gem in Gemini platform and verified sharing link works
+- [ ] Claude Code: Tested commands/skills/agents integration
+- [ ] Cursor AI: Tested tool integration (if applicable)
+- [ ] Gemini: Created Gem in Gemini platform and verified sharing link works (if applicable)
 
 ## Categorization
-- [ ] Tool is properly categorized in `categories.json` (or uses default "general" category)
-- [ ] If creating a new category: Added clear name and description
+- [ ] Tool is properly categorized in `categories.yaml` (or uses default "General" category)
 
 ## Ethical Guidelines Compliance
 - [ ] ✅ No real people are referenced by name in examples or documentation

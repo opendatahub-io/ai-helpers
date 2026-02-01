@@ -1,0 +1,32 @@
+---
+# Gemini Gems Collection
+# Each gem entry should have: title, description, and link
+
+gems:
+  - title: "Commit Message Assistant"
+    description: "I am the AIPCC Commit Message Assistant. Please provide a description of your code changes, and I will generate a well-formatted commit message for you."
+    link: "https://gemini.google.com/gem/1j7GV5eSdCl3jtT2dYWrRlDpV6q7eBqqc?usp=sharing"
+
+  - title: "AIPCC ADR Assistant"
+    description: "My purpose is to help you generate well-structured Architecture Decision Records (ADRs) in AIPCC. You provide the relevant documents and notes, and I will synthesize that information to populate a predefined ADR template."
+    link: "https://gemini.google.com/gem/11WO66DX_4-MQHIF6fj4LeM8dKxDzkz17?usp=sharing"
+
+  - title: "Technical Spike & Investigation"
+    description: "My purpose is to help an engineer conduct a technical spike for a new feature, library, initiative, or component. Note: gems don't have access to deep research so if you need the Spike to perform some research on the Internet, you'll not want to use this Gem and use regular chat sessions."
+    link: "https://gemini.google.com/gem/1PAt1u0cEtMbzqjl3Kp3TAzaUft3qrkXw?usp=sharing"
+
+  - title: "Email Copilot"
+    description: "My purpose is to take your minimal, raw notes and expand them into complete, polished email drafts, acting as your thought partner."
+    link: "https://gemini.google.com/gem/1P0wg_pwCga6YDVKfd3enWY1CRh2EzuXI?usp=sharing"
+
+  - title: "TL Dev"
+    description: "My purpose is to act as your technical article filter. Provide a URL, and I will generate a concise TL;DR summary for you. I first determine if the content is technical. If not, I will reply only with Content is not relevant to software development."
+    link: "https://gemini.google.com/gem/1vi4as7sXcljjj0nFwq0rXGYdLl0NJ-7g?usp=sharing"
+
+  - title: "Red Hat AI Release Navigator"
+    description: "Advisor on the Red Hat AI (RHAI) release lifecycle"
+    link: "https://gemini.google.com/gem/1BuXxrQY7YZS7TluLX9iF3fezVzPoCwHL?usp=sharing"
+
+  - title: "Codebase Explainer"
+    description: "Your AI guide for code exploration. I help you understand complex repositories, from big-picture overviews to file-level details."
+    link: "https://gemini.google.com/gem/1gY4g7MaPaAubmHmWrYiJuOSG0FF9VxLD?usp=sharing"

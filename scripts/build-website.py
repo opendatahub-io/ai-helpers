@@ -1,581 +1,403 @@
 #!/usr/bin/env python3
 """
 Build website data for ODH ai-helpers Github Pages
-Extracts plugin and command information from the repository
+Loads tool information from centralized tools.yaml configuration
 """
 
 import json
 import re
+import sys
 import yaml
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict
 
 
-def parse_frontmatter(content: str) -> Dict[str, str]:
-    """Extract frontmatter from markdown file"""
-    frontmatter = {}
-    if content.startswith("---"):
-        parts = content.split("---", 2)
-        if len(parts) >= 2:
-            fm_lines = parts[1].strip().split("\n")
-            for line in fm_lines:
-                if ":" in line:
-                    key, value = line.split(":", 1)
-                    frontmatter[key.strip()] = value.strip()
-    return frontmatter
+def load_categories_config(categories_path: Path) -> Dict:
+    """Load categories configuration from categories.yaml."""
 
-
-def extract_synopsis(content: str) -> str:
-    """Extract synopsis from command markdown"""
-    match = re.search(r"## Synopsis\s*```\s*([^\n]+)", content, re.MULTILINE)
-    if match:
-        return match.group(1).strip()
-    return ""
-
-
-def get_plugin_commands(
-    plugin_path: Path, plugin_name: str = ""
-) -> List[Dict[str, str]]:
-    """Get all commands for a plugin"""
-    commands = []
-    commands_dir = plugin_path / "commands"
-
-    if not commands_dir.exists():
-        return commands
-
-    for cmd_file in sorted(commands_dir.glob("*.md")):
-        try:
-            content = cmd_file.read_text()
-            frontmatter = parse_frontmatter(content)
-            synopsis = extract_synopsis(content)
-
-            command_name = cmd_file.stem
-
-            # Fix synopsis to use proper Claude Code format: /plugin:command
-            if synopsis and plugin_name:
-                # Replace the command part with the plugin:command format
-                # E.g., "/sprint-summary <args>" becomes "/jira:sprint-summary <args>"
-                synopsis = synopsis.replace(
-                    f"/{command_name}", f"/{plugin_name}:{command_name}"
-                )
-
-            # Create relative path from repository root for GitHub link
-            base_path = cmd_file.parents[
-                3
-            ]  # Get repo root (three levels up from claude-plugins/plugin/commands)
-            relative_path = cmd_file.relative_to(base_path)
-
-            commands.append(
-                {
-                    "name": command_name,
-                    "description": frontmatter.get("description", ""),
-                    "synopsis": synopsis,
-                    "argument_hint": frontmatter.get("argument-hint", ""),
-                    "file_path": str(relative_path),
-                }
-            )
-        except Exception as e:
-            print(f"Error processing {cmd_file}: {e}")
-
-    return commands
-
-
-def get_plugin_skills(plugin_path: Path) -> List[Dict[str, str]]:
-    """Get all skills for a plugin"""
-    skills = []
-    skills_dir = plugin_path / "skills"
-
-    if not skills_dir.exists():
-        return skills
-
-    for skill_dir in sorted(skills_dir.iterdir()):
-        if not skill_dir.is_dir():
-            continue
-
-        skill_file = skill_dir / "SKILL.md"
-        if not skill_file.exists():
-            continue
-
-        try:
-            content = skill_file.read_text()
-            frontmatter = parse_frontmatter(content)
-
-            skill_name = skill_dir.name
-            # Create relative path from repository root for GitHub link
-            base_path = skill_file.parents[
-                4
-            ]  # Get repo root (four levels up from claude-plugins/plugin/skills/skill/SKILL.md)
-            relative_path = skill_file.relative_to(base_path)
-
-            skills.append(
-                {
-                    "name": frontmatter.get("name", skill_name),
-                    "id": skill_name,
-                    "description": frontmatter.get("description", ""),
-                    "file_path": str(relative_path),
-                }
-            )
-        except Exception as e:
-            print(f"Error processing {skill_file}: {e}")
-
-    return skills
-
-
-def get_plugin_hooks(plugin_path: Path) -> List[Dict[str, str]]:
-    """Get all hooks for a plugin"""
-    hooks = []
-    hooks_file = plugin_path / "hooks" / "hooks.json"
-
-    if not hooks_file.exists():
-        return hooks
+    if not categories_path.exists():
+        print(f"Error: Categories configuration not found: {categories_path}")
+        sys.exit(1)
 
     try:
-        with open(hooks_file) as f:
-            hooks_data = json.load(f)
-
-        # Extract description and hook types
-        description = hooks_data.get("description", "")
-        hook_types = hooks_data.get("hooks", {})
-
-        for hook_type, hook_configs in hook_types.items():
-            hooks.append(
-                {"name": hook_type, "description": description, "type": hook_type}
-            )
-    except Exception as e:
-        print(f"Error processing {hooks_file}: {e}")
-
-    return hooks
+        with open(categories_path, "r") as f:
+            return yaml.safe_load(f)
+    except (yaml.YAMLError, IOError) as e:
+        print(f"Error: Could not read categories configuration: {e}")
+        sys.exit(1)
 
 
-def get_plugin_agents(plugin_path: Path) -> List[Dict[str, str]]:
-    """Get all agents for a plugin"""
-    agents = []
-    agents_dir = plugin_path / "agents"
+def title_to_slug(title: str) -> str:
+    """Convert gem title to slug format (lowercase, spaces/special chars to hyphens)"""
+    return re.sub(r"[^a-zA-Z0-9]+", "-", title.lower()).strip("-")
 
-    if not agents_dir.exists():
-        return agents
 
-    for agent_file in sorted(agents_dir.glob("*.md")):
+def get_filesystem_tools(helpers_dir: Path) -> Dict[str, str]:
+    """Extract all tool names from the filesystem with their types
+
+    Returns:
+        Dict mapping tool name to tool type
+    """
+    filesystem_tools = {}
+
+    # Skills - directories in helpers/skills/
+    skills_dir = helpers_dir / "skills"
+    if skills_dir.exists() and skills_dir.is_dir():
+        for item in skills_dir.iterdir():
+            if item.is_dir():
+                filesystem_tools[item.name] = "skill"
+
+    # Commands - .md files in helpers/commands/
+    commands_dir = helpers_dir / "commands"
+    if commands_dir.exists() and commands_dir.is_dir():
+        for item in commands_dir.iterdir():
+            if item.is_file() and item.suffix == ".md":
+                # Skip README.md files (case-insensitive)
+                if item.name.lower() == "readme.md":
+                    continue
+                filesystem_tools[item.stem] = "command"
+
+    # Agents - .md files in helpers/agents/
+    agents_dir = helpers_dir / "agents"
+    if agents_dir.exists() and agents_dir.is_dir():
+        for item in agents_dir.iterdir():
+            if item.is_file() and item.suffix == ".md":
+                # Skip README.md files (case-insensitive)
+                if item.name.lower() == "readme.md":
+                    continue
+                filesystem_tools[item.stem] = "agent"
+
+    # Gems - titles from gems.yaml
+    gems_file = helpers_dir / "gems" / "gems.yaml"
+    if gems_file.exists() and gems_file.is_file():
         try:
-            content = agent_file.read_text()
-            frontmatter = parse_frontmatter(content)
-
-            agent_name = agent_file.stem
-            # Create relative path from repository root for GitHub link
-            base_path = agent_file.parents[
-                3
-            ]  # Get repo root (three levels up from claude-plugins/plugin/agents)
-            relative_path = agent_file.relative_to(base_path)
-
-            agents.append(
-                {
-                    "name": frontmatter.get("name", agent_name),
-                    "id": agent_name,
-                    "description": frontmatter.get("description", ""),
-                    "tools": frontmatter.get("tools", ""),
-                    "model": frontmatter.get("model", ""),
-                    "file_path": str(relative_path),
-                }
-            )
-        except Exception as e:
-            print(f"Error processing {agent_file}: {e}")
-
-    return agents
-
-
-def get_cursor_commands(cursor_path: Path) -> List[Dict[str, str]]:
-    """Get all commands for cursor tools"""
-    commands = []
-    commands_dir = cursor_path / "commands"
-
-    if not commands_dir.exists():
-        return commands
-
-    for cmd_file in sorted(commands_dir.glob("*.md")):
-        try:
-            # Resolve symlinks to get the actual file path
-            resolved_file = cmd_file.resolve()
-            content = resolved_file.read_text()
-            frontmatter = parse_frontmatter(content)
-            synopsis = extract_synopsis(content)
-
-            command_name = cmd_file.stem
-            # For cursor commands, use the full filename as the command name
-            # e.g., 'git-commit-suggest' becomes '/git-commit-suggest'
-            full_command_name = command_name
-
-            # Extract display name for the command itself (last part after hyphen)
-            parts = command_name.split("-", 1)
-            if len(parts) > 1:
-                display_name = parts[1]
-            else:
-                display_name = command_name
-
-            # Fix synopsis for cursor commands to use proper format: /full-command-name
-            if synopsis:
-                # Replace the raw command with the full command name
-                # E.g., "/sprint-summary <args>" becomes "/jira-sprint-summary <args>"
-                cursor_synopsis = synopsis.replace(
-                    f"/{display_name}", f"/{full_command_name}"
-                )
-                # Also handle cases where the synopsis might have the old :format
-                cursor_synopsis = cursor_synopsis.replace(
-                    f"/{command_name.split('-')[0]}:{display_name}",
-                    f"/{full_command_name}",
-                )
-            else:
-                cursor_synopsis = f"/{full_command_name}"
-
-            # Create relative path from repository root for GitHub link
-            # Handle both symlinked and regular files
-            try:
-                # Check if this is a symlink that points to somewhere within this repo
-                if cmd_file.is_symlink():
-                    resolved_file = cmd_file.resolve()
-                    # Check if resolved file is within our repo
-                    repo_base = cmd_file.parents[2]  # Should be the repo root
-                    try:
-                        # If the resolved file is within our repo, use its path
-                        if resolved_file.is_relative_to(repo_base):
-                            relative_path = resolved_file.relative_to(repo_base)
-                        else:
-                            # Symlink points outside our repo, use the symlink path itself
-                            relative_path = cmd_file.relative_to(repo_base)
-                    except (ValueError, AttributeError):
-                        # Fallback for older Python versions or path issues
-                        try:
-                            resolved_str = str(resolved_file)
-                            repo_str = str(repo_base)
-                            if resolved_str.startswith(repo_str):
-                                relative_path = resolved_file.relative_to(repo_base)
-                            else:
-                                relative_path = cmd_file.relative_to(repo_base)
-                        except ValueError:
-                            relative_path = Path("cursor") / "commands" / cmd_file.name
-                else:
-                    # Regular file, use normal path
-                    base_path = cmd_file.parents[
-                        2
-                    ]  # Get repo root (two levels up from cursor/commands)
-                    relative_path = cmd_file.relative_to(base_path)
-            except (ValueError, OSError):
-                # Final fallback: construct path assuming standard structure
-                relative_path = Path("cursor") / "commands" / cmd_file.name
-
-            commands.append(
-                {
-                    "name": display_name,
-                    "full_command_name": full_command_name,
-                    "description": frontmatter.get("description", ""),
-                    "synopsis": cursor_synopsis,
-                    "argument_hint": frontmatter.get("argument-hint", ""),
-                    "file_path": str(relative_path),
-                }
-            )
-        except Exception as e:
-            print(f"Error processing {cmd_file}: {e}")
-
-    return commands
-
-
-def get_gemini_gems(gems_dir: Path, categories_data: Dict) -> List[Dict[str, any]]:
-    """Get all Gemini Gems as individual tools for website display"""
-    tools = []
-    gems_file = gems_dir / "gems.yaml"
-
-    if not gems_file.exists():
-        return tools
-
-    try:
-        with open(gems_file, "r") as f:
-            gems_data = yaml.safe_load(f)
-
-        if not gems_data or "gems" not in gems_data:
-            return tools
-
-        for gem in gems_data["gems"]:
-            gem_title = gem.get("title", "Untitled Gem")
-            # Get category from categories.json based on gem title
-            gem_category = get_gemini_gem_category(gem_title, categories_data)
-
-            tools.append(
-                {
-                    "name": gem_title.lower().replace(" ", "-"),
-                    "display_name": gem_title,
-                    "description": gem.get("description", ""),
-                    "category": gem_category,
-                    "link": gem.get("link", ""),
-                    "commands": [],
-                    "skills": [],
-                    "hooks": [],
-                    "agents": [],
-                    "has_readme": False,
-                }
-            )
-    except Exception as e:
-        print(f"Error processing {gems_file}: {e}")
-
-    return tools
-
-
-def load_categories(base_path: Path) -> Dict:
-    """Load categories configuration"""
-    categories_file = base_path / "categories.json"
-    if categories_file.exists():
-        with open(categories_file) as f:
-            return json.load(f)
-    return {
-        "categories": {
-            "general": {
-                "name": "General",
-                "description": "General-purpose tools and utilities",
-                "claude_plugin_dirs": [],
-                "cursor_commands": [],
-            }
-        }
-    }
-
-
-def update_categories_with_missing_items(
-    categories_data: Dict, marketplace_data: Dict, base_path: Path
-) -> bool:
-    """Update categories.json to include any missing plugins, cursor commands, or gemini gems in 'general' category.
-    Returns True if file was updated, False otherwise."""
-
-    # Get all existing categorized items
-    categorized_plugins = set()
-    categorized_commands = set()
-    categorized_gems = set()
-
-    for category_data in categories_data["categories"].values():
-        categorized_plugins.update(category_data.get("claude_plugin_dirs", []))
-        categorized_commands.update(category_data.get("cursor_commands", []))
-        categorized_gems.update(category_data.get("gemini_gems", []))
-
-    # Get all actual plugins from marketplace
-    actual_plugins = {plugin["name"] for plugin in marketplace_data["plugins"]}
-
-    # Get all actual cursor commands
-    actual_commands = set()
-    cursor_path = base_path / "cursor" / "commands"
-    if cursor_path.exists():
-        for cmd_file in cursor_path.glob("*.md"):
-            actual_commands.add(cmd_file.stem)
-
-    # Get all actual gemini gems
-    actual_gems = set()
-    gems_file = base_path / "gemini-gems" / "gems.yaml"
-    if gems_file.exists():
-        try:
-            with open(gems_file, "r") as f:
+            with open(gems_file, "r", encoding="utf-8") as f:
                 gems_data = yaml.safe_load(f)
+
             if gems_data and "gems" in gems_data:
                 for gem in gems_data["gems"]:
-                    actual_gems.add(gem.get("title", "Untitled Gem"))
-        except Exception as e:
-            print(f"Error reading gems.yaml: {e}")
+                    if "title" in gem:
+                        tool_name = title_to_slug(gem["title"])
+                        filesystem_tools[tool_name] = "gem"
+        except (yaml.YAMLError, IOError) as e:
+            print(
+                f"Warning: Could not parse gems.yaml ({gems_file}): {e}",
+                file=sys.stderr,
+            )
 
-    # Find missing items
-    missing_plugins = actual_plugins - categorized_plugins
-    missing_commands = actual_commands - categorized_commands
-    missing_gems = actual_gems - categorized_gems
+    return filesystem_tools
 
-    # If nothing missing, no update needed
-    if not missing_plugins and not missing_commands and not missing_gems:
-        return False
 
-    # Ensure general category exists with proper structure
-    if "general" not in categories_data["categories"]:
-        categories_data["categories"]["general"] = {
-            "name": "General",
-            "description": "General-purpose tools and utilities",
-            "claude_plugin_dirs": [],
-            "cursor_commands": [],
-            "gemini_gems": [],
-        }
+def get_tool_file_path(tool: Dict, base_path: Path) -> str:
+    """Generate file path for a tool based on its type."""
 
-    general_category = categories_data["categories"]["general"]
+    tool_type = tool["type"]
+    tool_name = tool["name"]
 
-    # Ensure the arrays exist
-    if "claude_plugin_dirs" not in general_category:
-        general_category["claude_plugin_dirs"] = []
-    if "cursor_commands" not in general_category:
-        general_category["cursor_commands"] = []
-    if "gemini_gems" not in general_category:
-        general_category["gemini_gems"] = []
+    if tool_type == "skill":
+        skill_file = base_path / "helpers" / "skills" / tool_name / "SKILL.md"
+        if skill_file.exists():
+            return f"helpers/skills/{tool_name}/SKILL.md"
+        else:
+            print(f"Warning: Skill file not found: {skill_file}")
+            return f"helpers/skills/{tool_name}/SKILL.md"
+    elif tool_type == "command":
+        return f"helpers/commands/{tool_name}.md"
+    elif tool_type == "agent":
+        return f"helpers/agents/{tool_name}.md"
+    elif tool_type == "gem":
+        # Gems are external, no local file path
+        return ""
+    else:
+        print(f"Warning: Unknown tool type '{tool_type}' for tool '{tool_name}'")
+        return ""
 
-    # Add missing plugins and commands to general category
-    if missing_plugins:
-        general_category["claude_plugin_dirs"].extend(sorted(missing_plugins))
-        general_category["claude_plugin_dirs"] = sorted(
-            list(set(general_category["claude_plugin_dirs"]))
+
+def get_tool_metadata(tool: Dict, category: str, base_path: Path) -> Dict:
+    """Get additional metadata for a tool by reading its file."""
+
+    # Initialize metadata with basic info, description will be extracted from markdown
+    metadata = {
+        "name": tool["name"],
+        "description": "",  # Will be populated from markdown frontmatter
+        "category": category,
+        "file_path": get_tool_file_path(tool, base_path),
+    }
+
+    tool_type = tool["type"]
+
+    if tool_type == "skill":
+        # Read additional skill metadata from SKILL.md
+        skill_file = base_path / "helpers" / "skills" / tool["name"] / "SKILL.md"
+        if skill_file.exists():
+            try:
+                content = skill_file.read_text()
+
+                # Parse YAML frontmatter
+                if content.startswith("---\n"):
+                    end_marker = content.find("\n---\n", 4)
+                    if end_marker != -1:
+                        frontmatter_content = content[4:end_marker]
+                        skill_data = yaml.safe_load(frontmatter_content)
+
+                        metadata.update(
+                            {
+                                "description": skill_data.get("description", ""),
+                                "id": tool["name"],
+                                "allowed_tools": skill_data.get("allowed-tools", ""),
+                            }
+                        )
+            except Exception as e:
+                print(f"Warning: Could not read skill metadata from {skill_file}: {e}")
+
+        # Add default fields for skills
+        if "id" not in metadata:
+            metadata["id"] = tool["name"]
+        if "allowed_tools" not in metadata:
+            metadata["allowed_tools"] = ""
+
+    elif tool_type == "command":
+        # Read command metadata from frontmatter
+        cmd_file = base_path / "helpers" / "commands" / f"{tool['name']}.md"
+        if cmd_file.exists():
+            try:
+                content = cmd_file.read_text()
+                frontmatter = {}
+
+                # Parse frontmatter - simple key: value parser
+                if content.startswith("---\n"):
+                    end_marker = content.find("\n---\n", 4)
+                    if end_marker != -1:
+                        frontmatter_content = content[4:end_marker]
+                        for line in frontmatter_content.strip().split("\n"):
+                            if ":" in line:
+                                key, value = line.split(":", 1)
+                                frontmatter[key.strip()] = value.strip()
+
+                # Extract synopsis
+                import re
+
+                match = re.search(
+                    r"## Synopsis\s*```[^\n]*\n([^\n]+)", content, re.MULTILINE
+                )
+
+                # Only add synopsis to metadata if we found a non-empty match
+                metadata_updates = {
+                    "description": frontmatter.get("description", ""),
+                    "argument_hint": frontmatter.get("argument-hint", ""),
+                }
+                if match:
+                    synopsis = match.group(1).strip()
+                    if synopsis:  # Only add if non-empty
+                        metadata_updates["synopsis"] = synopsis
+
+                metadata.update(metadata_updates)
+            except Exception as e:
+                print(f"Warning: Could not read command metadata from {cmd_file}: {e}")
+
+        # Add default fields for commands
+        if "synopsis" not in metadata:
+            metadata["synopsis"] = f"/{tool['name']}"
+        if "argument_hint" not in metadata:
+            metadata["argument_hint"] = ""
+
+    elif tool_type == "agent":
+        # Read agent metadata from frontmatter
+        agent_file = base_path / "helpers" / "agents" / f"{tool['name']}.md"
+        if agent_file.exists():
+            try:
+                content = agent_file.read_text()
+
+                # Parse YAML frontmatter
+                if content.startswith("---\n"):
+                    end_marker = content.find("\n---\n", 4)
+                    if end_marker != -1:
+                        frontmatter_content = content[4:end_marker]
+                        agent_data = yaml.safe_load(frontmatter_content)
+
+                        metadata.update(
+                            {
+                                "description": agent_data.get("description", ""),
+                                "id": tool["name"],
+                                "tools": agent_data.get("tools", ""),
+                                "model": agent_data.get("model", ""),
+                            }
+                        )
+            except Exception as e:
+                print(f"Warning: Could not read agent metadata from {agent_file}: {e}")
+
+        # Add default fields for agents
+        if "id" not in metadata:
+            metadata["id"] = tool["name"]
+        if "tools" not in metadata:
+            metadata["tools"] = ""
+        if "model" not in metadata:
+            metadata["model"] = ""
+
+    elif tool_type == "gem":
+        # For gems, get description and link from gems.yaml by matching tool name
+        link = ""
+        description = ""
+
+        gemini_gems_path = base_path / "helpers" / "gems" / "gems.yaml"
+        if gemini_gems_path.exists():
+            try:
+                with open(gemini_gems_path) as f:
+                    gems_data = yaml.safe_load(f)
+
+                # Find matching gem by converting gem title to kebab-case
+                def title_to_kebab_case(title):
+                    """Convert gem title to kebab-case for matching with tool names"""
+                    import re
+
+                    # Replace spaces and special characters with hyphens
+                    kebab = re.sub(r"[^\w\s-]", "", title.lower())
+                    kebab = re.sub(r"[-\s]+", "-", kebab)
+                    return kebab.strip("-")
+
+                tool_name = tool["name"]
+
+                for gem in gems_data.get("gems", []):
+                    gem_title = gem.get("title", "")
+                    if gem_title and title_to_kebab_case(gem_title) == tool_name:
+                        link = gem.get("link", "")
+                        # Use description from gems.yaml if available
+                        if "description" in gem:
+                            description = gem.get("description", "")
+                        break
+            except Exception as e:
+                print(f"Warning: Could not read gemini gems data: {e}")
+
+        metadata.update(
+            {
+                "description": description,
+                "link": link,
+            }
         )
-        print(
-            f"Added {len(missing_plugins)} missing Claude plugins to general category: {', '.join(sorted(missing_plugins))}"
-        )
 
-    if missing_commands:
-        general_category["cursor_commands"].extend(sorted(missing_commands))
-        general_category["cursor_commands"] = sorted(
-            list(set(general_category["cursor_commands"]))
-        )
-        print(
-            f"Added {len(missing_commands)} missing Cursor commands to general category: {', '.join(sorted(missing_commands))}"
-        )
-
-    if missing_gems:
-        general_category["gemini_gems"].extend(sorted(missing_gems))
-        general_category["gemini_gems"] = sorted(
-            list(set(general_category["gemini_gems"]))
-        )
-        print(
-            f"Added {len(missing_gems)} missing Gemini Gems to general category: {', '.join(sorted(missing_gems))}"
-        )
-
-    return True
-
-
-def get_plugin_category(plugin_name: str, categories_data: Dict) -> str:
-    """Determine the category for a Claude plugin based on its directory name"""
-    for category_key, category_data in categories_data["categories"].items():
-        if plugin_name in category_data.get("claude_plugin_dirs", []):
-            return category_key
-    return "general"  # Default category
-
-
-def get_cursor_category(command_name: str, categories_data: Dict) -> str:
-    """Determine the category for a Cursor command based on configuration"""
-    for category_key, category_data in categories_data["categories"].items():
-        cursor_commands = category_data.get("cursor_commands", [])
-        if command_name in cursor_commands:
-            return category_key
-    return "general"  # Default category
-
-
-def get_gemini_gem_category(gem_title: str, categories_data: Dict) -> str:
-    """Determine the category for a Gemini Gem based on configuration"""
-    for category_key, category_data in categories_data["categories"].items():
-        gemini_gems = category_data.get("gemini_gems", [])
-        if gem_title in gemini_gems:
-            return category_key
-    return "general"  # Default category
+    return metadata
 
 
 def build_website_data():
     """Build complete website data structure"""
     # Get repository root (parent of scripts directory)
     base_path = Path(__file__).parent.parent
-    marketplace_file = base_path / ".claude-plugin" / "marketplace.json"
-    categories_file = base_path / "categories.json"
-
-    with open(marketplace_file) as f:
-        marketplace = json.load(f)
+    categories_path = base_path / "categories.yaml"
 
     # Load categories configuration
-    categories_data = load_categories(base_path)
-
-    # Update categories with any missing plugins/commands
-    categories_updated = update_categories_with_missing_items(
-        categories_data, marketplace, base_path
+    categories_config = (
+        load_categories_config(categories_path) if categories_path.exists() else {}
     )
 
-    # Save updated categories back to file if needed
-    if categories_updated:
-        with open(categories_file, "w") as f:
-            json.dump(categories_data, f, indent=2)
-        print(f"Updated {categories_file} with missing items")
+    # Get filesystem tools to infer types
+    helpers_dir = base_path / "helpers"
+    filesystem_tools = get_filesystem_tools(helpers_dir)
+
+    # Collect tools that are already in categories to identify General tools
+    categorized_tools = set()
+    for category_name, tools in categories_config.items():
+        if isinstance(tools, list):
+            categorized_tools.update(tools)
+
+    # Check for duplicate tool names
+    all_tools_in_categories = []
+    for category_name, tools in categories_config.items():
+        if isinstance(tools, list):
+            all_tools_in_categories.extend(tools)
+
+    # Validate no duplicates
+    seen_tools = set()
+    duplicate_tools = set()
+    for tool_name in all_tools_in_categories:
+        if tool_name in seen_tools:
+            duplicate_tools.add(tool_name)
+        seen_tools.add(tool_name)
+
+    if duplicate_tools:
+        print("Error: Duplicate tool names found in categories:")
+        for tool in duplicate_tools:
+            print(f"  - {tool}")
+        sys.exit(1)
+
+    # Identify tools that should be in General category (not in any category)
+    general_tools = []
+    for tool_name in filesystem_tools.keys():
+        if tool_name not in categorized_tools:
+            general_tools.append(tool_name)
+
+    # Create complete categories structure (including General if there are uncategorized tools)
+    categories = {}
+    if general_tools:
+        categories["general"] = {"name": "General"}
+    for category_key in categories_config.keys():
+        # Convert category names to lowercase keys for consistent filtering
+        categories[category_key.lower()] = {"name": category_key}
 
     website_data = {
-        "name": marketplace["name"],
-        "owner": marketplace["owner"]["name"],
-        "categories": categories_data,
-        "tools": {"claude_code": [], "cursor": [], "gemini": []},
+        "name": "odh-ai-helpers",
+        "owner": "ODH",
+        "categories": categories,
+        "tools": {"gemini": [], "skills": [], "commands": [], "agents": []},
     }
 
-    # Process Claude Code plugins
-    for plugin_info in marketplace["plugins"]:
-        source = plugin_info["source"]
+    # Process General tools first (uncategorized tools)
+    if general_tools:
+        for tool_name in general_tools:
+            if tool_name in filesystem_tools:
+                tool_type = filesystem_tools[tool_name]
+                tool_metadata = get_tool_metadata(
+                    {"name": tool_name, "type": tool_type}, "general", base_path
+                )
 
-        # External plugins have object sources - skip local scanning
-        if isinstance(source, dict):
-            category = get_plugin_category(plugin_info["name"], categories_data)
-            plugin_data = {
-                "name": plugin_info["name"],
-                "description": plugin_info["description"],
-                "category": category,
-                "commands": [],
-                "skills": [],
-                "hooks": [],
-                "agents": [],
-                "has_readme": False,
-                "external": True,
-                "source": source,
-            }
-            website_data["tools"]["claude_code"].append(plugin_data)
+                if tool_type == "skill":
+                    website_data["tools"]["skills"].append(tool_metadata)
+                elif tool_type == "command":
+                    website_data["tools"]["commands"].append(tool_metadata)
+                elif tool_type == "agent":
+                    website_data["tools"]["agents"].append(tool_metadata)
+                elif tool_type == "gem":
+                    website_data["tools"]["gemini"].append(tool_metadata)
+
+    # Process tools by category
+    for category_name, tools in categories_config.items():
+        if not isinstance(tools, list):
+            print(
+                f"Warning: Category '{category_name}' does not contain a list of tools"
+            )
             continue
 
-        # Local plugin - scan directory
-        plugin_path = base_path / source
+        for tool_name in tools:
+            # Validate tool name is a string
+            if not isinstance(tool_name, str):
+                print(
+                    f"Warning: Tool name must be a string in category '{category_name}': {tool_name}"
+                )
+                continue
 
-        # Get commands, skills, hooks, and agents
-        commands = get_plugin_commands(plugin_path, plugin_info["name"])
-        skills = get_plugin_skills(plugin_path)
-        hooks = get_plugin_hooks(plugin_path)
-        agents = get_plugin_agents(plugin_path)
+            # Get tool type from filesystem
+            if tool_name not in filesystem_tools:
+                print(f"Warning: Tool '{tool_name}' not found in filesystem, skipping")
+                continue
 
-        # Read README if exists
-        readme_path = plugin_path / "README.md"
+            tool_type = filesystem_tools[tool_name]
+            tool_metadata = get_tool_metadata(
+                {"name": tool_name, "type": tool_type}, category_name.lower(), base_path
+            )
 
-        # Determine category for this plugin
-        category = get_plugin_category(plugin_info["name"], categories_data)
+            if tool_type == "skill":
+                website_data["tools"]["skills"].append(tool_metadata)
+            elif tool_type == "command":
+                website_data["tools"]["commands"].append(tool_metadata)
+            elif tool_type == "agent":
+                website_data["tools"]["agents"].append(tool_metadata)
+            elif tool_type == "gem":
+                website_data["tools"]["gemini"].append(tool_metadata)
 
-        plugin_data = {
-            "name": plugin_info["name"],
-            "description": plugin_info["description"],
-            "category": category,
-            "commands": commands,
-            "skills": skills,
-            "hooks": hooks,
-            "agents": agents,
-            "has_readme": readme_path.exists(),
-        }
-
-        website_data["tools"]["claude_code"].append(plugin_data)
-
-    # Process Cursor commands (each command as individual tool)
-    cursor_path = base_path / "cursor"
-    if cursor_path.exists():
-        cursor_commands = get_cursor_commands(cursor_path)
-
-        # Each cursor command becomes an individual tool entry
-        for cmd in cursor_commands:
-            # Get the full command name from the file (e.g., git-commit-suggest, jira-sprint-summary)
-            # Determine category for this cursor command
-            category = get_cursor_category(cmd["full_command_name"], categories_data)
-
-            cursor_tool_data = {
-                "name": cmd[
-                    "full_command_name"
-                ],  # This will be added by get_cursor_commands
-                "description": cmd["description"],
-                "category": category,
-                "commands": [cmd],  # Single command per tool
-                "skills": [],
-                "hooks": [],
-                "agents": [],
-                "has_readme": (cursor_path / "README.md").exists(),
-            }
-
-            website_data["tools"]["cursor"].append(cursor_tool_data)
-
-    # Process Gemini Gems
-    gemini_gems_path = base_path / "gemini-gems"
-    if gemini_gems_path.exists():
-        gems = get_gemini_gems(gemini_gems_path, categories_data)
-
-        # Add each gem as an individual tool
-        for gem_tool in gems:
-            website_data["tools"]["gemini"].append(gem_tool)
+    # Sort all tool arrays alphabetically by name to ensure consistent ordering
+    website_data["tools"]["skills"].sort(key=lambda x: x["name"])
+    website_data["tools"]["commands"].sort(key=lambda x: x["name"])
+    website_data["tools"]["agents"].sort(key=lambda x: x["name"])
+    website_data["tools"]["gemini"].sort(key=lambda x: x["name"])
 
     return website_data
 
@@ -592,25 +414,15 @@ if __name__ == "__main__":
 
     print(f"Website data written to {output_file}")
 
-    # Calculate statistics
-    claude_tools = data["tools"]["claude_code"]
-    cursor_tools = data["tools"]["cursor"]
+    # Calculate statistics for new tool structure
+    skills_tools = data["tools"]["skills"]
+    commands_tools = data["tools"]["commands"]
+    agents_tools = data["tools"]["agents"]
     gemini_tools = data["tools"]["gemini"]
-    all_tools = claude_tools + cursor_tools + gemini_tools
+    all_tools = skills_tools + commands_tools + agents_tools + gemini_tools
 
-    print(f"Total Claude Code plugins: {len(claude_tools)}")
-    print(f"Total Cursor tools: {len(cursor_tools)}")
-    print(f"Total Gemini Gems collections: {len(gemini_tools)}")
+    print(f"Total Skills: {len(skills_tools)}")
+    print(f"Total Commands: {len(commands_tools)}")
+    print(f"Total Agents: {len(agents_tools)}")
+    print(f"Total Gemini Gems: {len(gemini_tools)}")
     print(f"Total tools: {len(all_tools)}")
-
-    total_commands = sum(len(p["commands"]) for p in all_tools)
-    print(f"Total commands: {total_commands}")
-
-    total_skills = sum(len(p["skills"]) for p in all_tools)
-    print(f"Total skills: {total_skills}")
-
-    total_hooks = sum(len(p["hooks"]) for p in all_tools)
-    print(f"Total hooks: {total_hooks}")
-
-    total_agents = sum(len(p["agents"]) for p in all_tools)
-    print(f"Total agents: {total_agents}")

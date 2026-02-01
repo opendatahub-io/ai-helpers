@@ -67,6 +67,10 @@ rules:
     enabled: true
     severity: error
 
+  tools-yaml-validation:
+    enabled: true
+    severity: error
+
 # Exclude patterns
 exclude: []
 

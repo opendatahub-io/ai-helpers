@@ -2,448 +2,232 @@
   "name": "odh-ai-helpers",
   "owner": "ODH",
   "categories": {
-    "categories": {
-      "general": {
-        "name": "General",
-        "description": "General-purpose tools and utilities",
-        "claude_plugin_dirs": [
-          "fips-compliance-checker",
-          "git",
-          "gitlab",
-          "hello-world",
-          "jira",
-          "konflux",
-          "python-packaging",
-          "rpm",
-          "slack",
-          "utils"
-        ],
-        "cursor_commands": [
-          "jira-sprint-summary",
-          "konflux-application",
-          "konflux-component",
-          "rpm-examine"
-        ],
-        "gemini_gems": [
-          "Email Copilot",
-          "Technical Spike & Investigation"
-        ]
-      },
-      "aipcc": {
-        "name": "AIPCC",
-        "description": "Tools specifically designed for AIPCC workflows and processes",
-        "claude_plugin_dirs": [
-          "aipcc"
-        ],
-        "cursor_commands": [
-          "aipcc-commit-suggest"
-        ],
-        "gemini_gems": [
-          "Commit Message Assistant",
-          "AIPCC ADR Assistant"
-        ]
-      },
-      "vllm": {
-        "name": "vLLM",
-        "description": "Tools specifically designed for vLLM workflows and processes",
-        "claude_plugin_dirs": [
-          "vllm"
-        ]
-      }
+    "general": {
+      "name": "General"
+    },
+    "aipcc": {
+      "name": "AIPCC"
+    },
+    "vllm": {
+      "name": "vLLM"
     }
   },
   "tools": {
-    "claude_code": [
+    "gemini": [
       {
-        "name": "aipcc",
-        "description": "Tools specifically designed for AIPCC workflows and processes",
+        "name": "aipcc-adr-assistant",
+        "description": "My purpose is to help you generate well-structured Architecture Decision Records (ADRs) in AIPCC. You provide the relevant documents and notes, and I will synthesize that information to populate a predefined ADR template.",
         "category": "aipcc",
-        "commands": [
-          {
-            "name": "commit-suggest",
-            "description": "Generate AIPCC Commits style commit messages or summarize existing commits",
-            "synopsis": "/aipcc:commit-suggest       # Analyze staged changes",
-            "argument_hint": "[N]",
-            "file_path": "claude-plugins/aipcc/commands/commit-suggest.md"
-          }
-        ],
-        "skills": [],
-        "hooks": [],
-        "agents": [],
-        "has_readme": true
+        "file_path": "",
+        "link": "https://gemini.google.com/gem/11WO66DX_4-MQHIF6fj4LeM8dKxDzkz17?usp=sharing"
       },
       {
-        "name": "git",
-        "description": "Git workflow automation and utilities",
+        "name": "codebase-explainer",
+        "description": "Your AI guide for code exploration. I help you understand complex repositories, from big-picture overviews to file-level details.",
         "category": "general",
-        "commands": [],
-        "skills": [
-          {
-            "name": "shallow-clone",
-            "id": "shallow-clone",
-            "description": "Perform a shallow clone of a Git repository to a temporary location.",
-            "file_path": "claude-plugins/git/skills/shallow-clone/SKILL.md"
-          }
-        ],
-        "hooks": [],
-        "agents": [],
-        "has_readme": true
+        "file_path": "",
+        "link": "https://gemini.google.com/gem/1gY4g7MaPaAubmHmWrYiJuOSG0FF9VxLD?usp=sharing"
       },
       {
-        "name": "gitlab",
-        "description": "Tools and skills for interacting with GitLab resources",
+        "name": "commit-message-assistant",
+        "description": "I am the AIPCC Commit Message Assistant. Please provide a description of your code changes, and I will generate a well-formatted commit message for you.",
+        "category": "aipcc",
+        "file_path": "",
+        "link": "https://gemini.google.com/gem/1j7GV5eSdCl3jtT2dYWrRlDpV6q7eBqqc?usp=sharing"
+      },
+      {
+        "name": "email-copilot",
+        "description": "My purpose is to take your minimal, raw notes and expand them into complete, polished email drafts, acting as your thought partner.",
         "category": "general",
-        "commands": [],
-        "skills": [
-          {
-            "name": "pipeline-debugger",
-            "id": "pipeline-debugger",
-            "description": "Debug and monitor GitLab CI/CD pipelines for merge requests. Check pipeline status, view job logs, and troubleshoot CI failures. Use this when the user needs to investigate GitLab CI pipeline issues, check job statuses, or view specific job logs.",
-            "file_path": "claude-plugins/gitlab/skills/pipeline-debugger/SKILL.md"
-          }
-        ],
-        "hooks": [],
-        "agents": [],
-        "has_readme": true
+        "file_path": "",
+        "link": "https://gemini.google.com/gem/1P0wg_pwCga6YDVKfd3enWY1CRh2EzuXI?usp=sharing"
       },
       {
-        "name": "hello-world",
-        "description": "A hello world plugin",
+        "name": "red-hat-ai-release-navigator",
+        "description": "Advisor on the Red Hat AI (RHAI) release lifecycle",
         "category": "general",
-        "commands": [
-          {
-            "name": "echo",
-            "description": "Hello world plugin implementation",
-            "synopsis": "/hello-world:echo [name]",
-            "argument_hint": "[name]",
-            "file_path": "claude-plugins/hello-world/commands/echo.md"
-          }
-        ],
-        "skills": [],
-        "hooks": [],
-        "agents": [],
-        "has_readme": true
+        "file_path": "",
+        "link": "https://gemini.google.com/gem/1BuXxrQY7YZS7TluLX9iF3fezVzPoCwHL?usp=sharing"
       },
       {
-        "name": "jira",
-        "description": "Jira workflow automation and utilities",
+        "name": "technical-spike-investigation",
+        "description": "My purpose is to help an engineer conduct a technical spike for a new feature, library, initiative, or component. Note: gems don't have access to deep research so if you need the Spike to perform some research on the Internet, you'll not want to use this Gem and use regular chat sessions.",
         "category": "general",
-        "commands": [
-          {
-            "name": "sprint-summary",
-            "description": "Generate comprehensive sprint summaries by analyzing JIRA sprint data, including issue breakdown, progress metrics, and team performance insights.",
-            "synopsis": "/jira:sprint-summary <sprint-name> [options]",
-            "argument_hint": "<sprint-name> [options]",
-            "file_path": "claude-plugins/jira/commands/sprint-summary.md"
-          }
-        ],
-        "skills": [
-          {
-            "name": "upload-chat-log",
-            "id": "upload-chat-log",
-            "description": "Export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation.",
-            "file_path": "claude-plugins/jira/skills/upload-chat-log/SKILL.md"
-          },
-          {
-            "name": "upload-slack-thread",
-            "id": "upload-slack-thread",
-            "description": "Export Slack thread conversations to JIRA tickets as formatted markdown comments",
-            "file_path": "claude-plugins/jira/skills/upload-slack-thread/SKILL.md"
-          }
-        ],
-        "hooks": [],
-        "agents": [],
-        "has_readme": true
+        "file_path": "",
+        "link": "https://gemini.google.com/gem/1PAt1u0cEtMbzqjl3Kp3TAzaUft3qrkXw?usp=sharing"
       },
       {
-        "name": "konflux",
-        "description": "A plugin to analyze and trigger Konflux builds",
+        "name": "tl-dev",
+        "description": "My purpose is to act as your technical article filter. Provide a URL, and I will generate a concise TL;DR summary for you. I first determine if the content is technical. If not, I will reply only with Content is not relevant to software development.",
         "category": "general",
-        "commands": [
-          {
-            "name": "application",
-            "description": "Manage Konflux application",
-            "synopsis": "/konflux:application status <application>",
-            "argument_hint": "<subcommand> [args]",
-            "file_path": "claude-plugins/konflux/commands/application.md"
-          },
-          {
-            "name": "component",
-            "description": "Manage Konflux component",
-            "synopsis": "/konflux:component status <component>",
-            "argument_hint": "<subcommand> [args]",
-            "file_path": "claude-plugins/konflux/commands/component.md"
-          }
-        ],
-        "skills": [],
-        "hooks": [],
-        "agents": [],
-        "has_readme": true
-      },
-      {
-        "name": "python-packaging",
-        "description": "Tools and skills for Python package management",
-        "category": "general",
-        "commands": [],
-        "skills": [
-          {
-            "name": "complexity",
-            "id": "complexity",
-            "description": "Analyze Python package build complexity by inspecting PyPI metadata. Evaluates compilation requirements, dependencies, distribution types, and provides recommendations for wheel building strategies.",
-            "file_path": "claude-plugins/python-packaging/skills/complexity/SKILL.md"
-          },
-          {
-            "name": "env-finder",
-            "id": "env-finder",
-            "description": "Investigate environment variables that can be set when building Python wheels for a given project. Analyzes setup.py, CMake files, and other build configuration files to discover customizable build environment variables.",
-            "file_path": "claude-plugins/python-packaging/skills/env-finder/SKILL.md"
-          },
-          {
-            "name": "license-checker",
-            "id": "license-checker",
-            "description": "Assess license compatibility for Python package redistribution using SPDX.org license database. Evaluates whether a given license allows building and distributing wheels, with real-time license information lookup.",
-            "file_path": "claude-plugins/python-packaging/skills/license-checker/SKILL.md"
-          },
-          {
-            "name": "license-finder",
-            "id": "license-finder",
-            "description": "Deterministically find license information for Python packages by checking PyPI metadata first, then falling back to Git repository LICENSE files using shallow cloning.",
-            "file_path": "claude-plugins/python-packaging/skills/license-finder/SKILL.md"
-          },
-          {
-            "name": "source-finder",
-            "id": "source-finder",
-            "description": "Locate source code repositories for Python packages by analyzing PyPI metadata, project URLs, and code hosting platforms like GitHub, GitLab, and Bitbucket. Provides deterministic results with confidence levels.",
-            "file_path": "claude-plugins/python-packaging/skills/source-finder/SKILL.md"
-          }
-        ],
-        "hooks": [],
-        "agents": [
-          {
-            "name": "python-packaging-investigator",
-            "id": "investigator",
-            "description": "Investigates Python package repositories to analyze build systems, dependencies, and packaging complexity. Provides comprehensive guidance on how packages can be built from source using integrated analysis skills.",
-            "tools": "Bash, Read, Grep, Glob, WebFetch, Skill",
-            "model": "sonnet",
-            "file_path": "claude-plugins/python-packaging/agents/investigator.md"
-          }
-        ],
-        "has_readme": true
-      },
-      {
-        "name": "rpm",
-        "description": "Tools for working with RPMs",
-        "category": "general",
-        "commands": [
-          {
-            "name": "examine",
-            "description": "Analyze RPM build.log failures",
-            "synopsis": "/rpm:examine <copr-chroot-url>",
-            "argument_hint": "[copr-chroot-url] OR [build-log-url] [srpm-url] OR [build.log] [specfile|dist-git] [sources]",
-            "file_path": "claude-plugins/rpm/commands/examine.md"
-          }
-        ],
-        "skills": [],
-        "hooks": [],
-        "agents": [],
-        "has_readme": true
-      },
-      {
-        "name": "utils",
-        "description": "A generic utilities plugin serving as a catch-all for various helper commands and agents",
-        "category": "general",
-        "commands": [
-          {
-            "name": "placeholder",
-            "description": "Placeholder command for the utils plugin",
-            "synopsis": "/utils:placeholder",
-            "argument_hint": "",
-            "file_path": "claude-plugins/utils/commands/placeholder.md"
-          }
-        ],
-        "skills": [],
-        "hooks": [],
-        "agents": [],
-        "has_readme": true
-      },
-      {
-        "name": "vllm",
-        "description": "vLLM plugin",
-        "category": "vllm",
-        "commands": [],
-        "skills": [
-          {
-            "name": "vLLM Slack Summary",
-            "id": "vllm-slack-summary",
-            "description": "Generate slack summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team",
-            "file_path": "claude-plugins/vllm/skills/vllm-slack-summary/SKILL.md"
-          }
-        ],
-        "hooks": [],
-        "agents": [],
-        "has_readme": true
-      },
-      {
-        "name": "fips-compliance-checker",
-        "description": "Plugin to scan for FIPS compliance",
-        "category": "general",
-        "commands": [],
-        "skills": [],
-        "hooks": [],
-        "agents": [],
-        "has_readme": false,
-        "external": true,
-        "source": {
-          "source": "url",
-          "url": "https://github.com/opendatahub-io/fips-compliance-checker-claude-code-plugin.git"
-        }
+        "file_path": "",
+        "link": "https://gemini.google.com/gem/1vi4as7sXcljjj0nFwq0rXGYdLl0NJ-7g?usp=sharing"
       }
     ],
-    "cursor": [
+    "skills": [
+      {
+        "name": "git-shallow-clone",
+        "description": "Perform a shallow clone of a Git repository to a temporary location.",
+        "category": "general",
+        "file_path": "helpers/skills/git-shallow-clone/SKILL.md",
+        "id": "git-shallow-clone",
+        "allowed_tools": "Bash"
+      },
+      {
+        "name": "gitlab-pipeline-debugger",
+        "description": "Debug and monitor GitLab CI/CD pipelines for merge requests. Check pipeline status, view job logs, and troubleshoot CI failures. Use this when the user needs to investigate GitLab CI pipeline issues, check job statuses, or view specific job logs.",
+        "category": "general",
+        "file_path": "helpers/skills/gitlab-pipeline-debugger/SKILL.md",
+        "id": "gitlab-pipeline-debugger",
+        "allowed_tools": "Bash Read"
+      },
+      {
+        "name": "jira-upload-chat-log",
+        "description": "Export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation.",
+        "category": "general",
+        "file_path": "helpers/skills/jira-upload-chat-log/SKILL.md",
+        "id": "jira-upload-chat-log",
+        "allowed_tools": ""
+      },
+      {
+        "name": "jira-upload-slack-thread",
+        "description": "Export Slack thread conversations to JIRA tickets as formatted markdown comments",
+        "category": "general",
+        "id": "upload-slack-thread",
+        "file_path": "claude-plugins/jira/skills/upload-slack-thread/SKILL.md"
+      },
+      {
+        "name": "oci-cve-checker",
+        "description": "Compare CVE vulnerabilities between two OCI container images and generate reports showing fixed and new CVEs.",
+        "category": "general",
+        "file_path": "helpers/skills/oci-cve-checker/SKILL.md",
+        "id": "oci-cve-checker",
+        "allowed_tools": "Bash Read"
+      },
+      {
+        "name": "python-packaging-bug-finder",
+        "description": "Find known packaging bugs, fixes, and workarounds for Python projects by searching GitHub issues and analyzing their resolution status",
+        "category": "general",
+        "file_path": "helpers/skills/python-packaging-bug-finder/SKILL.md",
+        "id": "python-packaging-bug-finder",
+        "allowed_tools": "Skill WebFetch WebSearch"
+      },
+      {
+        "name": "python-packaging-complexity",
+        "description": "Analyze Python package build complexity by inspecting PyPI metadata. Evaluates compilation requirements, dependencies, distribution types, and provides recommendations for wheel building strategies.",
+        "category": "general",
+        "file_path": "helpers/skills/python-packaging-complexity/SKILL.md",
+        "id": "python-packaging-complexity",
+        "allowed_tools": "Bash Read"
+      },
+      {
+        "name": "python-packaging-env-finder",
+        "description": "Investigate environment variables that can be set when building Python wheels for a given project. Analyzes setup.py, CMake files, and other build configuration files to discover customizable build environment variables.",
+        "category": "general",
+        "file_path": "helpers/skills/python-packaging-env-finder/SKILL.md",
+        "id": "python-packaging-env-finder",
+        "allowed_tools": "Bash Read Grep Glob"
+      },
+      {
+        "name": "python-packaging-license-checker",
+        "description": "Assess license compatibility for Python package redistribution using SPDX.org license database. Evaluates whether a given license allows building and distributing wheels, with real-time license information lookup.",
+        "category": "general",
+        "file_path": "helpers/skills/python-packaging-license-checker/SKILL.md",
+        "id": "python-packaging-license-checker",
+        "allowed_tools": "WebFetch"
+      },
+      {
+        "name": "python-packaging-license-finder",
+        "description": "Deterministically find license information for Python packages by checking PyPI metadata first, then falling back to Git repository LICENSE files using shallow cloning.",
+        "category": "general",
+        "file_path": "helpers/skills/python-packaging-license-finder/SKILL.md",
+        "id": "python-packaging-license-finder",
+        "allowed_tools": "Bash Skill"
+      },
+      {
+        "name": "python-packaging-source-finder",
+        "description": "Locate source code repositories for Python packages by analyzing PyPI metadata, project URLs, and code hosting platforms like GitHub, GitLab, and Bitbucket. Provides deterministic results with confidence levels.",
+        "category": "general",
+        "file_path": "helpers/skills/python-packaging-source-finder/SKILL.md",
+        "id": "python-packaging-source-finder",
+        "allowed_tools": "Bash WebSearch WebFetch"
+      },
+      {
+        "name": "vllm-compare-reqs",
+        "description": "Compare vllm requirements files between versions",
+        "category": "vllm",
+        "file_path": "helpers/skills/vllm-compare-reqs/SKILL.md",
+        "id": "vllm-compare-reqs",
+        "allowed_tools": "Bash"
+      },
+      {
+        "name": "vllm-slack-summary",
+        "description": "Generate slack summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team",
+        "category": "vllm",
+        "file_path": "helpers/skills/vllm-slack-summary/SKILL.md",
+        "id": "vllm-slack-summary",
+        "allowed_tools": ""
+      }
+    ],
+    "commands": [
       {
         "name": "aipcc-commit-suggest",
         "description": "Generate AIPCC Commits style commit messages or summarize existing commits",
         "category": "aipcc",
-        "commands": [
-          {
-            "name": "commit-suggest",
-            "full_command_name": "aipcc-commit-suggest",
-            "description": "Generate AIPCC Commits style commit messages or summarize existing commits",
-            "synopsis": "/aipcc-commit-suggest       # Analyze staged changes",
-            "argument_hint": "[N]",
-            "file_path": "claude-plugins/aipcc/commands/commit-suggest.md"
-          }
-        ],
-        "skills": [],
-        "hooks": [],
-        "agents": [],
-        "has_readme": true
+        "file_path": "helpers/commands/aipcc-commit-suggest.md",
+        "argument_hint": "[N]",
+        "synopsis": "/aipcc:commit-suggest       # Analyze staged changes"
+      },
+      {
+        "name": "hello-world-echo",
+        "description": "Hello world plugin implementation",
+        "category": "general",
+        "file_path": "helpers/commands/hello-world-echo.md",
+        "argument_hint": "[name]",
+        "synopsis": "/hello-world:echo [name]"
       },
       {
         "name": "jira-sprint-summary",
         "description": "Generate comprehensive sprint summaries by analyzing JIRA sprint data, including issue breakdown, progress metrics, and team performance insights.",
         "category": "general",
-        "commands": [
-          {
-            "name": "sprint-summary",
-            "full_command_name": "jira-sprint-summary",
-            "description": "Generate comprehensive sprint summaries by analyzing JIRA sprint data, including issue breakdown, progress metrics, and team performance insights.",
-            "synopsis": "/jira-sprint-summary <sprint-name> [options]",
-            "argument_hint": "<sprint-name> [options]",
-            "file_path": "claude-plugins/jira/commands/sprint-summary.md"
-          }
-        ],
-        "skills": [],
-        "hooks": [],
-        "agents": [],
-        "has_readme": true
+        "file_path": "helpers/commands/jira-sprint-summary.md",
+        "argument_hint": "<sprint-name> [options]",
+        "synopsis": "/jira:sprint-summary <sprint-name> [options]"
       },
       {
         "name": "konflux-application",
         "description": "Manage Konflux application",
         "category": "general",
-        "commands": [
-          {
-            "name": "application",
-            "full_command_name": "konflux-application",
-            "description": "Manage Konflux application",
-            "synopsis": "/konflux-application status <application>",
-            "argument_hint": "<subcommand> [args]",
-            "file_path": "claude-plugins/konflux/commands/application.md"
-          }
-        ],
-        "skills": [],
-        "hooks": [],
-        "agents": [],
-        "has_readme": true
+        "file_path": "helpers/commands/konflux-application.md",
+        "argument_hint": "<subcommand> [args]",
+        "synopsis": "/konflux:application status <application>"
       },
       {
         "name": "konflux-component",
         "description": "Manage Konflux component",
         "category": "general",
-        "commands": [
-          {
-            "name": "component",
-            "full_command_name": "konflux-component",
-            "description": "Manage Konflux component",
-            "synopsis": "/konflux-component status <component>",
-            "argument_hint": "<subcommand> [args]",
-            "file_path": "claude-plugins/konflux/commands/component.md"
-          }
-        ],
-        "skills": [],
-        "hooks": [],
-        "agents": [],
-        "has_readme": true
+        "file_path": "helpers/commands/konflux-component.md",
+        "argument_hint": "<subcommand> [args]",
+        "synopsis": "/konflux:component status <component>"
       },
       {
         "name": "rpm-examine",
         "description": "Analyze RPM build.log failures",
         "category": "general",
-        "commands": [
-          {
-            "name": "examine",
-            "full_command_name": "rpm-examine",
-            "description": "Analyze RPM build.log failures",
-            "synopsis": "/rpm-examine <copr-chroot-url>",
-            "argument_hint": "[copr-chroot-url] OR [build-log-url] [srpm-url] OR [build.log] [specfile|dist-git] [sources]",
-            "file_path": "claude-plugins/rpm/commands/examine.md"
-          }
-        ],
-        "skills": [],
-        "hooks": [],
-        "agents": [],
-        "has_readme": true
+        "file_path": "helpers/commands/rpm-examine.md",
+        "argument_hint": "[copr-chroot-url] OR [build-log-url] [srpm-url] OR [build.log] [specfile|dist-git] [sources]",
+        "synopsis": "/rpm:examine <copr-chroot-url>"
       }
     ],
-    "gemini": [
+    "agents": [
       {
-        "name": "commit-message-assistant",
-        "display_name": "Commit Message Assistant",
-        "description": "I am the AIPCC Commit Message Assistant. Please provide a description of your code changes, and I will generate a well-formatted commit message for you.",
-        "category": "aipcc",
-        "link": "https://gemini.google.com/gem/1j7GV5eSdCl3jtT2dYWrRlDpV6q7eBqqc?usp=sharing",
-        "commands": [],
-        "skills": [],
-        "hooks": [],
-        "agents": [],
-        "has_readme": false
-      },
-      {
-        "name": "aipcc-adr-assistant",
-        "display_name": "AIPCC ADR Assistant",
-        "description": "My purpose is to help you generate well-structured Architecture Decision Records (ADRs) in AIPCC. You provide the relevant documents and notes, and I will synthesize that information to populate a predefined ADR template.",
-        "category": "aipcc",
-        "link": "https://gemini.google.com/gem/11WO66DX_4-MQHIF6fj4LeM8dKxDzkz17?usp=sharing",
-        "commands": [],
-        "skills": [],
-        "hooks": [],
-        "agents": [],
-        "has_readme": false
-      },
-      {
-        "name": "technical-spike-&-investigation",
-        "display_name": "Technical Spike & Investigation",
-        "description": "My purpose is to help an engineer conduct a technical spike for a new feature, library, initiative, or component. Note: gems don't have access to deep research so if you need the Spike to perform some research on the Internet, you'll not want to use this Gem and use regular chat sessions.",
+        "name": "python-packaging-investigator",
+        "description": "Investigates Python package repositories to analyze build systems, dependencies, and packaging complexity. Provides comprehensive guidance on how packages can be built from source using integrated analysis skills.",
         "category": "general",
-        "link": "https://gemini.google.com/gem/1PAt1u0cEtMbzqjl3Kp3TAzaUft3qrkXw?usp=sharing",
-        "commands": [],
-        "skills": [],
-        "hooks": [],
-        "agents": [],
-        "has_readme": false
-      },
-      {
-        "name": "email-copilot",
-        "display_name": "Email Copilot",
-        "description": "My purpose is to take your minimal, raw notes and expand them into complete, polished email drafts, acting as your thought partner.",
-        "category": "general",
-        "link": "https://gemini.google.com/gem/1P0wg_pwCga6YDVKfd3enWY1CRh2EzuXI?usp=sharing",
-        "commands": [],
-        "skills": [],
-        "hooks": [],
-        "agents": [],
-        "has_readme": false
+        "file_path": "helpers/agents/python-packaging-investigator.md",
+        "id": "python-packaging-investigator",
+        "tools": "Bash, Read, Grep, Glob, WebFetch, Skill",
+        "model": "sonnet"
       }
     ]
   }

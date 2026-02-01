@@ -12,14 +12,6 @@
   color: a2eeef
 
 # Platform-specific labels
-- name: claude-code
-  description: Related to Claude Code plugins, commands, skills, or agents
-  color: 7057ff
-
-- name: cursor-ai
-  description: Related to Cursor AI commands
-  color: 0969da
-
 - name: gemini
   description: Related to Gemini Gems
   color: fbca04
@@ -70,10 +62,6 @@
   color: yellow
 
 # Type of contribution
-- name: new-plugin
-  description: Contribution adds a new plugin
-  color: 1d76db
-
 - name: new-command
   description: Contribution adds a new command
   color: 0e8a16

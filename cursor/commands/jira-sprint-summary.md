@@ -1,1 +1,0 @@
-../../claude-plugins/jira/commands/sprint-summary.md

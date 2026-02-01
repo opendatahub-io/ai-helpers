@@ -14,7 +14,7 @@ except ImportError:
 
 
 class PluginsDocUpToDateRule(Rule):
-    """Check that TOOLS.md, docs/data.json, and images/claude-settings.json are up-to-date by running 'make update'"""
+    """Check that docs/data.json and images/claude/claude-settings.json are up-to-date by running 'make update'"""
 
     @property
     def rule_id(self) -> str:
@@ -22,7 +22,7 @@ class PluginsDocUpToDateRule(Rule):
 
     @property
     def description(self) -> str:
-        return "TOOLS.md, docs/data.json, and images/claude-settings.json must be up-to-date with plugin metadata. Run 'make update' to regenerate."
+        return "docs/data.json and images/claude/claude-settings.json must be up-to-date with plugin metadata. Run 'make update' to regenerate."
 
     def default_severity(self) -> Severity:
         return Severity.ERROR
@@ -34,21 +34,18 @@ class PluginsDocUpToDateRule(Rule):
         if not context.has_marketplace():
             return violations
 
-        tools_md_path = context.root_path / "TOOLS.md"
         data_json_path = context.root_path / "docs" / "data.json"
-        claude_settings_path = context.root_path / "images" / "claude-settings.json"
+        claude_settings_path = (
+            context.root_path / "images" / "claude" / "claude-settings.json"
+        )
 
-        if not tools_md_path.exists():
-            return violations
-
-        # Check if generate_tools_docs.py script exists
-        script_path = context.root_path / "scripts" / "generate_tools_docs.py"
-        if not script_path.exists():
+        # Check if we have categories.yaml as the source of truth
+        categories_yaml_path = context.root_path / "categories.yaml"
+        if not categories_yaml_path.exists():
             return violations
 
         try:
             # Read current content of files to check
-            original_tools_md = tools_md_path.read_text()
             original_data_json = (
                 data_json_path.read_text() if data_json_path.exists() else None
             )
@@ -58,25 +55,7 @@ class PluginsDocUpToDateRule(Rule):
                 else None
             )
 
-            # Run the docs generation script
-            result = subprocess.run(
-                ["python3", str(script_path)],
-                cwd=str(context.root_path),
-                capture_output=True,
-                text=True,
-                timeout=30,
-            )
-
-            if result.returncode != 0:
-                violations.append(
-                    self.violation(
-                        f"'make update' failed: {result.stderr}",
-                        file_path=tools_md_path,
-                    )
-                )
-                return violations
-
-            # Also run build-website.py if it exists
+            # Run build-website.py if it exists
             website_script_path = context.root_path / "scripts" / "build-website.py"
             if website_script_path.exists():
                 result = subprocess.run(
@@ -93,12 +72,12 @@ class PluginsDocUpToDateRule(Rule):
                             f"build-website.py failed: {result.stderr}",
                             file_path=data_json_path
                             if data_json_path.exists()
-                            else tools_md_path,
+                            else categories_yaml_path,
                         )
                     )
                     return violations
 
-            # Also run update_claude_settings.py if it exists
+            # Run update_claude_settings.py if it exists
             claude_settings_script_path = (
                 context.root_path / "scripts" / "update_claude_settings.py"
             )
@@ -117,23 +96,12 @@ class PluginsDocUpToDateRule(Rule):
                             f"update_claude_settings.py failed: {result.stderr}",
                             file_path=claude_settings_path
                             if claude_settings_path.exists()
-                            else tools_md_path,
+                            else categories_yaml_path,
                         )
                     )
                     return violations
 
-            # Check if TOOLS.md changed
-            generated_tools_md = tools_md_path.read_text()
-            if original_tools_md != generated_tools_md:
-                # Restore original content
-                tools_md_path.write_text(original_tools_md)
-
-                violations.append(
-                    self.violation(
-                        "TOOLS.md is out of sync with plugin metadata. Run 'make update' to update.",
-                        file_path=tools_md_path,
-                    )
-                )
+            # Check if generated files changed
 
             # Check if docs/data.json changed
             if data_json_path.exists():
@@ -160,20 +128,22 @@ class PluginsDocUpToDateRule(Rule):
 
                     violations.append(
                         self.violation(
-                            "images/claude-settings.json is out of sync with plugin metadata. Run 'make update' to update.",
+                            "images/claude/claude-settings.json is out of sync with plugin metadata. Run 'make update' to update.",
                             file_path=claude_settings_path,
                         )
                     )
 
         except subprocess.TimeoutExpired:
             violations.append(
-                self.violation("'make update' timed out", file_path=tools_md_path)
+                self.violation(
+                    "'make update' timed out", file_path=categories_yaml_path
+                )
             )
         except Exception as e:
             violations.append(
                 self.violation(
                     f"Error checking files up-to-date status: {e}",
-                    file_path=tools_md_path,
+                    file_path=categories_yaml_path,
                 )
             )
 
@@ -268,6 +238,99 @@ class MarketplacePluginsUpToDateRule(Rule):
             violations.append(
                 self.violation(
                     f"Error checking marketplace.json: {e}", file_path=marketplace_path
+                )
+            )
+
+        return violations
+
+
+class CategoriesYamlValidationRule(Rule):
+    """Validate categories.yaml structure, tool consistency, and prevent duplicates"""
+
+    @property
+    def rule_id(self) -> str:
+        return "tools-yaml-validation"
+
+    @property
+    def description(self) -> str:
+        return "categories.yaml must have valid structure, consistent categories, proper tool definitions, and no duplicate tool names across types"
+
+    def default_severity(self) -> Severity:
+        return Severity.ERROR
+
+    def check(self, context: RepositoryContext) -> List[RuleViolation]:
+        violations = []
+
+        # Check if categories.yaml exists
+        categories_yaml_path = context.root_path / "categories.yaml"
+        if not categories_yaml_path.exists():
+            if context.has_marketplace():
+                violations.append(
+                    self.violation(
+                        "categories.yaml is required for marketplace repos",
+                        file_path=categories_yaml_path,
+                    )
+                )
+            return violations
+
+        # Run the validation script
+        validation_script_path = context.root_path / "scripts" / "validate_tools.py"
+        if not validation_script_path.exists():
+            violations.append(
+                self.violation(
+                    "scripts/validate_tools.py not found but categories.yaml exists",
+                    file_path=categories_yaml_path,
+                )
+            )
+            return violations
+
+        try:
+            result = subprocess.run(
+                ["python3", str(validation_script_path), str(categories_yaml_path)],
+                cwd=str(context.root_path),
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+
+            if result.returncode != 0:
+                output = "\n".join(
+                    part for part in [result.stdout, result.stderr] if part
+                )
+                # Parse the validation errors from the script output
+                error_lines = output.strip().split("\n")
+                # Find the lines that contain actual errors (start with ✗)
+                for line in error_lines:
+                    if line.strip().startswith("✗"):
+                        error_msg = line.strip()[2:].strip()  # Remove ✗ prefix
+                        violations.append(
+                            self.violation(
+                                f"categories.yaml validation error: {error_msg}",
+                                file_path=categories_yaml_path,
+                            )
+                        )
+
+                # If no specific errors found, use the full output
+                if not violations:
+                    violations.append(
+                        self.violation(
+                            f"categories.yaml validation failed: {output.strip()}",
+                            file_path=categories_yaml_path,
+                        )
+                    )
+
+        except subprocess.TimeoutExpired:
+            violations.append(
+                self.violation(
+                    "categories.yaml validation script timed out",
+                    file_path=categories_yaml_path,
+                )
+            )
+        except Exception as e:
+            violations.append(
+                self.violation(
+                    f"Error running categories.yaml validation: {e}",
+                    file_path=categories_yaml_path,
                 )
             )
 

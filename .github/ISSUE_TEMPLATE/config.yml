@@ -1,11 +1,8 @@
 blank_issues_enabled: true
 contact_links:
-  - name: 📋 Claude Code Plugin Development Guide
-    url: https://code.claude.com/docs/en/plugins-reference
-    about: Official Claude Code plugin development documentation
-  - name: 🎯 Cursor AI Commands Documentation
-    url: https://cursor.com/docs/agent/chat/commands
-    about: Official Cursor AI commands documentation
+  - name: 📋 Tool Development Guide
+    url: https://opendatahub-io.github.io/ai-helpers/
+    about: AI Helpers marketplace and development documentation
   - name: 💎 Gemini Platform
     url: https://gemini.google.com/
     about: Create and manage Gemini Gems

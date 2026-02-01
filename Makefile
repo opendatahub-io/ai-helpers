@@ -45,9 +45,7 @@ lint: ## Run plugin linter, ruff syntax checker and formatter, and shellcheck
 	fi
 
 .PHONY: update
-update: ## Update plugin documentation, Claude settings, and website data
-	@echo "Updating plugin documentation..."
-	@python3 scripts/generate_tools_docs.py
+update: ## Update Claude settings and website data
 	@echo "Updating Claude settings..."
 	@python3 scripts/update_claude_settings.py
 	@echo "Building website data..."
@@ -66,5 +64,10 @@ build: ## Build Claude container image using Containerfile
 
 .PHONY: container-build
 container-build: build ## Alias for build target
+
+.PHONY: docs
+docs: ## Run docs locally at http://localhost:8000
+	@echo "Starting local documentation server..."
+	@python3 -m http.server 8000 --directory docs
 
 .DEFAULT_GOAL := help
