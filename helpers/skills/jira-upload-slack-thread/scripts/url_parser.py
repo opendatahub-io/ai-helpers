@@ -17,6 +17,7 @@ SLACK_TIMESTAMP_MIN_LENGTH = 7  # Minimum: 1 digit seconds + 6 digits microsecon
 
 class InvalidURLError(ValueError):
     """Raised when a Slack thread URL is invalid."""
+
     pass
 
 
@@ -31,6 +32,7 @@ class SlackThreadURL:
         channel_id: Channel ID (e.g., "C09Q8MD1V0Q")
         thread_ts: Thread timestamp in decimal format (e.g., "1769333522.823869")
     """
+
     raw_url: str
     workspace: str
     channel_id: str
@@ -39,14 +41,14 @@ class SlackThreadURL:
     def __post_init__(self):
         """Validate all fields after initialization."""
         # Validate channel_id format
-        if not re.match(r'^[A-Z0-9]+$', self.channel_id):
+        if not re.match(r"^[A-Z0-9]+$", self.channel_id):
             raise InvalidURLError(
                 f"Invalid channel ID format: {self.channel_id}\n"
                 f"Expected: Uppercase letters and numbers only (e.g., C09Q8MD1V0Q)"
             )
 
         # Validate thread_ts is decimal format
-        if not re.match(r'^\d+\.\d+$', self.thread_ts):
+        if not re.match(r"^\d+\.\d+$", self.thread_ts):
             raise InvalidURLError(
                 f"Invalid thread timestamp format: {self.thread_ts}\n"
                 f"Expected: Decimal format (e.g., 1769333522.823869)"
@@ -74,9 +76,9 @@ def parse_slack_url(url: str) -> SlackThreadURL:
         >>> parsed.thread_ts
         '1769333522.823869'
     """
-    
-   # Pattern: https://<workspace>.slack.com/archives/<CHANNEL_ID>/p<TIMESTAMP>[?#...]
-    pattern = r'https://([^/]+)\.slack\.com/archives/([A-Z0-9]+)/p(\d+)(?:[?#].*)?$'
+
+    # Pattern: https://<workspace>.slack.com/archives/<CHANNEL_ID>/p<TIMESTAMP>[?#...]
+    pattern = r"https://([^/]+)\.slack\.com/archives/([A-Z0-9]+)/p(\d+)(?:[?#].*)?$"
     match = re.match(pattern, url)
 
     if not match:
@@ -105,8 +107,5 @@ def parse_slack_url(url: str) -> SlackThreadURL:
     thread_ts = f"{timestamp_str[:-microsec_offset]}.{timestamp_str[-microsec_offset:]}"
 
     return SlackThreadURL(
-        raw_url=url,
-        workspace=workspace,
-        channel_id=channel_id,
-        thread_ts=thread_ts
+        raw_url=url, workspace=workspace, channel_id=channel_id, thread_ts=thread_ts
     )

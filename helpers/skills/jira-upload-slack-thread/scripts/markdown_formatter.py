@@ -25,14 +25,20 @@ _CODE_BLOCK_END = re.compile(r"(```[^`]*```)(?!\n)")  # Add newline after ``` if
 
 # Convert Slack mentions to markdown bold
 _USER_MENTION = re.compile(r"<@([A-Z0-9]+)>")  # <@U123456> → user_id for lookup
-_CHANNEL_MENTION = re.compile(r"<#[A-Z0-9]+\|([^>]+)>")  # <#C123|channel-name> → **#channel-name**
+_CHANNEL_MENTION = re.compile(
+    r"<#[A-Z0-9]+\|([^>]+)>"
+)  # <#C123|channel-name> → **#channel-name**
 
 # Remove Slack's URL wrapper syntax, keeping just the URL
-_URL_WRAPPER = re.compile(r"<(https?://[^|>]+)(?:\|[^>]+)?>")  # <url|text> or <url> → url
+_URL_WRAPPER = re.compile(
+    r"<(https?://[^|>]+)(?:\|[^>]+)?>"
+)  # <url|text> or <url> → url
 
 # Convert Slack formatting to markdown equivalents
 # Negative lookbehind/ahead ensure we don't match already-converted markdown
-_SLACK_BOLD = re.compile(r"(?<!\*)\*(?!\*)([^\*]+)\*(?!\*)")  # *text* → **text** (avoid ****)
+_SLACK_BOLD = re.compile(
+    r"(?<!\*)\*(?!\*)([^\*]+)\*(?!\*)"
+)  # *text* → **text** (avoid ****)
 _SLACK_ITALIC = re.compile(r"(?<!_)_(?!_)([^_]+)_(?!_)")  # _text_ → *text* (avoid __)
 _SLACK_STRIKETHROUGH = re.compile(r"~([^~]+)~")  # ~text~ → ~~text~~
 
@@ -53,6 +59,7 @@ class MarkdownExport:
         total_message_count: Total messages in thread
         included_message_count: Messages included in export
     """
+
     ticket_key: str
     thread_url: str
     channel_name: str
@@ -92,10 +99,7 @@ class MarkdownExport:
         return content
 
 
-def format_slack_text(
-    text: str,
-    user_lookup: dict[str, str] | None = None
-) -> str:
+def format_slack_text(text: str, user_lookup: dict[str, str] | None = None) -> str:
     """
     Format Slack message text to clean markdown.
 
@@ -169,8 +173,8 @@ def format_attachments(attachments: list[AttachmentMetadata] | None) -> str:
     lines = []
     for att in attachments:
         try:
-            filename = att.filename or 'unnamed'
-            filetype = att.filetype or 'file'
+            filename = att.filename or "unnamed"
+            filetype = att.filetype or "file"
 
             # If URL is available, create a markdown link
             if att.url:
@@ -221,7 +225,7 @@ def merge_consecutive_messages(messages: list[ThreadMessage]) -> list[ThreadMess
             merged[-1] = replace(
                 merged[-1],
                 text=merged_text,
-                attachments=combined_attachments if combined_attachments else None
+                attachments=combined_attachments if combined_attachments else None,
             )
         else:
             merged.append(replace(msg))
@@ -244,14 +248,13 @@ def format_timestamp(ts: str) -> str:
         Falls back to current UTC time if timestamp is malformed
     """
     try:
-        ts_parts = ts.split('.')
+        ts_parts = ts.split(".")
         dt = datetime.fromtimestamp(int(ts_parts[0]), tz=timezone.utc)
         return dt.strftime("%Y-%m-%d %H:%M:%S")
     except (ValueError, IndexError, TypeError, OSError) as e:
         # Log warning about malformed timestamp
         logger.warning(
-            f"Malformed timestamp '{ts}': {e}. "
-            f"Using current UTC time as fallback."
+            f"Malformed timestamp '{ts}': {e}. Using current UTC time as fallback."
         )
         # Return current UTC time as safe fallback
         fallback_dt = datetime.now(tz=timezone.utc)
@@ -262,7 +265,7 @@ def format_thread_to_markdown(
     thread: SlackThread,
     ticket_key: str,
     thread_url: str,
-    user_lookup: dict[str, str] | None = None
+    user_lookup: dict[str, str] | None = None,
 ) -> MarkdownExport:
     """
     Format Slack thread as markdown for JIRA export.
@@ -313,5 +316,5 @@ def format_thread_to_markdown(
         transcript=transcript,
         is_truncated=thread.is_truncated,
         total_message_count=thread.total_message_count,
-        included_message_count=len(thread.messages)
+        included_message_count=len(thread.messages),
     )

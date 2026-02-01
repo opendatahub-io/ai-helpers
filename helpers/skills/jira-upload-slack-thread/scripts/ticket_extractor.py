@@ -12,6 +12,7 @@ from dataclasses import dataclass
 
 class InvalidTicketKeyError(ValueError):
     """Raised when a JIRA ticket key is invalid."""
+
     pass
 
 
@@ -25,19 +26,20 @@ class JIRATicketKey:
         project: Project prefix (e.g., "JN", "AIPCC")
         number: Ticket number
     """
+
     raw_key: str
 
     def __post_init__(self):
         """Validate and parse ticket key after initialization."""
         # Validate format: [A-Z]+-\d+
-        if not re.match(r'^[A-Z]+-\d+$', self.raw_key):
+        if not re.match(r"^[A-Z]+-\d+$", self.raw_key):
             raise InvalidTicketKeyError(
                 f"Invalid JIRA ticket key format: {self.raw_key}\n"
                 f"Expected format: PROJECT-NUMBER (e.g., JN-1234, AIPCC-7354)"
             )
 
         # Parse components
-        parts = self.raw_key.split('-')
+        parts = self.raw_key.split("-")
         self.project = parts[0]
         self.number = int(parts[1])
 
@@ -62,7 +64,7 @@ def extract_ticket_from_text(text: str) -> JIRATicketKey | None:
     """
     # Pattern: [A-Z]+-\d+ (e.g., JN-1234, PROJ-567)
     # Matches JIRA ticket format: uppercase letters, hyphen, numbers
-    pattern = r'[A-Z]+-\d+'
+    pattern = r"[A-Z]+-\d+"
     match = re.search(pattern, text)
 
     if not match:

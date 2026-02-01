@@ -19,6 +19,7 @@ class JIRAComment:
         body: Comment content (markdown formatted)
         comment_id: JIRA comment ID (set after successful post)
     """
+
     ticket_key: str
     body: str
     comment_id: str | None = None

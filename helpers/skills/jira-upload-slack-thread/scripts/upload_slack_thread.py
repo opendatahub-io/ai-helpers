@@ -45,6 +45,7 @@ class SkillArguments:
     Note:
         If both summary and summary_only are True, summary_only takes precedence.
     """
+
     slack_thread_url: str
     ticket_key: str | None = None
     summary: bool = False
@@ -129,5 +130,5 @@ def parse_skill_arguments(args_str: str) -> SkillArguments:
         ticket_key=ticket_key,
         summary=summary,
         summary_only=summary_only,
-        verbose=verbose
+        verbose=verbose,
     )

@@ -18,6 +18,7 @@ MAX_THREAD_MESSAGES = 50
 
 class EmptyThreadError(ValueError):
     """Raised when a Slack thread has no messages."""
+
     pass
 
 
@@ -32,6 +33,7 @@ class AttachmentMetadata:
         url: URL to access the attachment (if available)
         size: File size in bytes (if available)
     """
+
     filename: str
     filetype: str
     url: str | None = None
@@ -43,8 +45,8 @@ class AttachmentMetadata:
             raise ValueError("Attachment filename must not be empty")
 
         # Extract filetype from filename if not provided
-        if not self.filetype and '.' in self.filename:
-            self.filetype = self.filename.rsplit('.', 1)[1]
+        if not self.filetype and "." in self.filename:
+            self.filetype = self.filename.rsplit(".", 1)[1]
 
 
 @dataclass
@@ -60,6 +62,7 @@ class ThreadMessage:
         is_parent: True if this is the thread's parent message
         attachments: File attachment metadata (if any)
     """
+
     user_id: str
     user_name: str
     timestamp: str
@@ -101,6 +104,7 @@ class SlackThread:
         total_message_count: Total messages (may be > len(messages) if truncated)
         is_truncated: True if thread exceeded 50 message limit
     """
+
     channel_id: str
     channel_name: str | None
     thread_ts: str
