@@ -4,53 +4,29 @@ This repository serves as a collaborative marketplace for AI automation tools, p
 
 ## Repository Purpose
 
-The odh-ai-helpers repository hosts collections of four distinct tool types:
-- **Skills**: Standardized capabilities using agentskills.io format, compatible with Claude Code and Cursor
-- **Commands**: Atomic, executable actions for immediate functionality
-- **Agents**: Specialized AI entities for complex, multi-step workflows and analysis
-- **Gemini Gems**: Conversational AI assistants optimized for specific domains
+The odh-ai-helpers repository hosts collections of:
+- **Claude Code Plugins**: Custom commands, skills, agents that extend Claude Code's functionality
+- **Cursor AI Commands**: Custom commands for Cursor AI integration
+- **Gemini Gems**: Specialized AI assistants for various development tasks
 
-This enables teams to automate repetitive tasks, integrate with development tools, and create specialized AI capabilities tailored to specific workflows and needs.
+This enables teams to automate repetitive tasks, integrate with development tools, and create specialized AI assistants tailored to specific workflows and needs.
 
-## Tool Types
-
-### Skills
-Standardized capabilities that work across multiple AI platforms using the agentskills.io specification. Skills provide reusable functionality with cross-platform compatibility.
-
-**→ Located in [helpers/skills/](helpers/skills/) directory**
-
-### Commands
-Atomic, executable actions that provide immediate functionality. Commands are designed for quick, specific tasks and can be invoked directly by AI agents.
-
-**→ Located in [helpers/commands/](helpers/commands/) directory**
-
-### Agents
-Specialized AI entities capable of complex reasoning and multi-step workflows. Agents maintain context and can execute sophisticated analysis within their domain of expertise.
-
-**→ Located in [helpers/agents/](helpers/agents/) directory**
-
-### Gemini Gems
-Conversational AI assistants created within Google's Gemini platform. Each Gem is tailored with specific instructions and knowledge bases for particular domains or tasks.
-
-**→ For detailed Gemini Gems instructions, see [Gemini Gems README](helpers/gems/README.md)**
-
-## Platform Support
+## Supported AI Platforms
 
 ### Claude Code
-- **Skills**: Available through marketplace plugin entries
-- **Commands**: Available through marketplace plugin entries
-- **Agents**: Available as sub-agents through marketplace plugin entries
+Claude Code plugins extend Claude's functionality with custom commands for specific workflows. Plugins use a structured format with JSON metadata and Markdown command definitions.
 
-
-### OpenCode.ai
-- **Skills**: Compatible as OpenCode skills in ~/.config/opencode/skills/
-- **Commands**: Compatible as OpenCode commands in ~/.config/opencode/commands/
-- **Agents**: Not currently compatible due to format differences
+**→ For detailed Claude Code development instructions, see [@claude-plugins/README.md](claude-plugins/README.md)**
 
 ### Cursor AI
-- **Skills**: Compatible through agentskills.io format
-- **Commands**: Can be adapted for Cursor command structure
-- **Agents**: Can be used as specialized workflow guides
+Cursor commands provide custom AI functionality within the Cursor development environment. Commands are implemented as simple Markdown files with descriptive instructions.
+
+**→ For detailed Cursor development instructions, see [@cursor/README.md](cursor/README.md)**
+
+### Gemini Gems
+Gemini Gems are specialized AI assistants created within Google's Gemini platform. Each Gem can be tailored with specific instructions and knowledge bases for particular tasks.
+
+**→ For detailed Gemini Gems instructions, see [@gemini-gems/README.md](gemini-gems/README.md)**
 
 ## How to Create New Tools
 
@@ -68,8 +44,8 @@ Conversational AI assistants created within Google's Gemini platform. Each Gem i
 
 3. **Validate and Test**
    ```bash
-   make lint      # Validate tool structure
-   make update    # Update settings and website data
+   make lint      # Validate plugin structure
+   make update    # Regenerate documentation
    ```
 
 4. **Submit Contribution**
@@ -77,22 +53,66 @@ Conversational AI assistants created within Google's Gemini platform. Each Gem i
    - Update relevant documentation
    - Submit a merge request with your changes
 
-## Tool Registry
+## Categorization System
 
-The marketplace uses a centralized category registry in `categories.yaml` to organize specialized tools by category. **Tools not listed in any category are automatically placed in the "General" category**, providing a clean organization system that requires no action from contributors for basic tools.
+The marketplace uses a categorization system to organize tools by their intended purpose and workflows. This helps users discover relevant tools and maintains a well-structured tool collection.
 
-### Category Registry Structure
+### How Categories Work
 
-Specialized tool categories are defined in `categories.yaml` at the repository root:
+Categories are defined in `categories.json` at the repository root and automatically applied to tools:
 
-```yaml
-CategoryName:
-  - specialized-tool
-  - another-tool
+- **Claude Code plugins**: Categorized by plugin directory name
+- **Cursor commands**: Categorized by command filename (without .md extension)
+- **Gemini Gems**: Categorized by gem title in categories.json
 
-AnotherCategory:
-  - domain-specific-tool
-```
+### Current Categories
+
+- **General**: Default category for general-purpose tools and utilities
+- **AIPCC**: Tools specifically designed for AIPCC workflows and processes
+
+### Adding a New Category
+
+When you have multiple related tools that form a cohesive workflow or domain, consider creating a new category:
+
+1. **Edit categories.json**: Add your category definition with clear name and description
+   ```json
+   {
+     "categories": {
+       "your-category": {
+         "name": "Your Category Name",
+         "description": "Clear description of the category's purpose and scope",
+         "claude_plugin_dirs": ["plugin1", "plugin2"],
+         "cursor_commands": ["command1", "command2"],
+         "gemini_gems": ["gem title", "gem title 2"]
+       }
+     }
+   }
+   ```
+
+2. **Assign existing tools**: Move relevant tools from other categories to your new category
+
+3. **Update documentation**: Run `make update` to regenerate the website and tool documentation
+
+### Category Guidelines
+
+**When to create a new category:**
+- You have 3+ related tools that share a common domain or workflow
+- The tools serve a specific user group or use case
+- The category provides clear value for tool discovery
+
+**Category naming:**
+- Use lowercase with hyphens for category keys (e.g., "data-science")
+- Use clear, descriptive names for display (e.g., "Data Science")
+- Write concise descriptions that explain the category's scope
+
+### Automatic Management
+
+The build system automatically handles categorization maintenance:
+- New tools are assigned to "general" if not explicitly categorized
+- Categories.json is updated during `make update` to include new tools
+- Manual categorizations are preserved across updates
+
+This ensures all tools are categorized without requiring manual maintenance.
 
 ## Ethical Guidelines
 
@@ -107,7 +127,7 @@ This ensures consent, prevents misrepresentation, respects intellectual property
 
 ## Getting Started
 
-1. **Explore Existing Tools**: Browse [categories.yaml](categories.yaml) for categorized tools or visit our [website](https://opendatahub-io.github.io/ai-helpers/)
+1. **Explore Existing Tools**: Browse [TOOLS.md](TOOLS.md) for available tools
 2. **Choose Your Platform**: Review platform-specific READMEs for detailed guidance
 3. **Study Examples**: Look at existing implementations for structure and patterns
 4. **Start Contributing**: Follow the development workflow for your chosen platform
