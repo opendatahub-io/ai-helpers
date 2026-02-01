@@ -234,15 +234,29 @@ def format_timestamp(ts: str) -> str:
     """
     Convert Slack timestamp to human-readable format.
 
+    Handles malformed timestamps gracefully by returning a fallback value
+    instead of raising an exception.
+
     Args:
         ts: Slack timestamp in decimal format (e.g., "1769333522.823869")
 
     Returns:
         Formatted timestamp string in UTC (e.g., "2026-01-27 14:32:02")
+        Falls back to current UTC time if timestamp is malformed
     """
-    ts_parts = ts.split('.')
-    dt = datetime.fromtimestamp(int(ts_parts[0]), tz=timezone.utc)
-    return dt.strftime("%Y-%m-%d %H:%M:%S")
+    try:
+        ts_parts = ts.split('.')
+        dt = datetime.fromtimestamp(int(ts_parts[0]), tz=timezone.utc)
+        return dt.strftime("%Y-%m-%d %H:%M:%S")
+    except (ValueError, IndexError, TypeError, OSError) as e:
+        # Log warning about malformed timestamp
+        logger.warning(
+            f"Malformed timestamp '{ts}': {e}. "
+            f"Using current UTC time as fallback."
+        )
+        # Return current UTC time as safe fallback
+        fallback_dt = datetime.now(tz=timezone.utc)
+        return fallback_dt.strftime("%Y-%m-%d %H:%M:%S")
 
 
 def format_thread_to_markdown(
