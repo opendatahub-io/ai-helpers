@@ -93,8 +93,9 @@
         "name": "jira-upload-slack-thread",
         "description": "Export Slack thread conversations to JIRA tickets as formatted markdown comments",
         "category": "general",
-        "id": "upload-slack-thread",
-        "file_path": "claude-plugins/jira/skills/upload-slack-thread/SKILL.md"
+        "file_path": "helpers/skills/jira-upload-slack-thread/SKILL.md",
+        "id": "jira-upload-slack-thread",
+        "allowed_tools": ""
       },
       {
         "name": "oci-cve-checker",

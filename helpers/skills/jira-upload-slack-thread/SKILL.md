@@ -1,5 +1,5 @@
 ---
-name: upload-slack-thread
+name: jira-upload-slack-thread
 description: Export Slack thread conversations to JIRA tickets as formatted markdown comments
 ---
 
