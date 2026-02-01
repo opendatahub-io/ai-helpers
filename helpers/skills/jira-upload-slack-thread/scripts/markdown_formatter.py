@@ -153,13 +153,16 @@ def format_slack_text(
 
 def format_attachments(attachments: list[AttachmentMetadata] | None) -> str:
     """
-    Format Slack attachments as markdown notes.
+    Format Slack attachments as markdown links.
+
+    Note: This creates markdown links to the attachments, not embedded files.
+    The actual files remain in Slack and are accessed via the links.
 
     Args:
         attachments: List of attachment metadata objects
 
     Returns:
-        Formatted markdown string representing file attachments
+        Formatted markdown string with links to attachments
     """
     if not attachments:
         return ""
@@ -169,7 +172,13 @@ def format_attachments(attachments: list[AttachmentMetadata] | None) -> str:
         try:
             filename = att.filename or 'unnamed'
             filetype = att.filetype or 'file'
-            lines.append(f"📄 *File:* `{filename}` ({filetype})")
+
+            # If URL is available, create a markdown link
+            if att.url:
+                lines.append(f"📄 *File:* [{filename}]({att.url}) ({filetype})")
+            else:
+                # Fallback to just filename if no URL
+                lines.append(f"📄 *File:* `{filename}` ({filetype})")
         except AttributeError as e:
             logger.warning(f"Malformed attachment metadata: {att}. Error: {e}")
             # Fallback to generic file indicator
@@ -185,6 +194,9 @@ def merge_consecutive_messages(messages: list[ThreadMessage]) -> list[ThreadMess
     This function creates new ThreadMessage objects rather than modifying the originals,
     preventing unintended side effects if the original message list is reused.
 
+    When merging messages, both text and attachments are combined, preserving the
+    chronological order of attachments from all merged messages.
+
     Args:
         messages: List of thread messages in chronological order
 
@@ -198,8 +210,20 @@ def merge_consecutive_messages(messages: list[ThreadMessage]) -> list[ThreadMess
     merged = [replace(messages[0])]
     for msg in messages[1:]:
         if msg.user_id == merged[-1].user_id:
-            # Create a new message with merged text instead of mutating
-            merged[-1] = replace(merged[-1], text=merged[-1].text + f"\n\n{msg.text}")
+            # Merge text
+            merged_text = merged[-1].text + f"\n\n{msg.text}"
+
+            # Merge attachments, preserving order and handling None/empty cases
+            existing_attachments = merged[-1].attachments or []
+            new_attachments = msg.attachments or []
+            combined_attachments = existing_attachments + new_attachments
+
+            # Create a new message with merged text and combined attachments
+            merged[-1] = replace(
+                merged[-1],
+                text=merged_text,
+                attachments=combined_attachments if combined_attachments else None
+            )
         else:
             merged.append(replace(msg))
 

@@ -29,10 +29,12 @@ class AttachmentMetadata:
     Attributes:
         filename: Name of the attached file
         filetype: File type/extension
+        url: URL to access the attachment (if available)
         size: File size in bytes (if available)
     """
     filename: str
     filetype: str
+    url: str | None = None
     size: int | None = None
 
     def __post_init__(self):

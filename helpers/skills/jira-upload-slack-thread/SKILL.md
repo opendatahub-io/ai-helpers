@@ -131,11 +131,11 @@ Create markdown document based on flags:
 
 **Message formatting rules:**
 - Convert Slack timestamps to `YYYY-MM-DD HH:MM:SS` format
-- Merge consecutive messages from same user (combine with double newline)
+- Merge consecutive messages from same user (combine text with double newline, preserve all attachments)
 - Replace user mentions `<@U123>` with `**@username**`
 - Replace channel mentions `<#C123|name>` with `**#name**`
 - Clean URLs: remove `< >` wrapper, keep readable
-- Note file attachments: `📄 *File:* \`filename.ext\` (type)`
+- Add file attachment links: `📄 *File:* [filename.ext](url) (type)` (links to files in Slack, not embedded)
 - Note reactions: `*Reactions:* :emoji: (count)`
 
 ### Step 6: Post Comment to JIRA via JIRA MCP
