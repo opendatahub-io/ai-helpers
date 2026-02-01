@@ -49,7 +49,7 @@ Extract components from the URL:
 
 Use the Slack MCP server to fetch thread messages:
 
-```
+```text
 Tool: mcp__slack__conversations_replies
 Parameters:
   - channel_id: {channel_id}
@@ -170,14 +170,14 @@ If truncated:
 
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| Slack MCP unavailable | Verify Slack MCP server is configured in Claude Code settings |
-| Authentication failed | Check Slack MCP server authentication tokens |
-| Invalid URL format | Display expected format with example |
-| JIRA MCP unavailable | Verify JIRA MCP server is configured |
-| Empty thread | "Thread has no messages to export." |
-| Permission errors | Provide specific guidance on required permissions |
+| Issue | Solution |  
+| --- | --- |  
+| Slack MCP unavailable | Verify Slack MCP server is configured in Claude Code settings |  
+| Authentication failed | Check Slack MCP server authentication tokens |  
+| Invalid URL format | Display expected format with example |  
+| JIRA MCP unavailable | Verify JIRA MCP server is configured |  
+| Empty thread | "Thread has no messages to export." |  
+| Permission errors | Provide specific guidance on required permissions |  
 
 ## Examples
 

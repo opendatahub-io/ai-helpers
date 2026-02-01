@@ -10,7 +10,6 @@ import logging
 import re
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
-from typing import Any
 
 from slack_fetcher import AttachmentMetadata, SlackThread, ThreadMessage
 
