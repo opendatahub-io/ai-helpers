@@ -1,6 +1,6 @@
 ---
 name: unit-test-repo-conformant
-description: Guides the agent to write unit tests that strictly conform to the repository’s existing testing structure, patterns, and style by learning from similar tests before writing anything new.
+description: Guides the agent to write unit tests that strictly conform to the repository's existing testing structure, patterns, and style by learning from similar tests before writing anything new.
 ---
 # Unit Test (Repository-Conformant) Skill
 
