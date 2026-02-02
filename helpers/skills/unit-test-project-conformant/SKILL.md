@@ -1,10 +1,10 @@
 ---
-name: unit-test-repo-conformant
-description: Guides the agent to write unit tests that strictly conform to the repository's existing testing structure, patterns, and style by learning from similar tests before writing anything new.
+name: unit-test-project-conformant
+description: Guides the agent to write unit tests that strictly conform to the project's existing testing structure, patterns, and style by learning from similar tests before writing anything new.
 ---
-# Unit Test (Repository-Conformant) Skill
+# Unit Test (Project-Conformant) Skill
 
-This skill ensures the agent does **not invent test structure** and instead learns how the repository already tests similar code, then writes the new test in the same style, location, and pattern.
+This skill ensures the agent does **not invent test structure** and instead learns how the project already tests similar code, then writes the new test in the same style, location, and pattern.
 
 The goal is for the new test to be **indistinguishable from existing tests**.
 
@@ -17,12 +17,12 @@ The goal is for the new test to be **indistinguishable from existing tests**.
 
 ## Instructions
 
-### Step 1 — Discover How the Repository Tests Similar Code
+### Step 1 — Discover How the project Tests Similar Code
 
 Before writing any test:
 
 - Identify the file, function, or class to be tested.
-- Search the repository for tests covering:
+- Search the project for tests covering:
   - The same module
   - The same directory
   - Similar functions
@@ -57,7 +57,7 @@ From the discovered tests, learn:
 - Helper utilities used
 - What is intentionally *not* tested
 
-You are learning the repository’s **testing contract**.
+You are learning the project’s **testing contract**.
 
 ---
 
@@ -76,7 +76,7 @@ Do **not** create a new test file unless similar tests do.
 
 ### Step 4 — Match Style Exactly
 
-Mirror the repository’s style for:
+Mirror the project’s style for:
 
 - Function and variable names
 - Imports
@@ -90,7 +90,7 @@ Do not introduce new libraries, helpers, or patterns.
 
 ---
 
-### Step 5 — Respect How the Repository Chooses to Test
+### Step 5 — Respect How the project Chooses to Test
 
 If similar methods:
 
@@ -100,13 +100,13 @@ If similar methods:
 
 Then you must follow the same pattern.
 
-Do **not** create standalone unit tests if the repository does not.
+Do **not** create standalone unit tests if the project does not.
 
 ---
 
 ### Step 6 — Match the Level of Coverage
 
-Match the repository’s expectations:
+Match the project’s expectations:
 
 - If tests check only success paths → do the same
 - If tests include edge cases → include them
@@ -143,10 +143,10 @@ The result should look like it was written by the same author as the surrounding
 ## Anti-Patterns (Never Do These)
 
 - Creating new test structure because it seems “better”
-- Writing standalone tests when the repo does not
+- Writing standalone tests when the project does not
 - Introducing new testing frameworks
 - Adding excessive assertions not seen elsewhere
-- Adding mocks where the repo avoids them
+- Adding mocks where the project avoids them
 - Guessing where tests belong without searching
 
 ---

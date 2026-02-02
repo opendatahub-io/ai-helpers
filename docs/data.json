@@ -147,7 +147,7 @@
       },
       {
         "name": "unit-test-project-conformant",
-        "description": "Guides the agent to write unit tests that strictly conform to the repository's existing testing structure, patterns, and style by learning from similar tests before writing anything new.",
+        "description": "Guides the agent to write unit tests that strictly conform to the project's existing testing structure, patterns, and style by learning from similar tests before writing anything new.",
         "category": "general",
         "file_path": "helpers/skills/unit-test-project-conformant/SKILL.md",
         "id": "unit-test-project-conformant",
