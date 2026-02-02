@@ -1,7 +1,6 @@
 ---
 name: jira-upload-slack-thread
 description: Export Slack thread conversations to JIRA tickets as formatted markdown comments
-allowed-tools: mcp__slack__conversations_replies mcp__mcp-atlassian__jira_add_comment
 ---
 
 # jira:upload-slack-thread
@@ -29,6 +28,8 @@ Export a Slack thread conversation to a JIRA ticket as a formatted markdown comm
 
 - Slack MCP server configured with valid authentication
 - JIRA MCP server configured (`mcp__mcp-atlassian__jira_*` tools available)
+
+allowed-tools: mcp__slack__conversations_replies mcp__mcp-atlassian__jira_add_comment
 
 ## Implementation
 
