@@ -10,7 +10,6 @@ Usage:
 import argparse
 import json
 import re
-import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -105,7 +104,6 @@ def parse_task_block(block: str) -> Optional[dict]:
                 task["notes"] = field_value
                 current_field = "notes"
             elif field_name in ("subtasks", "subtask"):
-                subtask_section = True
                 current_field = "subtasks"
             continue
 
@@ -439,7 +437,7 @@ def init_project(output_dir: Path) -> None:
 
     create_spec_directory(sample_task, output_dir)
 
-    print(f"✅ Initialized AutoClaude structure:")
+    print("✅ Initialized AutoClaude structure:")
     print(f"   📄 {tasks_file}")
     print(f"   📁 {output_dir}/001-project-setup/")
 
