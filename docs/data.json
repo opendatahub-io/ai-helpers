@@ -66,6 +66,14 @@
     ],
     "skills": [
       {
+        "name": "autoclaude-task-converter",
+        "description": "Convert single-file task backlogs (TASKS.md format) to AutoClaude multi-file spec structure. Use when the user wants to (1) convert existing TASKS.md or similar task backlog files to AutoClaude specs, (2) initialize a new project with AutoClaude-compatible task structure, (3) migrate task definitions from simple markdown to the multi-file spec format with requirements.json, context.json, implementation_plan.json. Triggers on phrases like \"convert tasks to AutoClaude\", \"set up AutoClaude specs\", \"migrate backlog\", \"create spec from task\".",
+        "category": "general",
+        "file_path": "helpers/skills/autoclaude-task-converter/SKILL.md",
+        "id": "autoclaude-task-converter",
+        "allowed_tools": ""
+      },
+      {
         "name": "git-shallow-clone",
         "description": "Perform a shallow clone of a Git repository to a temporary location.",
         "category": "general",
