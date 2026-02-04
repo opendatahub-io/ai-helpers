@@ -70,6 +70,7 @@ git commit --signoff -m "$(cat <<'EOF'
 
 <Longer description summarizing all the changes>
 
+Co-authored-by: <model>@<version> (claude code)
 Signed-off-by: <Author Name> <email>
 EOF
 )"
@@ -78,7 +79,8 @@ EOF
 **Commit Message Requirements:**
 1. **Title line**: Must start with JIRA ticket ID matching: `(RHELAI|RHOAIENG|AIPCC|INFERENG|RHAIENG)-XXXX:`
 2. **Body**: Must include at least one line of description after an empty line
-3. **Signed-off-by**: Must include a `Signed-off-by:` line
+3. **Co-authored-by**: When AI assisted, include `Co-authored-by: <model>@<version> (claude code)`
+4. **Signed-off-by**: Must include a `Signed-off-by:` line
 
 ### Step 6: Validate Commit
 
@@ -126,6 +128,7 @@ AIPCC-1234: Add new validation feature
 Implement input validation with typo fixes and additional features.
 Includes all work from the original WIP commits.
 
+Co-authored-by: claude-sonnet-4@20250514 (claude code)
 Signed-off-by: Jane Developer <jane@redhat.com>
 ```
 

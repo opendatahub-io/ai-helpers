@@ -39,13 +39,15 @@ The commit message MUST follow this exact format:
 
 <Longer description explaining what changed and why>
 
+Co-authored-by: <model>@<version> (claude code)
 Signed-off-by: <Author Name> <email>
 ```
 
 **Requirements:**
 1. **Title line**: Must start with a JIRA ticket ID matching: `(RHELAI|RHOAIENG|AIPCC|INFERENG|RHAIENG)-XXXX:`
 2. **Body**: Must include at least one line of description after an empty line
-3. **Signed-off-by**: Must include a `Signed-off-by:` line (use `--signoff` flag)
+3. **Co-authored-by**: When AI assisted, include `Co-authored-by: <model>@<version> (claude code)`
+4. **Signed-off-by**: Must include a `Signed-off-by:` line (use `--signoff` flag)
 
 ### Execution Steps
 
@@ -80,6 +82,7 @@ AIPCC-1234: Add input validation for user forms
 Implement validation rules to prevent invalid data from being
 submitted through the user registration form.
 
+Co-authored-by: claude-sonnet-4@20250514 (claude code)
 Signed-off-by: Jane Developer <jane@redhat.com>
 ```
 

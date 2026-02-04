@@ -23,6 +23,19 @@ The validator checks three rules:
    - Format: `Signed-off-by: Name <email@domain>`
    - Use `git commit --signoff` to add automatically
 
+## Recommended Format
+
+When AI assists with code changes, include the Co-authored-by line:
+
+```
+AIPCC-1234: Onboard package foobar
+
+This commit onboards the foobar package needed by the foo team.
+
+Co-authored-by: claude-sonnet-4@20250514 (claude code)
+Signed-off-by: Your Name <your.email@example.com>
+```
+
 ## Prerequisites
 
 - Git repository

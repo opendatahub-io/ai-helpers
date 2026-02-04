@@ -49,13 +49,15 @@ The commit message MUST follow this exact format:
 
 <Longer description explaining what changed and why>
 
+Co-authored-by: <model>@<version> (claude code)
 Signed-off-by: <Author Name> <email>
 ```
 
 **Requirements:**
 1. **Title line**: Must start with JIRA ticket ID matching: `(RHELAI|RHOAIENG|AIPCC|INFERENG|RHAIENG)-XXXX:`
 2. **Body**: Must include at least one line of description after an empty line
-3. **Signed-off-by**: Must include a `Signed-off-by:` line (use `--signoff` flag)
+3. **Co-authored-by**: When AI assisted, include `Co-authored-by: <model>@<version> (claude code)`
+4. **Signed-off-by**: Must include a `Signed-off-by:` line (use `--signoff` flag)
 
 ### Step 3: Create Commit
 
@@ -66,6 +68,7 @@ git commit --signoff -m "$(cat <<'EOF'
 
 <Longer description>
 
+Co-authored-by: <model>@<version> (claude code)
 Signed-off-by: <Author Name> <email>
 EOF
 )"
