@@ -142,7 +142,7 @@ def main():
         print(f"✓ All {len(commits)} commit(s) pass AIPCC linter validation")
         return 0
     else:
-        print(f"✗ Commit validation failed:\n")
+        print("✗ Commit validation failed:\n")
         for error in all_errors:
             print(f"  {error}\n")
         return 1
