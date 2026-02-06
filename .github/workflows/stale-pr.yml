@@ -1,0 +1,59 @@
+name: Stale PR Management
+
+on:
+  schedule:
+    # Run daily at 12:00 UTC
+    - cron: '0 12 * * *'
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+    - name: Mark/Close stale PRs
+      uses: actions/stale@v10
+      with:
+        # Only target pull requests, not issues
+        only-pr-labels: ''
+
+        # Days before PR is considered stale
+        days-before-stale: 14
+
+        # Days before a stale PR is closed (set to -1 to disable auto-closing)
+        days-before-close: -1
+
+        # Label to apply to stale PRs
+        stale-pr-label: 'stale'
+
+        # Message to comment on stale PRs
+        stale-pr-message: |
+          This pull request has been inactive for 2 weeks and is now marked as stale.
+
+          **To keep this PR active:**
+          - Add new commits to address any feedback
+          - Respond to review comments
+          - Update the description if needed
+
+          **If this PR is still relevant:**
+          - Remove the `stale` label to reset the timer
+          - Leave a comment explaining the current status
+
+          This PR will remain open but may be closed in the future if it continues to be inactive.
+
+          Thank you for your contribution! 🚀
+
+        # Don't process PRs with these labels
+        exempt-pr-labels: 'blocked,on-hold,work-in-progress,wip'
+
+        # Remove stale label when PR becomes active again
+        remove-stale-when-updated: true
+
+        # Enable debug output
+        debug-only: false
+
+        # Don't process draft PRs
+        exempt-draft-pr: true
