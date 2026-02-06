@@ -61,6 +61,18 @@
   description: Still being worked on
   color: yellow
 
+- name: stale
+  description: No recent activity, may be closed
+  color: ededed
+
+- name: blocked
+  description: Blocked by external dependencies or issues
+  color: b60205
+
+- name: on-hold
+  description: Temporarily on hold, do not mark as stale
+  color: fbca04
+
 # Type of contribution
 - name: new-command
   description: Contribution adds a new command
