@@ -20,6 +20,9 @@
             --success: #92cc6f;
             --accent: #ff9800;
             --radius: 12px;
+
+            /* Navbar height variables for responsive design */
+            --navbar-base-height: 7.5rem;
         }
 
         /* Light mode colors */
@@ -92,7 +95,7 @@
         }
 
         body {
-            padding-top: 120px;
+            padding-top: var(--navbar-base-height);
         }
 
         .navbar-content {
@@ -655,6 +658,11 @@
             .checkbox-label {
                 font-size: 0.8rem;
             }
+
+            /* Adjust body padding for taller navbar when content stacks vertically */
+            body {
+                padding-top: calc(var(--navbar-base-height) + 8vh);
+            }
         }
 
         @media (max-width: 480px) {
@@ -683,6 +691,11 @@
 
             .filter-title {
                 font-size: 0.8rem;
+            }
+
+            /* Further adjust body padding for small screens where navbar stacks more elements */
+            body {
+                padding-top: calc(var(--navbar-base-height) + 10vh);
             }
         }
 
