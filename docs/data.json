@@ -79,6 +79,12 @@
         "commands": [],
         "skills": [
           {
+            "name": "pr-comment-review",
+            "id": "pr-comment-review",
+            "description": "Analyze Pull Request comments and generate structured action plans with severity rankings and response suggestions",
+            "file_path": "claude-plugins/git/skills/pr-comment-review/SKILL.md"
+          },
+          {
             "name": "shallow-clone",
             "id": "shallow-clone",
             "description": "Perform a shallow clone of a Git repository to a temporary location.",

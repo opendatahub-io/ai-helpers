@@ -45,6 +45,7 @@ See [claude-plugins/aipcc/README.md](claude-plugins/aipcc/README.md) for detaile
 Git workflow automation and utilities
 
 **Skills:**
+- **pr-comment-review** - Analyze Pull Request comments and generate structured action plans with severity rankings and response suggestions
 - **shallow-clone** - Perform a shallow clone of a Git repository to a temporary location.
 
 See [claude-plugins/git/README.md](claude-plugins/git/README.md) for detailed documentation.
