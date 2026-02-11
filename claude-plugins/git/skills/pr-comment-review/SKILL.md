@@ -89,7 +89,7 @@ Using the Severity Classification Guide from the template:
 3. Format issues using the Issue Template format (defined in the template)
 4. Format responses using the Response Template format (defined in the template)
 5. Remove the template sections at the bottom (marked with HTML comments)
-6. Write the completed report to `temp/pr_code_review###.md`
+6. Write the completed report to `temp/pr_code_review###.md` (the `temp` directory will be created automatically if it doesn't exist)
 
 **Note**: All formatting instructions, placeholder definitions, and guidelines are in the template file itself. Refer to it for complete details.
 
