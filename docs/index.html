@@ -92,7 +92,7 @@
         }
 
         body {
-            padding-top: 120px;
+            padding-top: 120px; /* fallback; dynamically set by ResizeObserver */
         }
 
         .navbar-content {
@@ -2019,6 +2019,23 @@
 
         // Load data on page load
         loadData();
+
+        // Dynamically sync body padding-top with actual navbar height
+        (function() {
+            var navbar = document.querySelector('.navbar');
+            if (!navbar) return;
+            function syncPadding() {
+                document.body.style.paddingTop = navbar.offsetHeight + 'px';
+            }
+            if (typeof ResizeObserver !== 'undefined') {
+                new ResizeObserver(syncPadding).observe(navbar);
+            } else {
+                // Fallback for older browsers
+                syncPadding();
+                window.addEventListener('resize', syncPadding);
+            }
+            syncPadding();
+        })();
     </script>
 </body>
 </html>
