@@ -20,6 +20,8 @@ Simply file a GitHub issue with your idea in the title and we'll work together t
 No implementation details needed - just describe what you'd like to automate or what workflow you think could be
 improved. The community can help figure out the best way to build it.
 
+Want to work on an issue? Comment `/assign` on it to assign yourself.
+
 ## Tools Development
 
 This repository is made for collaboration. We highly welcome contributions.
