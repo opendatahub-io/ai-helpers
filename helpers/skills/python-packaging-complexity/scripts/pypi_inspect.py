@@ -16,7 +16,6 @@ import json
 import logging
 import sys
 import urllib.error
-import urllib.parse
 import urllib.request
 from typing import Any
 
@@ -127,37 +126,39 @@ class PyPIInspector:
         Returns:
             Dictionary with distribution analysis for the current version
         """
-        # Get current version info
-        info = metadata.get("info", {})
-        current_version = info.get("version")
-        releases = metadata.get("releases", {})
+        # request for '{package_name}/{version}' does not contain 'releases'
+        # In a request for '{package_name}', the 'urls' field only contains
+        # files for the latest release.
+        urls: list[dict] = metadata["urls"]
 
         analysis = {
             "has_sdist": False,
             "has_wheels": False,
+            "has_platlib_wheels": False,
             "wheel_types": set(),
         }
 
         # Get files for the current version
-        if current_version and current_version in releases:
-            files = releases[current_version]
+        for file_info in urls:
+            filename = file_info.get("filename", "")
+            packagetype = file_info.get("packagetype", "")
 
-            for file_info in files:
-                filename = file_info.get("filename", "")
-                packagetype = file_info.get("packagetype", "")
+            if packagetype == "sdist" or filename.endswith((".tar.gz", ".zip")):
+                analysis["has_sdist"] = True
+            elif packagetype == "bdist_wheel" or filename.endswith(".whl"):
+                analysis["has_wheels"] = True
+                # none-any wheels are platform-independent and should not
+                # contain any compiled, platform-specific binaries.
+                if not filename.endswith("-none-any.whl"):
+                    analysis["has_platlib_wheels"] = True
 
-                if packagetype == "sdist" or filename.endswith((".tar.gz", ".zip")):
-                    analysis["has_sdist"] = True
-                elif packagetype == "bdist_wheel" or filename.endswith(".whl"):
-                    analysis["has_wheels"] = True
-
-                    # Extract wheel type information
-                    if filename.endswith(".whl"):
-                        wheel_parts = filename.split("-")
-                        if len(wheel_parts) >= 5:
-                            platform_tag = wheel_parts[-1].replace(".whl", "")
-                            abi_tag = wheel_parts[-2]
-                            analysis["wheel_types"].add(f"{abi_tag}-{platform_tag}")
+                # Extract wheel type information
+                if filename.endswith(".whl"):
+                    wheel_parts = filename.split("-")
+                    if len(wheel_parts) >= 5:
+                        platform_tag = wheel_parts[-1].replace(".whl", "")
+                        abi_tag = wheel_parts[-2]
+                        analysis["wheel_types"].add(f"{abi_tag}-{platform_tag}")
 
         analysis["wheel_types"] = list(analysis["wheel_types"])
         return analysis
@@ -358,6 +359,10 @@ class PyPIInspector:
             f"  Has source distribution: {dist_analysis.get('has_sdist', False)}"
         )
         output_lines.append(f"  Has wheels: {dist_analysis.get('has_wheels', False)}")
+        if dist_analysis.get("has_platlib_wheels"):
+            output_lines.append(
+                "  Has platform-specific wheel, highly likely needs compilation"
+            )
 
         wheel_types = dist_analysis.get("wheel_types", [])
         if wheel_types:
