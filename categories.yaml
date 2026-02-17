@@ -10,5 +10,5 @@ AIPCC:
 vLLM:
   - vllm-compare-reqs
   - vllm-slack-summary
-  - downstream-release-status
-  - release-vllm-midstream-image
+  - vllm-downstream-release-status
+  - vllm-release-midstream-image

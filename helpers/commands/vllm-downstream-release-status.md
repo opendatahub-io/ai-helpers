@@ -4,13 +4,13 @@ argument-hint: <version> [accelerator]
 ---
 
 ## Name
-odh-ai-helpers:downstream-release-status
+odh-ai-helpers:vllm-downstream-release-status
 
 ## Synopsis
 ```
-/downstream:release-status v0.14.0+rhai3      # Check specific release
-/downstream:release-status v0.14.0+rhai3 cuda # Check specific accelerator
-/downstream:release-status v0.14.0 all        # Check all accelerators
+/vllm:downstream-release-status v0.14.0+rhai3      # Check specific release
+/vllm:downstream-release-status v0.14.0+rhai3 cuda # Check specific accelerator
+/vllm:downstream-release-status v0.14.0 all        # Check all accelerators
 ```
 
 ## Description
@@ -160,17 +160,17 @@ Based on findings, recommend ONE of:
 
 ### Check specific release
 ```bash
-/downstream:release-status v0.14.0+rhai3
+/vllm:downstream-release-status v0.14.0+rhai3
 ```
 
 ### Check CUDA specifically
 ```bash
-/downstream:release-status v0.14.0+rhai3 cuda
+/vllm:downstream-release-status v0.14.0+rhai3 cuda
 ```
 
 ### Full status for all accelerators
 ```bash
-/downstream:release-status v0.14.0 all
+/vllm:downstream-release-status v0.14.0 all
 ```
 
 ## Arguments
@@ -189,4 +189,4 @@ Based on findings, recommend ONE of:
 - Konflux UI: https://konflux-ui.apps.stone-prod-p02.hjvn.p1.openshiftapps.com/ns/ai-tenant/applications
 
 ## See Also
-- **`/release:vllm-midstream-image`** – Release a vLLM container image to quay.io
+- **`/vllm:release-midstream-image`** – Release a vLLM container image to quay.io

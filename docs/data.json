@@ -204,14 +204,6 @@
         "synopsis": "/aipcc:fix-pr-commit           # Fix commits on current branch"
       },
       {
-        "name": "downstream-release-status",
-        "description": "Check RHAIIS downstream release status and suggest next steps",
-        "category": "vllm",
-        "file_path": "helpers/commands/downstream-release-status.md",
-        "argument_hint": "<version> [accelerator]",
-        "synopsis": "/downstream:release-status v0.14.0+rhai3      # Check specific release"
-      },
-      {
         "name": "hello-world-echo",
         "description": "Hello world plugin implementation",
         "category": "general",
@@ -244,20 +236,28 @@
         "synopsis": "/konflux:component status <component>"
       },
       {
-        "name": "release-vllm-midstream-image",
-        "description": "Release a vLLM container image to quay.io/vllm",
-        "category": "vllm",
-        "file_path": "helpers/commands/release-vllm-midstream-image.md",
-        "argument_hint": "<tag> <device>",
-        "synopsis": "/release:vllm-midstream-image v0.14.0+rhai3 cuda  # Release CUDA image"
-      },
-      {
         "name": "rpm-examine",
         "description": "Analyze RPM build.log failures",
         "category": "general",
         "file_path": "helpers/commands/rpm-examine.md",
         "argument_hint": "[copr-chroot-url] OR [build-log-url] [srpm-url] OR [build.log] [specfile|dist-git] [sources]",
         "synopsis": "/rpm:examine <copr-chroot-url>"
+      },
+      {
+        "name": "vllm-downstream-release-status",
+        "description": "Check RHAIIS downstream release status and suggest next steps",
+        "category": "vllm",
+        "file_path": "helpers/commands/vllm-downstream-release-status.md",
+        "argument_hint": "<version> [accelerator]",
+        "synopsis": "/vllm:downstream-release-status v0.14.0+rhai3      # Check specific release"
+      },
+      {
+        "name": "vllm-release-midstream-image",
+        "description": "Release a vLLM container image to quay.io/vllm",
+        "category": "vllm",
+        "file_path": "helpers/commands/vllm-release-midstream-image.md",
+        "argument_hint": "<tag> <device>",
+        "synopsis": "/vllm:release-midstream-image v0.14.0+rhai3 cuda  # Release CUDA image"
       }
     ],
     "agents": [

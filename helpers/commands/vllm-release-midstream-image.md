@@ -4,13 +4,13 @@ argument-hint: <tag> <device>
 ---
 
 ## Name
-odh-ai-helpers:release-vllm-midstream-image
+odh-ai-helpers:vllm-release-midstream-image
 
 ## Synopsis
 ```
-/release:vllm-midstream-image v0.14.0+rhai3 cuda  # Release CUDA image
-/release:vllm-midstream-image v0.14.0+rhai3 rocm  # Release ROCm image
-/release:vllm-midstream-image v0.14.0+rhai3 cpu   # Release CPU image
+/vllm:release-midstream-image v0.14.0+rhai3 cuda  # Release CUDA image
+/vllm:release-midstream-image v0.14.0+rhai3 rocm  # Release ROCm image
+/vllm:release-midstream-image v0.14.0+rhai3 cpu   # Release CPU image
 ```
 
 ## Description
@@ -104,17 +104,17 @@ curl -s "https://quay.io/api/v1/repository/vllm/vllm-<device>/tag/?specificTag=<
 
 ### Release CUDA image
 ```bash
-/release:vllm-midstream-image v0.14.0+rhai3 cuda
+/vllm:release-midstream-image v0.14.0+rhai3 cuda
 ```
 
 ### Release ROCm image
 ```bash
-/release:vllm-midstream-image v0.14.0+rhai3 rocm
+/vllm:release-midstream-image v0.14.0+rhai3 rocm
 ```
 
 ### Release CPU image
 ```bash
-/release:vllm-midstream-image v0.14.0+rhai3 cpu
+/vllm:release-midstream-image v0.14.0+rhai3 cpu
 ```
 
 ## Arguments
@@ -139,6 +139,6 @@ The `build-whl-image.yml` workflow in `neuralmagic/nm-cicd`:
 - Repository secrets configured in nm-cicd for Quay.io push
 
 ## See Also
-- **`/downstream:release-status`** – Check overall release status
+- **`/vllm:downstream-release-status`** – Check overall release status
 - nm-vllm-ent tags: https://github.com/neuralmagic/nm-vllm-ent/tags
 - nm-cicd workflows: https://github.com/neuralmagic/nm-cicd/actions
