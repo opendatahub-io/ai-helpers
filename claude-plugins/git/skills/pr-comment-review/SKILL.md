@@ -65,7 +65,20 @@ The template contains comprehensive documentation including:
 
 **Important**: Follow ALL guidance provided in the template file. It is self-documenting and comprehensive.
 
-### 3. Analyze and Categorize Comments
+### 3. Fetch Code Context for Inline Comments
+
+For each comment that references a specific file and line number:
+1. Use the Read tool to open the file mentioned in the comment
+2. Extract at least 3 lines of code context:
+   - The line being commented on
+   - 1-2 lines before for context
+   - 1-2 lines after for context
+3. Identify the programming language for proper syntax highlighting
+4. Store this code context to include in the issue analysis
+
+**Note**: This step is critical for providing reviewers with immediate code visibility without context switching.
+
+### 4. Analyze and Categorize Comments
 
 Using the Severity Classification Guide from the template:
 1. Review each comment from the fetched data
@@ -74,7 +87,7 @@ Using the Severity Classification Guide from the template:
 4. Determine appropriate actions using the template's guidance
 5. For complex issues, provide alternative approaches per the template's framework
 
-### 4. Generate the Report
+### 5. Generate the Report
 
 **File Location:** `temp/pr_code_review###.md`
 
@@ -93,7 +106,7 @@ Using the Severity Classification Guide from the template:
 
 **Note**: All formatting instructions, placeholder definitions, and guidelines are in the template file itself. Refer to it for complete details.
 
-### 5. Output Confirmation
+### 6. Output Confirmation
 
 After creating the report, inform the user:
 ```

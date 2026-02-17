@@ -100,11 +100,18 @@ Examples of good responses:
 INSTRUCTIONS FOR SKILL:
 
 1. Read this template file
-2. Replace all {PLACEHOLDER} values with actual content
-3. Format issues using the Issue Template format below
-4. Format responses using the Response Template format below
-5. Remove all template sections (Issue Template, Response Template, and these instructions)
-6. Write the final report to temp/pr_code_review{ITERATION}.md
+2. For each comment with a file path and line number, read the actual code file to get context
+3. Replace all {PLACEHOLDER} values with actual content
+4. Format issues using the Issue Template format below (including code context)
+5. Format responses using the Response Template format below
+6. Remove all template sections (Issue Template, Response Template, and these instructions)
+7. Write the final report to temp/pr_code_review{ITERATION}.md
+
+IMPORTANT: For inline code comments (those with file paths and line numbers), you MUST:
+- Use the Read tool to fetch the actual code from the file
+- Extract at least 3 lines of code context around the commented line
+- Include this code context in the "Code Context" section of each issue
+- This allows reviewers to see exactly what code is being discussed without switching contexts
 
 -->
 
@@ -180,6 +187,17 @@ Use this format for EACH issue in the severity sections above:
 **File:** {FILE_PATH}:{LINE_NUMBER}
 **Reviewer:** @{REVIEWER_USERNAME}
 **Comment URL:** [Link]({COMMENT_URL})
+
+**Code Context:**
+```{LANGUAGE}
+{AT_LEAST_3_LINES_OF_CODE_CONTEXT}
+```
+
+Include the actual code being discussed (minimum 3 lines):
+- Show the line mentioned in the comment
+- Include 1-2 lines before for context
+- Include 1-2 lines after for context
+- Use proper syntax highlighting with the language identifier
 
 **Reasonableness Check:**
 
