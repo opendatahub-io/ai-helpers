@@ -98,6 +98,14 @@
         "allowed_tools": "Bash Read"
       },
       {
+        "name": "python-full-deps",
+        "description": "Resolve the full install-time dependency tree for a Python package. Use when the user needs all transitive dependencies, full dependency list, or install requirements resolved for a specific Python version with environment markers.",
+        "category": "general",
+        "file_path": "helpers/skills/python-full-deps/SKILL.md",
+        "id": "python-full-deps",
+        "allowed_tools": "Bash Read"
+      },
+      {
         "name": "python-packaging-bug-finder",
         "description": "Find known packaging bugs, fixes, and workarounds for Python projects by searching GitHub issues and analyzing their resolution status",
         "category": "general",
