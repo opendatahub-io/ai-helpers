@@ -186,7 +186,14 @@ Use this format for EACH issue in the severity sections above:
 **Summary:** {BRIEF_DESCRIPTION_OF_THE_ISSUE}
 **File:** {FILE_PATH}:{LINE_NUMBER}
 **Reviewer:** @{REVIEWER_USERNAME}
+**Comment ID:** {COMMENT_ID}
 **Comment URL:** [Link]({COMMENT_URL})
+
+Note on Comment ID:
+- This is the unique identifier from the PR system (GitHub comment ID)
+- Can be used to programmatically respond to the specific comment
+- Useful for automation tools or scripts that post responses
+- Extract from the comment JSON data ('id' field)
 
 **Code Context:**
 ```{LANGUAGE}

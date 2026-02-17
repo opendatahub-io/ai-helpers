@@ -5,6 +5,8 @@ This Claude Code plugin helps you analyze Pull Request comments and generate com
 ## Features
 
 - **Automatic Comment Fetching**: Retrieves all review and general comments from GitHub PRs using `gh` CLI
+- **Code Context Inclusion**: Shows actual code snippets (minimum 3 lines) for each inline comment
+- **Comment ID Tracking**: Includes unique comment IDs for easy programmatic responses
 - **Severity Classification**: Categorizes issues as High, Medium, or Low priority
 - **Reasonableness Assessment**: Evaluates whether each comment is valid and actionable
 - **Action Planning**: Provides clear steps to address each issue
