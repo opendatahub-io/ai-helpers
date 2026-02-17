@@ -17,6 +17,11 @@
       "source": "./helpers",
       "description": "AI automation tools, plugins, and assistants for enhanced productivity",
       "strict": false
+    },
+    {
+      "name": "question-optimizer",
+      "source": "./plugins/question-optimizer",
+      "description": "Performance optimization plugin that detects simple questions and follow-up queries to suggest faster model usage"
     }
   ]
 }
