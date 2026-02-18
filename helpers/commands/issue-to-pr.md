@@ -1,6 +1,6 @@
 ---
 description: Analyze a GitHub or GitLab issue and drive toward a PR or ask for clarification. Use when the user provides an issue URL or pasted issue details.
-argument-hint: "[issue-url] or pasted issue title/body"
+argument-hint: [issue-url] or pasted issue title/body
 ---
 
 ## Name
