@@ -40,15 +40,6 @@ venv/
 # Various logs and metrics tracking info
 *.log
 .anonymous_id
-
-# Workaround for https://github.com/anthropic-experimental/sandbox-runtime/issues/85
-.bash_profile
-.bashrc
-.gitconfig
-.gitmodules
-.profile
-.ripgreprc
-.zprofile
-.zshrc
-.claude/agents
-.claude/commands
+.claude/commands/speckit.*
+.specify/*
+tmp/*

@@ -90,6 +90,14 @@
         "allowed_tools": ""
       },
       {
+        "name": "jira-upload-slack-thread",
+        "description": "Export Slack thread conversations to JIRA tickets as formatted markdown comments",
+        "category": "general",
+        "file_path": "helpers/skills/jira-upload-slack-thread/SKILL.md",
+        "id": "jira-upload-slack-thread",
+        "allowed_tools": ""
+      },
+      {
         "name": "oci-cve-checker",
         "description": "Compare CVE vulnerabilities between two OCI container images and generate reports showing fixed and new CVEs.",
         "category": "general",

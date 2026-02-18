@@ -25,7 +25,9 @@
               "gitlab.com",
               "*.gitlab.com",
               "gitlab.cee.redhat.com",
-              "pypi.org"
+              "pypi.org",
+              "slack.com",
+              "*.slack.com"
           ],
           "deniedDomains": []
       },
