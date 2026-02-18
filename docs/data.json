@@ -82,6 +82,14 @@
         "allowed_tools": "Bash Read"
       },
       {
+        "name": "jira-activity",
+        "description": "Summarize Jira ticket activity, including child tickets, to detect stale tickets in the backlog. Use when user asks to review one or more Jira tickets to determine if they are being worked on.",
+        "category": "general",
+        "file_path": "helpers/skills/jira-activity/SKILL.md",
+        "id": "jira-activity",
+        "allowed_tools": "Bash"
+      },
+      {
         "name": "jira-upload-chat-log",
         "description": "Export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation.",
         "category": "general",
