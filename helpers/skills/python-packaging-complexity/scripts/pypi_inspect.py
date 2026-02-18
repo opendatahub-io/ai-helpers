@@ -20,9 +20,7 @@ import urllib.request
 from typing import Any
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(levelname)s: %(message)s", stream=sys.stdout
-)
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s", stream=sys.stdout)
 logger = logging.getLogger(__name__)
 
 
@@ -39,9 +37,7 @@ class PyPIInspector:
         """Initialize the inspector with a PyPI base URL."""
         self.pypi_base_url = pypi_base_url.rstrip("/")
 
-    def get_package_metadata(
-        self, package_name: str, version: str | None = None
-    ) -> dict[str, Any]:
+    def get_package_metadata(self, package_name: str, version: str | None = None) -> dict[str, Any]:
         """
         Fetch package metadata from PyPI JSON API.
 
@@ -73,9 +69,7 @@ class PyPIInspector:
                         f"Package '{package_name}' version '{version}' not found on PyPI"
                     ) from e
                 else:
-                    raise PackageNotFoundError(
-                        f"Package '{package_name}' not found on PyPI"
-                    ) from e
+                    raise PackageNotFoundError(f"Package '{package_name}' not found on PyPI") from e
             else:
                 raise RuntimeError(f"HTTP error {e.code}: {e.reason}") from e
         except Exception as e:
@@ -117,9 +111,7 @@ class PyPIInspector:
             return text
         return text[: max_length - 3] + "..."
 
-    def analyze_current_version_distributions(
-        self, metadata: dict[str, Any]
-    ) -> dict[str, Any]:
+    def analyze_current_version_distributions(self, metadata: dict[str, Any]) -> dict[str, Any]:
         """
         Analyze available distributions for the current version being inspected.
 
@@ -305,9 +297,7 @@ class PyPIInspector:
         package_info["requires_python"] = info.get("requires_python")
 
         # Distribution analysis
-        package_info["distribution_analysis"] = (
-            self.analyze_current_version_distributions(metadata)
-        )
+        package_info["distribution_analysis"] = self.analyze_current_version_distributions(metadata)
 
         # Build complexity analysis
         package_info["build_analysis"] = self.analyze_build_complexity(metadata)
@@ -355,20 +345,14 @@ class PyPIInspector:
         # Distribution analysis
         dist_analysis = package_info.get("distribution_analysis", {})
         output_lines.append("\nDistribution Analysis:")
-        output_lines.append(
-            f"  Has source distribution: {dist_analysis.get('has_sdist', False)}"
-        )
+        output_lines.append(f"  Has source distribution: {dist_analysis.get('has_sdist', False)}")
         output_lines.append(f"  Has wheels: {dist_analysis.get('has_wheels', False)}")
         if dist_analysis.get("has_platlib_wheels"):
-            output_lines.append(
-                "  Has platform-specific wheel, highly likely needs compilation"
-            )
+            output_lines.append("  Has platform-specific wheel, highly likely needs compilation")
 
         wheel_types = dist_analysis.get("wheel_types", [])
         if wheel_types:
-            output_lines.append(
-                f"  Wheel types: {', '.join(wheel_types[:5])}"
-            )  # Show first 5
+            output_lines.append(f"  Wheel types: {', '.join(wheel_types[:5])}")  # Show first 5
 
         # Build analysis
         build_analysis = package_info.get("build_analysis", {})
@@ -376,9 +360,7 @@ class PyPIInspector:
         output_lines.append(
             f"  Likely needs compilation: {build_analysis.get('likely_needs_compilation', False)}"
         )
-        output_lines.append(
-            f"  Complexity score: {build_analysis.get('complexity_score', 0)}"
-        )
+        output_lines.append(f"  Complexity score: {build_analysis.get('complexity_score', 0)}")
 
         indicators = build_analysis.get("indicators", [])
         if indicators:
@@ -447,9 +429,7 @@ Examples:
         "--json", action="store_true", help="Output raw JSON instead of formatted text"
     )
 
-    parser.add_argument(
-        "-v", "--verbose", action="store_true", help="Enable verbose logging"
-    )
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose logging")
 
     args = parser.parse_args()
 

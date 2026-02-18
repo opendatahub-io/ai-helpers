@@ -9,8 +9,8 @@ by checking PyPI metadata and using web search as fallback.
 import json
 import re
 import sys
-import urllib.request
 import urllib.error
+import urllib.request
 from typing import Dict, Optional
 
 
@@ -47,7 +47,10 @@ class SourceFinder:
             "url": None,
             "confidence": ConfidenceLevel.LOW,
             "method": "pypi_fallback",
-            "message": f"Could not find repository in PyPI metadata for '{package_name}'. Manual search recommended.",
+            "message": (
+                f"Could not find repository in PyPI metadata"
+                f" for '{package_name}'. Manual search recommended."
+            ),
         }
 
     def _check_pypi_metadata(self, package_name: str) -> Optional[Dict[str, str]]:
@@ -76,9 +79,7 @@ class SourceFinder:
 
             # Return the best candidate
             if repo_candidates:
-                best_candidate = max(
-                    repo_candidates, key=lambda x: self._confidence_score(x[1])
-                )
+                best_candidate = max(repo_candidates, key=lambda x: self._confidence_score(x[1]))
                 url, confidence, source = best_candidate
                 return {
                     "url": url,

@@ -108,9 +108,7 @@ def resolve_with_pip(req: str) -> set[tuple[str, str]]:
             timeout=120,
         )
         if upgrade.returncode != 0:
-            raise RuntimeError(
-                f"failed to upgrade pip for --report support: {upgrade.stderr}"
-            )
+            raise RuntimeError(f"failed to upgrade pip for --report support: {upgrade.stderr}")
 
         report_file = Path(tmpdir) / "report.json"
         result = subprocess.run(

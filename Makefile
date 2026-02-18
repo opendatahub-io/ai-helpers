@@ -25,7 +25,7 @@ lint: ## Run plugin linter, ruff syntax checker and formatter, and shellcheck
 		echo "ruff not found, skipping Python syntax checking. Install with: pip install ruff"; \
 		exit 1; \
 	fi
-	@echo "Running ruff formatter on Python scripts..."
+	@echo "Running ruff format checker on Python scripts..."
 	@ruff format --check --diff .
 	@echo "Running shellcheck on shell scripts..."
 	@if command -v shellcheck >/dev/null 2>&1; then \
