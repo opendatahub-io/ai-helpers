@@ -11,8 +11,8 @@
     "vllm": {
       "name": "vLLM"
     },
-    "rhaiis release": {
-      "name": "RHAIIS Release"
+    "rhaiis": {
+      "name": "RHAIIS"
     }
   },
   "tools": {
@@ -175,7 +175,7 @@
       {
         "name": "vllm-slack-summary",
         "description": "Generate slack summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team",
-        "category": "vllm",
+        "category": "rhaiis",
         "file_path": "helpers/skills/vllm-slack-summary/SKILL.md",
         "id": "vllm-slack-summary",
         "allowed_tools": ""
@@ -217,7 +217,7 @@
       {
         "name": "rhaiis-release-branch",
         "description": "Create release branches and enable repeatable builds for a RHAIIS release",
-        "category": "rhaiis release",
+        "category": "rhaiis",
         "file_path": "helpers/commands/rhaiis-release-branch.md",
         "argument_hint": "<epic-key> <version>",
         "synopsis": "/rhaiis:release-branch INFERENG-4584 3.3  # Create release branches for version 3.3"
@@ -225,7 +225,7 @@
       {
         "name": "rhaiis-release-infra",
         "description": "Add infrastructure version entry for a new RHAIIS release",
-        "category": "rhaiis release",
+        "category": "rhaiis",
         "file_path": "helpers/commands/rhaiis-release-infra.md",
         "argument_hint": "<epic-key> <version>",
         "synopsis": "/rhaiis:release-infra INFERENG-4584 3.4-ea1  # Add version entry for 3.4-ea1"
@@ -233,7 +233,7 @@
       {
         "name": "rhaiis-release-packages",
         "description": "Identify package changes between vLLM versions and create AIPCC JIRA issues",
-        "category": "rhaiis release",
+        "category": "rhaiis",
         "file_path": "helpers/commands/rhaiis-release-packages.md",
         "argument_hint": "<epic-key> <old-version> <new-version>",
         "synopsis": "/rhaiis:release-packages INFERENG-4584 v0.12.0+rhai5 v0.13.0+rhai1"
@@ -241,7 +241,7 @@
       {
         "name": "rhaiis-release-renovate",
         "description": "Update Renovate configs and product version for a RHAIIS release",
-        "category": "rhaiis release",
+        "category": "rhaiis",
         "file_path": "helpers/commands/rhaiis-release-renovate.md",
         "argument_hint": "<epic-key> <release-branch> <next-version>",
         "synopsis": "/rhaiis:release-renovate INFERENG-4584 3.3 3.4EA1  # Update Renovate for 3.3 release"
@@ -257,7 +257,7 @@
       {
         "name": "vllm-deploy",
         "description": "Deploy a model to OpenShift using the vLLM Helm chart",
-        "category": "vllm",
+        "category": "rhaiis",
         "file_path": "helpers/commands/vllm-deploy.md",
         "argument_hint": "<action> [model] [options]",
         "synopsis": "/vllm:deploy install granite-7b     # Install a model deployment"
@@ -265,7 +265,7 @@
       {
         "name": "vllm-downstream-release-status",
         "description": "Check RHAIIS downstream release status and suggest next steps",
-        "category": "vllm",
+        "category": "rhaiis",
         "file_path": "helpers/commands/vllm-downstream-release-status.md",
         "argument_hint": "<version> [accelerator]",
         "synopsis": "/vllm:downstream-release-status v0.14.0+rhai3      # Check specific release"
@@ -273,7 +273,7 @@
       {
         "name": "vllm-release-midstream-image",
         "description": "Release a vLLM container image to quay.io/vllm",
-        "category": "vllm",
+        "category": "rhaiis",
         "file_path": "helpers/commands/vllm-release-midstream-image.md",
         "argument_hint": "<tag> <device>",
         "synopsis": "/vllm:release-midstream-image v0.14.0+rhai3 cuda  # Release CUDA image"
@@ -281,7 +281,7 @@
       {
         "name": "vllm-test-endpoint",
         "description": "Test a deployed vLLM endpoint with health, model listing, and chat completion queries",
-        "category": "vllm",
+        "category": "rhaiis",
         "file_path": "helpers/commands/vllm-test-endpoint.md",
         "argument_hint": "\"[url]\"",
         "synopsis": "/vllm:test-endpoint                              # Auto-discover from OpenShift"
