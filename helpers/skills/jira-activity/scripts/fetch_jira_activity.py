@@ -65,12 +65,7 @@ def parse_jira_datetime(dt_str: str) -> datetime:
         dt_str = dt_str[:-1] + "+00:00"
     # Jira returns ISO 8601 with timezone offset like 2025-01-15T10:30:00.000+0000
     # Replace the +0000 style offset with +00:00 for fromisoformat
-    if (
-        dt_str
-        and len(dt_str) >= 5
-        and dt_str[-5] in ("+", "-")
-        and ":" not in dt_str[-5:]
-    ):
+    if dt_str and len(dt_str) >= 5 and dt_str[-5] in ("+", "-") and ":" not in dt_str[-5:]:
         dt_str = dt_str[:-2] + ":" + dt_str[-2:]
     dt = datetime.fromisoformat(dt_str)
     # Ensure timezone-aware so comparisons with cutoff don't raise TypeError
@@ -212,16 +207,12 @@ def collect_hierarchy_data(
         # Recursively collect children
         child_keys = find_child_keys(jira, issue_obj, key)
         for child_key in child_keys:
-            child_issues = collect_hierarchy_data(
-                jira, child_key, cutoff, level + 1, key, visited
-            )
+            child_issues = collect_hierarchy_data(jira, child_key, cutoff, level + 1, key, visited)
             issues.extend(child_issues)
 
     except Exception as e:
         # Add error entry for failed issues
-        issues.append(
-            {"key": key, "level": level, "parent_key": parent_key, "error": str(e)}
-        )
+        issues.append({"key": key, "level": level, "parent_key": parent_key, "error": str(e)})
 
     return issues
 
@@ -243,9 +234,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    cutoff = datetime.now(timezone.utc).replace(
-        hour=0, minute=0, second=0, microsecond=0
-    )
+    cutoff = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     cutoff = cutoff - timedelta(days=args.days)
 
     jira = get_jira_client()

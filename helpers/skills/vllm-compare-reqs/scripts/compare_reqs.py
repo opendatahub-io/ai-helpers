@@ -8,10 +8,9 @@ and provides intelligent comparison with support for hardware variants.
 
 import argparse
 import sys
-from typing import List, Tuple, Dict
-from urllib.request import urlopen
+from typing import Dict, List, Tuple
 from urllib.error import HTTPError, URLError
-
+from urllib.request import urlopen
 
 BASE_URL = "https://raw.githubusercontent.com/vllm-project/vllm"
 
@@ -88,9 +87,7 @@ def parse_dockerfile_args(lines: List[str]) -> Dict[str, str]:
     return args
 
 
-def compare_dockerfiles(
-    old_lines: List[str], new_lines: List[str]
-) -> Dict[str, List[str]]:
+def compare_dockerfiles(old_lines: List[str], new_lines: List[str]) -> Dict[str, List[str]]:
     """
     Compare Dockerfile ARG statements between versions.
     Returns dict with keys: 'changed', 'added', 'removed'
@@ -106,9 +103,7 @@ def compare_dockerfiles(
     for arg_name in old_args:
         if arg_name in new_args:
             if old_args[arg_name] != new_args[arg_name]:
-                changed.append(
-                    f"{arg_name}={old_args[arg_name]} → {arg_name}={new_args[arg_name]}"
-                )
+                changed.append(f"{arg_name}={old_args[arg_name]} → {arg_name}={new_args[arg_name]}")
         else:
             removed.append(f"{arg_name}={old_args[arg_name]}")
 
@@ -223,13 +218,9 @@ def print_changes(filename: str, changes: Dict[str, List[str]], pretty: bool = T
 
     if pretty:
         # Pretty mode with emojis
-        print(
-            f"\n{Colors.BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}"
-        )
+        print(f"\n{Colors.BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
         print(f"{Colors.BOLD}{emoji} {filename}{Colors.RESET}")
-        print(
-            f"{Colors.BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}\n"
-        )
+        print(f"{Colors.BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}\n")
 
         has_changes = False
 
@@ -305,9 +296,7 @@ Examples:
         default=True,
         help="Show clean categorized output (default)",
     )
-    parser.add_argument(
-        "--no-pretty", action="store_true", help="Show simple diff output"
-    )
+    parser.add_argument("--no-pretty", action="store_true", help="Show simple diff output")
 
     args = parser.parse_args()
 
@@ -329,15 +318,17 @@ Examples:
         else:
             dockerfile_note = ""
 
-        print(
-            f"\n{Colors.BOLD}=== Comparing {variant_or_file} variant (runtime + build{dockerfile_note}): {args.version1} -> {args.version2} ==={Colors.RESET}\n"
+        header = (
+            f"=== Comparing {variant_or_file} variant"
+            f" (runtime + build{dockerfile_note}):"
+            f" {args.version1} -> {args.version2} ==="
         )
+        print(f"\n{Colors.BOLD}{header}{Colors.RESET}\n")
     else:
         # Specific file mode
         files_to_compare = [variant_or_file]
-        print(
-            f"\n{Colors.BOLD}=== Comparing {variant_or_file}: {args.version1} -> {args.version2} ==={Colors.RESET}\n"
-        )
+        header = f"=== Comparing {variant_or_file}: {args.version1} -> {args.version2} ==="
+        print(f"\n{Colors.BOLD}{header}{Colors.RESET}\n")
 
     # Fetch and compare files
     any_success = False
@@ -374,9 +365,7 @@ Examples:
         all_changes[filename] = changes
 
     if not any_success:
-        print(
-            f"\n{Colors.RED}Error: Could not fetch any requirements files{Colors.RESET}"
-        )
+        print(f"\n{Colors.RED}Error: Could not fetch any requirements files{Colors.RESET}")
         return 1
 
     # Print summary table if pretty mode
@@ -491,9 +480,7 @@ Examples:
             # Print rows with color coding
             for filename, pkg, old_ver, new_ver, change_type in table_rows:
                 # Truncate long values
-                display_file = (
-                    filename if len(filename) <= 19 else filename[:16] + "..."
-                )
+                display_file = filename if len(filename) <= 19 else filename[:16] + "..."
                 display_pkg = pkg if len(pkg) <= 34 else pkg[:31] + "..."
                 display_old = old_ver if len(old_ver) <= 24 else old_ver[:21] + "..."
                 display_new = new_ver if len(new_ver) <= 24 else new_ver[:21] + "..."
@@ -506,9 +493,12 @@ Examples:
                 else:  # Removed
                     type_colored = f"{Colors.RED}{change_type}{Colors.RESET}"
 
-                print(
-                    f"{display_file:<20} {display_pkg:<35} {display_old:<25} {display_new:<25} {type_colored}"
+                row = (
+                    f"{display_file:<20} {display_pkg:<35}"
+                    f" {display_old:<25} {display_new:<25}"
+                    f" {type_colored}"
                 )
+                print(row)
             print()
 
     # Display detailed changes

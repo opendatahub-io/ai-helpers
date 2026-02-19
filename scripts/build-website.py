@@ -7,9 +7,10 @@ Loads tool information from centralized tools.yaml configuration
 import json
 import re
 import sys
-import yaml
 from pathlib import Path
 from typing import Dict
+
+import yaml
 
 
 def load_categories_config(categories_path: Path) -> Dict:
@@ -177,9 +178,7 @@ def get_tool_metadata(tool: Dict, category: str, base_path: Path) -> Dict:
                 # Extract synopsis
                 import re
 
-                match = re.search(
-                    r"## Synopsis\s*```[^\n]*\n([^\n]+)", content, re.MULTILINE
-                )
+                match = re.search(r"## Synopsis\s*```[^\n]*\n([^\n]+)", content, re.MULTILINE)
 
                 # Only add synopsis to metadata if we found a non-empty match
                 metadata_updates = {
@@ -287,9 +286,7 @@ def build_website_data():
     categories_path = base_path / "categories.yaml"
 
     # Load categories configuration
-    categories_config = (
-        load_categories_config(categories_path) if categories_path.exists() else {}
-    )
+    categories_config = load_categories_config(categories_path) if categories_path.exists() else {}
 
     # Get filesystem tools to infer types
     helpers_dir = base_path / "helpers"
@@ -363,16 +360,15 @@ def build_website_data():
     # Process tools by category
     for category_name, tools in categories_config.items():
         if not isinstance(tools, list):
-            print(
-                f"Warning: Category '{category_name}' does not contain a list of tools"
-            )
+            print(f"Warning: Category '{category_name}' does not contain a list of tools")
             continue
 
         for tool_name in tools:
             # Validate tool name is a string
             if not isinstance(tool_name, str):
                 print(
-                    f"Warning: Tool name must be a string in category '{category_name}': {tool_name}"
+                    "Warning: Tool name must be a string in "
+                    f"category '{category_name}': {tool_name}"
                 )
                 continue
 

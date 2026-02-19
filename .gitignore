@@ -52,3 +52,6 @@ venv/
 .zshrc
 .claude/agents
 .claude/commands
+
+# Ignore agentready reports
+.agentready/

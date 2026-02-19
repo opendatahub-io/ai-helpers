@@ -1,0 +1,5 @@
+line-length = 100
+
+[lint]
+# https://docs.astral.sh/ruff/rules/
+select = ["F", "E", "W", "I", "N"]

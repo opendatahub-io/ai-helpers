@@ -7,13 +7,13 @@ that can be set during wheel building. It examines various build
 configuration files and extracts environment variable usage.
 """
 
-import sys
-import re
-import json
 import argparse
+import json
+import re
+import sys
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional
-from dataclasses import dataclass
 
 
 @dataclass
@@ -200,9 +200,7 @@ class EnvironmentVariableInvestigator:
             "Variable assignment",
         ]:
             # Skip if it appears to be in a Python string
-            if re.search(
-                r"""['"]{1,3}.*""" + re.escape(var_name) + r""".*['"]{1,3}""", line
-            ):
+            if re.search(r"""['"]{1,3}.*""" + re.escape(var_name) + r""".*['"]{1,3}""", line):
                 return False
 
             # Skip if it's in a Python comment
@@ -302,9 +300,7 @@ class EnvironmentVariableInvestigator:
         """Add a discovered environment variable"""
 
         # Determine variable type and description
-        description = self.known_vars.get(
-            var_name, self._infer_description(var_name, line_content)
-        )
+        description = self.known_vars.get(var_name, self._infer_description(var_name, line_content))
         var_type = self._infer_type(var_name, default_value, line_content)
 
         # If we already have this variable, update with more information
@@ -360,9 +356,7 @@ class EnvironmentVariableInvestigator:
 
         return f"Environment variable {var_name}"
 
-    def _infer_type(
-        self, var_name: str, default_value: Optional[str], line_content: str
-    ) -> str:
+    def _infer_type(self, var_name: str, default_value: Optional[str], line_content: str) -> str:
         """Infer the expected type of the variable"""
 
         # Check default value for type hints
@@ -377,15 +371,9 @@ class EnvironmentVariableInvestigator:
                 return "string"
 
         # Infer from variable name
-        if any(
-            word in var_name.lower()
-            for word in ["path", "dir", "home", "root", "prefix"]
-        ):
+        if any(word in var_name.lower() for word in ["path", "dir", "home", "root", "prefix"]):
             return "path"
-        elif any(
-            word in var_name.lower()
-            for word in ["enable", "disable", "with", "without"]
-        ):
+        elif any(word in var_name.lower() for word in ["enable", "disable", "with", "without"]):
             return "boolean"
         elif any(word in var_name.lower() for word in ["port", "count", "num", "jobs"]):
             return "number"
@@ -456,18 +444,11 @@ class EnvironmentVariableInvestigator:
         """Categorize a variable by its purpose"""
         name_lower = var_name.lower()
 
-        if any(
-            word in name_lower
-            for word in ["cc", "cxx", "cflags", "cxxflags", "ldflags"]
-        ):
+        if any(word in name_lower for word in ["cc", "cxx", "cflags", "cxxflags", "ldflags"]):
             return "Compiler and Linker Variables"
-        elif any(
-            word in name_lower for word in ["path", "dir", "home", "root", "prefix"]
-        ):
+        elif any(word in name_lower for word in ["path", "dir", "home", "root", "prefix"]):
             return "Path Configuration Variables"
-        elif any(
-            word in name_lower for word in ["enable", "disable", "with", "without"]
-        ):
+        elif any(word in name_lower for word in ["enable", "disable", "with", "without"]):
             return "Feature Control Variables"
         elif any(word in name_lower for word in ["python", "pip", "setuptools"]):
             return "Python-Specific Variables"

@@ -99,13 +99,9 @@ def view_job_log(pipeline: ProjectPipeline, job_name: str) -> None:
     print(log)
 
 
-def find_mr_for_branch(
-    project: Project, branch_name: str
-) -> ProjectMergeRequest | None:
+def find_mr_for_branch(project: Project, branch_name: str) -> ProjectMergeRequest | None:
     """Find an open merge request associated with a given branch."""
-    mrs = project.mergerequests.list(
-        source_branch=branch_name, state="opened", get_all=True
-    )
+    mrs = project.mergerequests.list(source_branch=branch_name, state="opened", get_all=True)
     if not mrs:
         return None
     # Return the first (most recent) MR
@@ -121,9 +117,7 @@ def get_latest_mr_pipeline(mr: ProjectMergeRequest) -> ProjectPipeline | None:
     return pipelines[0]
 
 
-def get_latest_branch_pipeline(
-    project: Project, branch_name: str
-) -> ProjectPipeline | None:
+def get_latest_branch_pipeline(project: Project, branch_name: str) -> ProjectPipeline | None:
     """Get the latest pipeline for a branch."""
     pipelines = project.pipelines.list(ref=branch_name, get_all=True)
     if not pipelines:
@@ -171,9 +165,7 @@ def get_gitlab_token(domain: str) -> str:
         if token:
             return token
         else:
-            raise ValueError(
-                f"ERROR: No applicable token found for {domain} in {netrc_file_path}"
-            )
+            raise ValueError(f"ERROR: No applicable token found for {domain} in {netrc_file_path}")
     except FileNotFoundError:
         pass
     print(
@@ -281,9 +273,7 @@ def main() -> None:
                 print(f"Pipeline branch: {branch_name}")
             pipeline = get_latest_branch_pipeline(project, branch_name)
             if not pipeline:
-                print(
-                    f"ERROR: No pipeline found on {main_branch} branch", file=sys.stderr
-                )
+                print(f"ERROR: No pipeline found on {main_branch} branch", file=sys.stderr)
                 sys.exit(1)
         else:
             mr = find_mr_for_branch(project, branch_name)
