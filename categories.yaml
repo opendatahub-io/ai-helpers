@@ -1,6 +1,5 @@
 AIPCC:
   - aipcc-commit
-  - aipcc-commit-validator
   - commit-message-assistant
   - aipcc-adr-assistant
 

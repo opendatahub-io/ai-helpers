@@ -1,6 +1,6 @@
 ---
 name: aipcc-commit
-description: Create, push, fix, or suggest git commits following AIPCC (AI Platform Core Components) conventions. Supports commit, push+PR, fix/squash, and suggestion modes.
+description: Create, push, fix, or suggest git commits following AIPCC (AI Platform Core Components) conventions. Supports commit, push+PR, fix/squash, suggestion, and validation modes.
 allowed-tools: Bash Read
 user-invocable: true
 ---
@@ -19,6 +19,7 @@ This skill operates in four modes based on arguments:
 | `/aipcc:commit --push [TICKET]` | Push + PR | Commit + push + create PR/MR |
 | `/aipcc:commit --fix [TICKET]` | Fix | Squash and rewrite non-compliant PR commits |
 | `/aipcc:commit --suggest [N]` | Suggest | Generate message suggestions without committing |
+| `/aipcc:commit --validate [REF]` | Validate | Validate commit messages against AIPCC linter rules |
 
 ## Commit Message Format
 
@@ -213,6 +214,52 @@ Co-authored-by: <model>@<version> (claude code)
 Signed-off-by: Your Name <your.email@example.com>
 ```
 
-## Related Tools
+---
 
-- **`aipcc-commit-validator`** skill - Validate commits with the standalone Python script
+### Mode: Validate (`--validate`)
+
+**Triggered by:** `/aipcc:commit --validate [REF]`
+
+Validate commit messages against AIPCC linter rules. Mimics the JIRA ticket linter used in GitLab CI.
+
+**IMPORTANT**: Run the script from the user's git repository directory, not from the skill directory. Use the base directory (`<base_path>`) for this skill to execute the script with an absolute path.
+
+**Validate last commit:**
+```bash
+uv run <base_path>/scripts/validate_commit.py
+```
+
+**Validate a specific commit:**
+```bash
+uv run <base_path>/scripts/validate_commit.py <commit-sha>
+```
+
+**Validate a range of commits:**
+```bash
+uv run <base_path>/scripts/validate_commit.py origin/main..HEAD
+```
+
+**Validate multiple specific commits:**
+```bash
+uv run <base_path>/scripts/validate_commit.py abc1234 def5678
+```
+
+**Example output (success):**
+```
+✓ All 3 commit(s) pass AIPCC linter validation
+```
+
+**Example output (failure):**
+```
+✗ Commit validation failed:
+
+  [abc1234] Subject must start with JIRA ticket (RHELAI|RHOAIENG|AIPCC|INFERENG|RHAIENG)-XXXX:
+    Got: fix typo in readme...
+
+  [abc1234] Commit must have a body (description after blank line)
+
+  [abc1234] Commit must include 'Signed-off-by: Name <email@domain>'
+    Use: git commit --signoff
+```
+
+**Prerequisites:** Git repository, Python 3.10+ with `uv` installed (script is self-contained).

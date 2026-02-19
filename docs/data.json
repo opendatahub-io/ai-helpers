@@ -70,18 +70,10 @@
     "skills": [
       {
         "name": "aipcc-commit",
-        "description": "Create, push, fix, or suggest git commits following AIPCC (AI Platform Core Components) conventions. Supports commit, push+PR, fix/squash, and suggestion modes.",
+        "description": "Create, push, fix, or suggest git commits following AIPCC (AI Platform Core Components) conventions. Supports commit, push+PR, fix/squash, suggestion, and validation modes.",
         "category": "aipcc",
         "file_path": "helpers/skills/aipcc-commit/SKILL.md",
         "id": "aipcc-commit",
-        "allowed_tools": "Bash Read"
-      },
-      {
-        "name": "aipcc-commit-validator",
-        "description": "Validate git commit messages against AIPCC linter rules used by Red Hat AI projects. Checks for proper JIRA ticket format, commit body, and Signed-off-by line. Use this when validating commits before pushing or when CI fails due to commit message format.",
-        "category": "aipcc",
-        "file_path": "helpers/skills/aipcc-commit-validator/SKILL.md",
-        "id": "aipcc-commit-validator",
         "allowed_tools": "Bash Read"
       },
       {
