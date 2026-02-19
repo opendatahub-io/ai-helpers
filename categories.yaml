@@ -1,8 +1,17 @@
 AIPCC:
-  - aipcc-commit-suggest
+  - aipcc-commit
+  - aipcc-commit-validator
   - commit-message-assistant
   - aipcc-adr-assistant
 
 vLLM:
   - vllm-compare-reqs
-  - vllm-slack-summary
+
+RHAIIS:
+  - rhaiis-slack-summary
+  - rhaiis-downstream-release-status
+  - rhaiis-release-midstream-image
+  - rhaiis-release-branch
+  - rhaiis-release-infra
+  - rhaiis-release-packages
+  - rhaiis-release-renovate

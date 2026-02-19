@@ -1,5 +1,5 @@
 ---
-name: vllm-slack-summary
+name: rhaiis-slack-summary
 description: Generate slack summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team
 ---
 
