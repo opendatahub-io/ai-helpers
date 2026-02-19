@@ -1,8 +1,5 @@
 AIPCC:
-  - aipcc-commit-suggest
   - aipcc-commit
-  - aipcc-commit-push-pr
-  - aipcc-fix-pr-commit
   - aipcc-commit-validator
   - commit-message-assistant
   - aipcc-adr-assistant
@@ -12,3 +9,11 @@ vLLM:
   - vllm-slack-summary
   - vllm-downstream-release-status
   - vllm-release-midstream-image
+  - vllm-deploy
+  - vllm-test-endpoint
+
+RHAIIS Release:
+  - rhaiis-release-branch
+  - rhaiis-release-infra
+  - rhaiis-release-packages
+  - rhaiis-release-renovate

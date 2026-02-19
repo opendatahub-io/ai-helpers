@@ -92,7 +92,7 @@ glab api --hostname gitlab.com "projects/redhat%2Frhel-ai%2Frhaiis%2Fcontainers/
 
 ```bash
 # Check all accelerator configs in the target branch
-for accel in cpu cuda rocm tpu spyre; do
+for accel in cpu cuda rocm tpu spyre neuron; do
   echo "=== $accel ==="
   glab api --hostname gitlab.com "projects/redhat%2Frhel-ai%2Frhaiis%2Fcontainers/repository/files/build-args%2F${accel}-ubi9.conf?ref=<BRANCH>" 2>/dev/null | jq -r '.content' | base64 -d | grep -E "^(BASE_IMAGE|WHEEL_RELEASE)"
 done

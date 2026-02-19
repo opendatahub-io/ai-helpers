@@ -10,6 +10,9 @@
     },
     "vllm": {
       "name": "vLLM"
+    },
+    "rhaiis release": {
+      "name": "RHAIIS Release"
     }
   },
   "tools": {
@@ -65,6 +68,14 @@
       }
     ],
     "skills": [
+      {
+        "name": "aipcc-commit",
+        "description": "Create, push, fix, or suggest git commits following AIPCC (AI Platform Core Components) conventions. Supports commit, push+PR, fix/squash, and suggestion modes.",
+        "category": "aipcc",
+        "file_path": "helpers/skills/aipcc-commit/SKILL.md",
+        "id": "aipcc-commit",
+        "allowed_tools": "Bash Read"
+      },
       {
         "name": "aipcc-commit-validator",
         "description": "Validate git commit messages against AIPCC linter rules used by Red Hat AI projects. Checks for proper JIRA ticket format, commit body, and Signed-off-by line. Use this when validating commits before pushing or when CI fails due to commit message format.",
@@ -172,38 +183,6 @@
     ],
     "commands": [
       {
-        "name": "aipcc-commit",
-        "description": "Create a git commit following AIPCC conventions",
-        "category": "aipcc",
-        "file_path": "helpers/commands/aipcc-commit.md",
-        "argument_hint": "[JIRA-TICKET]",
-        "synopsis": "/aipcc:commit           # Create commit, infer JIRA ticket from branch/changes"
-      },
-      {
-        "name": "aipcc-commit-push-pr",
-        "description": "Commit, push, and open a PR/MR following AIPCC conventions",
-        "category": "aipcc",
-        "file_path": "helpers/commands/aipcc-commit-push-pr.md",
-        "argument_hint": "[JIRA-TICKET]",
-        "synopsis": "/aipcc:commit-push-pr           # Full workflow with inferred JIRA ticket"
-      },
-      {
-        "name": "aipcc-commit-suggest",
-        "description": "Generate AIPCC Commits style commit messages or summarize existing commits",
-        "category": "aipcc",
-        "file_path": "helpers/commands/aipcc-commit-suggest.md",
-        "argument_hint": "[N]",
-        "synopsis": "/aipcc:commit-suggest       # Analyze staged changes"
-      },
-      {
-        "name": "aipcc-fix-pr-commit",
-        "description": "Fix non-compliant PR commits by squashing and recommitting",
-        "category": "aipcc",
-        "file_path": "helpers/commands/aipcc-fix-pr-commit.md",
-        "argument_hint": "[JIRA-TICKET]",
-        "synopsis": "/aipcc:fix-pr-commit           # Fix commits on current branch"
-      },
-      {
         "name": "hello-world-echo",
         "description": "Hello world plugin implementation",
         "category": "general",
@@ -236,12 +215,52 @@
         "synopsis": "/konflux:component status <component>"
       },
       {
+        "name": "rhaiis-release-branch",
+        "description": "Create release branches and enable repeatable builds for a RHAIIS release",
+        "category": "rhaiis release",
+        "file_path": "helpers/commands/rhaiis-release-branch.md",
+        "argument_hint": "<epic-key> <version>",
+        "synopsis": "/rhaiis:release-branch INFERENG-4584 3.3  # Create release branches for version 3.3"
+      },
+      {
+        "name": "rhaiis-release-infra",
+        "description": "Add infrastructure version entry for a new RHAIIS release",
+        "category": "rhaiis release",
+        "file_path": "helpers/commands/rhaiis-release-infra.md",
+        "argument_hint": "<epic-key> <version>",
+        "synopsis": "/rhaiis:release-infra INFERENG-4584 3.4-ea1  # Add version entry for 3.4-ea1"
+      },
+      {
+        "name": "rhaiis-release-packages",
+        "description": "Identify package changes between vLLM versions and create AIPCC JIRA issues",
+        "category": "rhaiis release",
+        "file_path": "helpers/commands/rhaiis-release-packages.md",
+        "argument_hint": "<epic-key> <old-version> <new-version>",
+        "synopsis": "/rhaiis:release-packages INFERENG-4584 v0.12.0+rhai5 v0.13.0+rhai1"
+      },
+      {
+        "name": "rhaiis-release-renovate",
+        "description": "Update Renovate configs and product version for a RHAIIS release",
+        "category": "rhaiis release",
+        "file_path": "helpers/commands/rhaiis-release-renovate.md",
+        "argument_hint": "<epic-key> <release-branch> <next-version>",
+        "synopsis": "/rhaiis:release-renovate INFERENG-4584 3.3 3.4EA1  # Update Renovate for 3.3 release"
+      },
+      {
         "name": "rpm-examine",
         "description": "Analyze RPM build.log failures",
         "category": "general",
         "file_path": "helpers/commands/rpm-examine.md",
         "argument_hint": "[copr-chroot-url] OR [build-log-url] [srpm-url] OR [build.log] [specfile|dist-git] [sources]",
         "synopsis": "/rpm:examine <copr-chroot-url>"
+      },
+      {
+        "name": "vllm-deploy",
+        "description": "Deploy a model to OpenShift using the vLLM Helm chart",
+        "category": "vllm",
+        "file_path": "helpers/commands/vllm-deploy.md",
+        "argument_hint": "<action> [model] [options]",
+        "synopsis": "/vllm:deploy install granite-7b     # Install a model deployment"
       },
       {
         "name": "vllm-downstream-release-status",
@@ -258,6 +277,14 @@
         "file_path": "helpers/commands/vllm-release-midstream-image.md",
         "argument_hint": "<tag> <device>",
         "synopsis": "/vllm:release-midstream-image v0.14.0+rhai3 cuda  # Release CUDA image"
+      },
+      {
+        "name": "vllm-test-endpoint",
+        "description": "Test a deployed vLLM endpoint with health, model listing, and chat completion queries",
+        "category": "vllm",
+        "file_path": "helpers/commands/vllm-test-endpoint.md",
+        "argument_hint": "\"[url]\"",
+        "synopsis": "/vllm:test-endpoint                              # Auto-discover from OpenShift"
       }
     ],
     "agents": [

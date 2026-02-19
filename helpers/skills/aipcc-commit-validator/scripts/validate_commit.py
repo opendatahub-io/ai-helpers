@@ -30,6 +30,9 @@ import sys
 # Valid JIRA project prefixes
 JIRA_PATTERN = re.compile(r"^(RHELAI|RHOAIENG|AIPCC|INFERENG|RHAIENG)-\d+:")
 SIGNED_OFF_BY_PATTERN = re.compile(r"Signed-off-by: .+ <.+@.+>")
+TRAILER_PATTERN = re.compile(
+    r"^(Signed-off-by|Co-authored-by|Co-Authored-By|Fixes|Closes): ", re.IGNORECASE
+)
 
 
 def get_commit_message(commit_ref: str = "HEAD") -> tuple[str, str]:
@@ -79,12 +82,15 @@ def validate_commit(commit_ref: str = "HEAD") -> tuple[bool, list[str]]:
         return False, [f"Failed to get commit message: {e}"]
 
     # Get short SHA for error messages
-    short_sha = subprocess.run(
-        ["git", "rev-parse", "--short", commit_ref],
-        capture_output=True,
-        text=True,
-        check=True,
-    ).stdout.strip()
+    try:
+        short_sha = subprocess.run(
+            ["git", "rev-parse", "--short", commit_ref],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+    except subprocess.CalledProcessError:
+        short_sha = commit_ref[:12]
 
     # Rule 1: Subject must start with valid JIRA ticket
     if not JIRA_PATTERN.match(subject):
@@ -94,10 +100,16 @@ def validate_commit(commit_ref: str = "HEAD") -> tuple[bool, list[str]]:
             f"  Got: {subject[:60]}..."
         )
 
-    # Rule 2: Must have a body (description)
-    if not body:
+    # Rule 2: Must have a body with at least one non-trailer line
+    body_lines = [
+        line
+        for line in body.splitlines()
+        if line.strip() and not TRAILER_PATTERN.match(line.strip())
+    ]
+    if not body_lines:
         errors.append(
-            f"[{short_sha}] Commit must have a body (description after blank line)"
+            f"[{short_sha}] Commit must have a body (description after blank line)\n"
+            f"  Trailer-only bodies (Signed-off-by, Co-authored-by) do not count"
         )
 
     # Rule 3: Must have Signed-off-by
@@ -120,7 +132,11 @@ def main():
         commits = ["HEAD"]
     elif ".." in args[0]:
         # Range specified
-        commits = get_commits_in_range(args[0])
+        try:
+            commits = get_commits_in_range(args[0])
+        except subprocess.CalledProcessError as e:
+            print(f"✗ Failed to resolve commit range '{args[0]}': {e.stderr.strip()}")
+            return 1
     else:
         # Specific commit(s)
         commits = args

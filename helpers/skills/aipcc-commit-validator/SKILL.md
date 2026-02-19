@@ -6,7 +6,7 @@ allowed-tools: Bash Read
 
 # AIPCC Commit Validator
 
-This skill validates git commit messages against the AIPCC (AI Platform Continuous Compliance) linter rules used by Red Hat AI projects. It mimics the JIRA ticket linter used in GitLab CI.
+This skill validates git commit messages against the AIPCC (AI Platform Core Components) linter rules used by Red Hat AI projects. It mimics the JIRA ticket linter used in GitLab CI.
 
 ## Validation Rules
 
@@ -106,8 +106,6 @@ git rebase -i origin/main
 # Change 'pick' to 'reword' for commits to fix
 ```
 
-## Related Commands
+## Related Tools
 
-- `/aipcc:commit` - Create AIPCC-compliant commits
-- `/aipcc:commit-push-pr` - Full commit, push, and PR workflow
-- `/aipcc:fix-pr-commit` - Fix non-compliant PR commits by squashing
+- **`aipcc-commit`** skill - Create, push, fix, or suggest AIPCC-compliant commits
