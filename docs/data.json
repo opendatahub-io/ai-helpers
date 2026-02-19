@@ -204,6 +204,14 @@
         "synopsis": "/hello-world:echo [name]"
       },
       {
+        "name": "issue-to-pr",
+        "description": "Analyze a GitHub or GitLab issue and drive toward a PR or ask for clarification. Use when the user provides an issue URL or pasted issue details.",
+        "category": "general",
+        "file_path": "helpers/commands/issue-to-pr.md",
+        "argument_hint": "[issue-url] or pasted issue title/body",
+        "synopsis": "/issue-to-pr [issue-url]"
+      },
+      {
         "name": "jira-sprint-summary",
         "description": "Generate comprehensive sprint summaries by analyzing JIRA sprint data, including issue breakdown, progress metrics, and team performance insights.",
         "category": "general",
