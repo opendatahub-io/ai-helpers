@@ -1,0 +1,16 @@
+{
+  "description": "Automatic skill activation suggestions based on user prompts",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/skill_activation_prompt.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
