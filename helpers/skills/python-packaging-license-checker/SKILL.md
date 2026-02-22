@@ -25,14 +25,19 @@ When a user provides a license name and asks about compatibility for redistribut
    - Try full name matching
    - Try partial/fuzzy matching for common variations
 
-3. **Risk Classification**:
+3. **Risk Classification** (check strong copyleft FIRST to prevent misclassification):
    ```
-   IF (isOsiApproved AND isFsfLibre AND permissive_pattern):
-       Risk = Low, Status = Compatible
+   IF (strong_copyleft_pattern):
+       Risk = High, Status = Restricted/Incompatible
+       # GPL, AGPL are ALWAYS restricted regardless of OSI/FSF status
+   ELIF (NOT isOsiApproved):
+       Risk = High, Status = Restricted/Incompatible
    ELIF (isOsiApproved AND weak_copyleft_pattern):
        Risk = Medium, Status = Compatible with Requirements
-   ELIF (strong_copyleft_pattern OR NOT isOsiApproved):
-       Risk = High, Status = Restricted/Incompatible
+   ELIF (isOsiApproved AND isFsfLibre AND permissive_pattern):
+       Risk = Low, Status = Compatible
+   ELSE:
+       Risk = High, Status = Unknown - requires manual review
    ```
 
 4. **Generate Assessment**:
@@ -60,24 +65,43 @@ When processing SPDX license data, examine these key fields:
 - `reference`: URL to full license details
 - `seeAlso`: Array of additional reference URLs
 
+### License Pattern Definitions
+
+Use these explicit pattern lists for classification. Match against the SPDX `licenseId` field (case-insensitive).
+
+#### Permissive Patterns (permissive_pattern)
+Licenses where the `licenseId` contains or matches any of:
+- `MIT`, `Apache-`, `BSD-`, `ISC`, `Unlicense`, `0BSD`, `PSF-`, `Python-`, `Zlib`, `BSL-1.0`, `CC0-`, `WTFPL`, `MulanPSL-`
+
+#### Weak Copyleft Patterns (weak_copyleft_pattern)
+Licenses where the `licenseId` contains or matches any of:
+- `LGPL-`, `MPL-`, `EPL-`, `CDDL-`, `CPL-`, `CeCILL-2.1`, `EUPL-`
+
+#### Strong Copyleft Patterns (strong_copyleft_pattern)
+Licenses where the `licenseId` contains or matches any of:
+- `GPL-` (but NOT `LGPL-`), `AGPL-`, `SSPL-`, `OSL-`, `CeCILL-` (but NOT `CeCILL-2.1`), `EUPL-` (when used with strong copyleft intent)
+
+**CRITICAL**: `GPL-2.0`, `GPL-3.0`, `GPL-2.0-only`, `GPL-2.0-or-later`, `GPL-3.0-only`, `GPL-3.0-or-later` are ALL strong copyleft. They are NOT permissive. They MUST be classified as Restricted/Incompatible for commercial wheel redistribution.
+
 ### Compatibility Assessment Logic
 
-Use SPDX flags and license patterns to determine compatibility:
+Use SPDX flags and the pattern definitions above to determine compatibility:
 
 #### ✅ Highly Compatible (Low Risk)
-- OSI Approved AND FSF Libre
-- Permissive licenses (MIT, Apache, BSD, ISC family)
-- No strong copyleft requirements
+- OSI Approved AND FSF Libre AND matches permissive_pattern
+- Examples: MIT, Apache-2.0, BSD-3-Clause, ISC, PSF-2.0
+- No copyleft requirements of any kind
 
 #### ⚠️ Compatible with Requirements (Medium Risk)
-- OSI Approved but specific obligations
-- Weak copyleft (LGPL, MPL)
-- File-level copyleft licenses
+- OSI Approved AND matches weak_copyleft_pattern
+- Examples: LGPL-2.1-only, LGPL-3.0-or-later, MPL-2.0
+- File-level or library-level copyleft only
 
 #### ❌ Restricted/High Risk
-- Strong copyleft (GPL, AGPL)
+- Matches strong_copyleft_pattern (GPL, AGPL) — regardless of OSI or FSF status
 - Non-OSI approved licenses
 - Proprietary or unclear terms
+- GPL licenses require ALL derivative works to be released under the same GPL license, making them incompatible with proprietary or commercial redistribution of binary wheels
 
 ### Output Format
 
