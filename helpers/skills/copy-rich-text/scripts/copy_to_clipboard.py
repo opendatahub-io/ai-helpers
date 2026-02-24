@@ -30,7 +30,7 @@ def has_markdown_table(text: str) -> bool:
     lines = text.strip().split("\n")
     for i, line in enumerate(lines):
         stripped = line.strip()
-        if re.match(r"^\|[\s\-:]+(\|[\s\-:]+)+\|?$", stripped):
+        if re.match(r"^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?\s*$", stripped):
             if i > 0 and "|" in lines[i - 1]:
                 return True
     return False
@@ -43,7 +43,7 @@ def markdown_table_to_tsv(text: str) -> str:
 
     for line in lines:
         stripped = line.strip()
-        if re.match(r"^\|[\s\-:]+(\|[\s\-:]+)+\|?$", stripped):
+        if re.match(r"^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?\s*$", stripped):
             continue
         if "|" in stripped:
             cells = [c.strip() for c in stripped.split("|")]
