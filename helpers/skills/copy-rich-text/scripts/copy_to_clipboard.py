@@ -45,12 +45,13 @@ def markdown_table_to_tsv(text: str) -> str:
         stripped = line.strip()
         if re.match(r"^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?\s*$", stripped):
             continue
-        if "|" in stripped:
-            cells = [c.strip() for c in stripped.split("|")]
-            if cells and cells[0] == "":
-                cells = cells[1:]
-            if cells and cells[-1] == "":
-                cells = cells[:-1]
+        cells = [c.strip() for c in stripped.split("|")]
+        if cells and cells[0] == "":
+            cells = cells[1:]
+        if cells and cells[-1] == "":
+            cells = cells[:-1]
+        non_empty = [c for c in cells if c]
+        if len(non_empty) >= 2:
             tsv_lines.append("\t".join(cells))
 
     return "\n".join(tsv_lines)
@@ -203,19 +204,14 @@ def _copy_darwin(text: str, html_content: str) -> None:
 def _copy_linux(text: str, html_content: str) -> None:
     """Set clipboard on Linux with both plain text and HTML."""
     try:
-        proc = subprocess.run(
+        subprocess.run(
             ["wl-copy", "--type", "text/html"],
             input=html_content.encode(),
+            check=True,
             capture_output=True,
         )
-        subprocess.run(
-            ["wl-copy", "--type", "text/plain", "--paste-once"],
-            input=text.encode(),
-            capture_output=True,
-        )
-        if proc.returncode == 0:
-            return
-    except FileNotFoundError:
+        return
+    except (FileNotFoundError, subprocess.CalledProcessError):
         pass
 
     try:
@@ -225,8 +221,12 @@ def _copy_linux(text: str, html_content: str) -> None:
             check=True,
             capture_output=True,
         )
+        print(
+            "Warning: only HTML set (plain text fallback not available with xclip)",
+            file=sys.stderr,
+        )
         return
-    except FileNotFoundError:
+    except (FileNotFoundError, subprocess.CalledProcessError):
         pass
 
     try:
