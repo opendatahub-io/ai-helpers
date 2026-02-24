@@ -36,15 +36,44 @@ def has_markdown_table(text: str) -> bool:
     return False
 
 
-def markdown_table_to_tsv(text: str) -> str:
-    """Extract markdown table(s) from text and convert to TSV."""
+def split_around_table(text: str) -> tuple[str, list[str], str]:
+    """Split text into (before, table_lines, after) around the first table."""
     lines = text.strip().split("\n")
-    tsv_lines = []
+    sep_regex = re.compile(r"^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?\s*$")
 
-    for line in lines:
+    # Find the separator line
+    sep_idx = None
+    for i, line in enumerate(lines):
+        if sep_regex.match(line.strip()) and i > 0 and "|" in lines[i - 1]:
+            sep_idx = i
+            break
+
+    if sep_idx is None:
+        return text, [], ""
+
+    # Walk backward from separator to find table start (header row)
+    table_start = sep_idx - 1
+
+    # Walk forward from separator to find table end
+    table_end = sep_idx + 1
+    while table_end < len(lines):
+        stripped = lines[table_end].strip()
+        if not stripped or "|" not in stripped:
+            break
+        table_end += 1
+
+    before = "\n".join(lines[:table_start]).strip()
+    table = [line for line in lines[table_start:table_end] if not sep_regex.match(line.strip())]
+    after = "\n".join(lines[table_end:]).strip()
+
+    return before, table, after
+
+
+def table_lines_to_tsv(table_lines: list[str]) -> str:
+    """Convert extracted table lines to TSV."""
+    tsv_lines = []
+    for line in table_lines:
         stripped = line.strip()
-        if re.match(r"^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?\s*$", stripped):
-            continue
         cells = [c.strip() for c in stripped.split("|")]
         if cells and cells[0] == "":
             cells = cells[1:]
@@ -53,7 +82,6 @@ def markdown_table_to_tsv(text: str) -> str:
         non_empty = [c for c in cells if c]
         if len(non_empty) >= 2:
             tsv_lines.append("\t".join(cells))
-
     return "\n".join(tsv_lines)
 
 
@@ -184,7 +212,8 @@ def main() -> None:
         sys.exit(1)
 
     if has_markdown_table(markdown):
-        tsv = markdown_table_to_tsv(markdown)
+        before, table_lines, after = split_around_table(markdown)
+        tsv = table_lines_to_tsv(table_lines)
         html_content = tsv_to_sheets_html(tsv)
         copy_to_clipboard(tsv, html_content)
         lines = tsv.strip().split("\n")

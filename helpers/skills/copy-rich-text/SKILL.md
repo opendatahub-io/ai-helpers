@@ -29,14 +29,23 @@ cat /tmp/rich_text_content.md | ./scripts/copy_to_clipboard.py
 
 ### Table detection
 
-- **If a table is detected**: The entire output is converted to a single table. The script uses Google Sheets-style HTML with both `text/plain` (TSV) and `text/html` pasteboard types set simultaneously — this is the only format Slack recognizes for table rendering.
-- **If no table is detected**: The Markdown is converted to simple HTML (headers, bold, italic, lists, code blocks, links) and set as rich text on the clipboard.
+- **If a table is detected**: The table is extracted and converted using Google Sheets-style HTML with both `text/plain` (TSV) and `text/html` pasteboard types set simultaneously — this is the only format Slack recognizes for table rendering.
+- **If no table is detected**: The Markdown is converted to HTML (headers, bold, italic, lists, code blocks, links) and set as rich text on the clipboard.
+
+### Mixed content (table + surrounding prose)
+
+When the content contains both a table and surrounding text (headings, bullet points, paragraphs), use a **two-step workflow**:
+
+1. **First**: Write only the table to the temp file, pipe it to the script, and tell the user: *"Table copied to clipboard. Paste it into Slack now."*
+2. **Second**: After the user confirms they pasted the table, write the surrounding prose to the temp file, pipe it to the script, and tell the user: *"Context text copied. You can paste this into Slack's context field for the table."*
+
+Slack shows a context/description field when you paste a table — the second paste goes there.
 
 ### Important
 
-- Write the full Markdown content to a temp file first, then pipe it. Do not try to pass it inline via echo — content with special characters will break.
-- When the output contains a table, the **entire** clipboard content should be the table. Strip any non-table prose and consolidate into a single table if needed.
+- Write content to a temp file first, then pipe it. Do not try to pass it inline via echo — content with special characters will break.
 - The first row of a table is automatically bolded as a header.
+- The script auto-detects tables vs prose — no flags needed. Just control what you write to the temp file.
 
 ## How It Works
 
