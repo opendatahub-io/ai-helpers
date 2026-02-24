@@ -1,6 +1,6 @@
 #!/usr/bin/env -S uv run --script
 # /// script
-# dependencies = ["pyobjc-framework-Cocoa; sys_platform == 'darwin'"]
+# dependencies = ["markdown", "pyobjc-framework-Cocoa; sys_platform == 'darwin'"]
 # ///
 """
 Copy markdown content to clipboard as rich text for pasting into Slack.
@@ -91,92 +91,10 @@ def tsv_to_sheets_html(tsv: str) -> str:
 
 
 def markdown_to_html(text: str) -> str:
-    """Convert markdown to simple HTML suitable for Slack rich text paste."""
-    lines = text.strip().split("\n")
-    result = []
-    in_code_block = False
-    in_list = False
-    code_lines = []
+    """Convert markdown to HTML using the markdown library."""
+    import markdown
 
-    for line in lines:
-        if line.strip().startswith("```"):
-            if in_code_block:
-                result.append(
-                    "<pre><code>" + html.escape("\n".join(code_lines)) + "</code></pre>"
-                )
-                code_lines = []
-                in_code_block = False
-            else:
-                if in_list:
-                    result.append("</ul>")
-                    in_list = False
-                in_code_block = True
-            continue
-
-        if in_code_block:
-            code_lines.append(line)
-            continue
-
-        stripped = line.strip()
-
-        if not stripped:
-            if in_list:
-                result.append("</ul>")
-                in_list = False
-            continue
-
-        header_match = re.match(r"^(#{1,6})\s+(.*)", stripped)
-        if header_match:
-            if in_list:
-                result.append("</ul>")
-                in_list = False
-            level = len(header_match.group(1))
-            content = inline_format(header_match.group(2))
-            result.append(f"<h{level}>{content}</h{level}>")
-            continue
-
-        list_match = re.match(r"^[-*+]\s+(.*)", stripped)
-        if list_match:
-            if not in_list:
-                result.append("<ul>")
-                in_list = True
-            content = inline_format(list_match.group(1))
-            result.append(f"<li>{content}</li>")
-            continue
-
-        num_match = re.match(r"^\d+[.)]\s+(.*)", stripped)
-        if num_match:
-            if not in_list:
-                result.append("<ul>")
-                in_list = True
-            content = inline_format(num_match.group(1))
-            result.append(f"<li>{content}</li>")
-            continue
-
-        if in_list:
-            result.append("</ul>")
-            in_list = False
-        content = inline_format(stripped)
-        result.append(f"<p>{content}</p>")
-
-    if in_list:
-        result.append("</ul>")
-    if in_code_block:
-        result.append(
-            "<pre><code>" + html.escape("\n".join(code_lines)) + "</code></pre>"
-        )
-
-    return "<html><body>" + "\n".join(result) + "</body></html>"
-
-
-def inline_format(text: str) -> str:
-    """Apply inline markdown formatting (bold, italic, code, links)."""
-    escaped = html.escape(text)
-    escaped = re.sub(r"`([^`]+)`", r"<code>\1</code>", escaped)
-    escaped = re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", escaped)
-    escaped = re.sub(r"\*([^*]+)\*", r"<i>\1</i>", escaped)
-    escaped = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2">\1</a>', escaped)
-    return escaped
+    return markdown.markdown(text, extensions=["fenced_code", "codehilite", "tables"])
 
 
 def copy_to_clipboard(text: str, html_content: str) -> None:
