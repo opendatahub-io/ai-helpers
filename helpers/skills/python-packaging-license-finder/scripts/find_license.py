@@ -56,19 +56,14 @@ def get_source_repository_url(data: dict) -> str:
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Find license information for Python packages"
-    )
+    parser = argparse.ArgumentParser(description="Find license information for Python packages")
     parser.add_argument("package", help="Package name")
     parser.add_argument("version", nargs="?", help="Package version (optional)")
 
     args = parser.parse_args()
 
     # Fetch PyPI data
-    print(
-        f"Fetching PyPI data for {args.package}"
-        + (f" {args.version}" if args.version else "")
-    )
+    print(f"Fetching PyPI data for {args.package}" + (f" {args.version}" if args.version else ""))
     data = fetch_pypi_data(args.package, args.version)
 
     # Check license fields - prioritize newer license_expression field
@@ -101,9 +96,7 @@ def main():
         repo_url = get_source_repository_url(data)
         if repo_url:
             print(f"SOURCE REPOSITORY: {repo_url}")
-            print(
-                "Use git:shallow-clone skill to search for LICENSE files in the repository"
-            )
+            print("Use git:shallow-clone skill to search for LICENSE files in the repository")
         else:
             print("No source repository URL found")
             print("LICENSE NOT FOUND")

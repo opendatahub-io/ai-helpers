@@ -90,6 +90,14 @@
         "allowed_tools": "Bash Read"
       },
       {
+        "name": "jira-activity",
+        "description": "Summarize Jira ticket activity, including child tickets, to detect stale tickets in the backlog. Use when user asks to review one or more Jira tickets to determine if they are being worked on.",
+        "category": "general",
+        "file_path": "helpers/skills/jira-activity/SKILL.md",
+        "id": "jira-activity",
+        "allowed_tools": "Bash"
+      },
+      {
         "name": "jira-upload-chat-log",
         "description": "Export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation.",
         "category": "general",
@@ -103,6 +111,14 @@
         "category": "general",
         "file_path": "helpers/skills/oci-cve-checker/SKILL.md",
         "id": "oci-cve-checker",
+        "allowed_tools": "Bash Read"
+      },
+      {
+        "name": "python-full-deps",
+        "description": "Resolve the full install-time dependency tree for a Python package. Use when the user needs all transitive dependencies, full dependency list, or install requirements resolved for a specific Python version with environment markers.",
+        "category": "general",
+        "file_path": "helpers/skills/python-full-deps/SKILL.md",
+        "id": "python-full-deps",
         "allowed_tools": "Bash Read"
       },
       {
@@ -152,6 +168,14 @@
         "file_path": "helpers/skills/python-packaging-source-finder/SKILL.md",
         "id": "python-packaging-source-finder",
         "allowed_tools": "Bash WebSearch WebFetch"
+      },
+      {
+        "name": "unit-test-project-conformant",
+        "description": "Guides the agent to write unit tests that strictly conform to the project's existing testing structure, patterns, and style by learning from similar tests before writing anything new.",
+        "category": "general",
+        "file_path": "helpers/skills/unit-test-project-conformant/SKILL.md",
+        "id": "unit-test-project-conformant",
+        "allowed_tools": ""
       },
       {
         "name": "vllm-compare-reqs",

@@ -16,9 +16,7 @@ from typing import Dict, List
 try:
     import yaml
 except ImportError:
-    print(
-        "Error: PyYAML is required. Install with: pip install pyyaml", file=sys.stderr
-    )
+    print("Error: PyYAML is required. Install with: pip install pyyaml", file=sys.stderr)
     sys.exit(1)
 
 # Import duplicate detection function from validate_tools.py
@@ -67,9 +65,7 @@ def get_filesystem_tools(helpers_dir: Path) -> Dict[str, str]:
     """
     # Use the comprehensive duplicate detection function if available
     if get_filesystem_tools_with_duplicates_check is not None:
-        filesystem_tools, duplicate_errors = get_filesystem_tools_with_duplicates_check(
-            helpers_dir
-        )
+        filesystem_tools, duplicate_errors = get_filesystem_tools_with_duplicates_check(helpers_dir)
 
         # Report duplicate errors
         for error in duplicate_errors:
@@ -88,7 +84,9 @@ def get_filesystem_tools(helpers_dir: Path) -> Dict[str, str]:
                 tool_name = item.name
                 if tool_name in filesystem_tools:
                     print(
-                        f"Warning: Duplicate tool name '{tool_name}' found - skill ({item}) conflicts with {filesystem_tools[tool_name]}",
+                        f"Warning: Duplicate tool name '{tool_name}' found"
+                        f" - skill ({item}) conflicts with"
+                        f" {filesystem_tools[tool_name]}",
                         file=sys.stderr,
                     )
                 filesystem_tools[tool_name] = "skill"
@@ -104,7 +102,9 @@ def get_filesystem_tools(helpers_dir: Path) -> Dict[str, str]:
                 tool_name = item.stem
                 if tool_name in filesystem_tools:
                     print(
-                        f"Warning: Duplicate tool name '{tool_name}' found - command ({item}) conflicts with {filesystem_tools[tool_name]}",
+                        f"Warning: Duplicate tool name '{tool_name}' found"
+                        f" - command ({item}) conflicts with"
+                        f" {filesystem_tools[tool_name]}",
                         file=sys.stderr,
                     )
                 filesystem_tools[tool_name] = "command"
@@ -120,7 +120,9 @@ def get_filesystem_tools(helpers_dir: Path) -> Dict[str, str]:
                 tool_name = item.stem
                 if tool_name in filesystem_tools:
                     print(
-                        f"Warning: Duplicate tool name '{tool_name}' found - agent ({item}) conflicts with {filesystem_tools[tool_name]}",
+                        f"Warning: Duplicate tool name '{tool_name}' found"
+                        f" - agent ({item}) conflicts with"
+                        f" {filesystem_tools[tool_name]}",
                         file=sys.stderr,
                     )
                 filesystem_tools[tool_name] = "agent"
@@ -138,7 +140,9 @@ def get_filesystem_tools(helpers_dir: Path) -> Dict[str, str]:
                         tool_name = title_to_slug(gem["title"])
                         if tool_name in filesystem_tools:
                             print(
-                                f"Warning: Duplicate tool name '{tool_name}' found - gem (title: {gem['title']}) conflicts with {filesystem_tools[tool_name]}",
+                                f"Warning: Duplicate tool name '{tool_name}'"
+                                f" found - gem (title: {gem['title']})"
+                                f" conflicts with {filesystem_tools[tool_name]}",
                                 file=sys.stderr,
                             )
                         filesystem_tools[tool_name] = "gem"
@@ -232,9 +236,7 @@ def generate_claude_settings(categories_config: Dict) -> Dict:
     # Base configuration
     settings = {
         "extraKnownMarketplaces": {
-            "odh-ai-helpers": {
-                "source": {"source": "directory", "path": "/opt/ai-helpers"}
-            }
+            "odh-ai-helpers": {"source": {"source": "directory", "path": "/opt/ai-helpers"}}
         },
         "enabledPlugins": {},
     }
@@ -245,9 +247,7 @@ def generate_claude_settings(categories_config: Dict) -> Dict:
     return settings
 
 
-def generate_marketplace_json(
-    categories_config: Dict, external_plugins: List[Dict]
-) -> Dict:
+def generate_marketplace_json(categories_config: Dict, external_plugins: List[Dict]) -> Dict:
     """Generate marketplace.json configuration."""
 
     # Base marketplace structure
@@ -298,9 +298,7 @@ def main():
     external_sources_path = repo_root / "claude-external-plugin-sources.json"
 
     print("Loading categories configuration...")
-    categories_config = (
-        load_categories_config(categories_path) if categories_path.exists() else {}
-    )
+    categories_config = load_categories_config(categories_path) if categories_path.exists() else {}
 
     if not isinstance(categories_config, dict):
         print(
@@ -330,7 +328,8 @@ def main():
         for tool_name in tools:
             if not isinstance(tool_name, str):
                 print(
-                    f"Warning: Tool name must be a string in category '{category_name}': {tool_name}",
+                    "Warning: Tool name must be a string in "
+                    f"category '{category_name}': {tool_name}",
                     file=sys.stderr,
                 )
                 continue
@@ -359,7 +358,9 @@ def main():
 
     if uncategorized_tools:
         print(
-            f"Note: Found {len(uncategorized_tools)} uncategorized tools (will be placed in General category): {', '.join(uncategorized_tools)}"
+            f"Note: Found {len(uncategorized_tools)} uncategorized"
+            " tools (will be placed in General category):"
+            f" {', '.join(uncategorized_tools)}"
         )
 
     print("Found tools:")

@@ -27,16 +27,15 @@ Output:
     - transcript.md: Formatted markdown transcript of conversations
 """
 
-import subprocess
-import sys
+import argparse
 import json
 import re
-import argparse
+import subprocess
+import sys
 from datetime import datetime, timedelta
-from pathlib import Path
 from glob import glob
-from typing import List, Dict, Any
-
+from pathlib import Path
+from typing import Any, Dict, List
 
 # Security validation patterns
 # Slack channel IDs: alphanumeric, typically start with C, D, G, or U
@@ -142,9 +141,7 @@ def export_slack_messages(channel_id, days_back, output_dir):
         channel_id,
     ]
 
-    run_command(
-        cmd, f"Exporting Slack messages from {start_date.date()} to {end_date.date()}"
-    )
+    run_command(cmd, f"Exporting Slack messages from {start_date.date()} to {end_date.date()}")
     return output_dir
 
 
@@ -167,9 +164,7 @@ def load_users(users_file: str) -> Dict[str, Dict[str, Any]]:
         profile = user.get("profile", {})
 
         user_lookup[user_id] = {
-            "real_name": user.get(
-                "real_name", profile.get("real_name", "Unknown User")
-            ),
+            "real_name": user.get("real_name", profile.get("real_name", "Unknown User")),
             "display_name": profile.get("display_name", ""),
             "name": user.get("name", ""),
             "email": profile.get("email", ""),
@@ -196,9 +191,7 @@ def get_user_display(user_id: str, user_lookup: Dict[str, Dict[str, Any]]) -> st
     user = user_lookup.get(user_id, {})
 
     # Prefer display_name, fallback to real_name, then name, then user_id
-    display_name = (
-        user.get("display_name") or user.get("real_name") or user.get("name") or user_id
-    )
+    display_name = user.get("display_name") or user.get("real_name") or user.get("name") or user_id
 
     # Add [Bot] indicator if it's a bot
     if user.get("is_bot"):
@@ -216,12 +209,8 @@ def extract_text_from_message(
 
     # Ensure code blocks have newlines around them
     # Match ```...``` and ensure newlines before and after
-    text = re.sub(
-        r"(?<!\n)(```)", r"\n\1", text
-    )  # Add newline before ``` if not present
-    text = re.sub(
-        r"(```[^`]*```)(?!\n)", r"\1\n", text
-    )  # Add newline after ``` if not present
+    text = re.sub(r"(?<!\n)(```)", r"\n\1", text)  # Add newline before ``` if not present
+    text = re.sub(r"(```[^`]*```)(?!\n)", r"\1\n", text)  # Add newline after ``` if not present
 
     # Replace user mentions <@U123456> with **@username**
     def replace_mention(match):
@@ -343,9 +332,7 @@ def process_messages_file(
                 reply_user_display = get_user_display(reply_user_id, user_lookup)
                 reply_timestamp_str = format_timestamp(reply_ts)
 
-                transcript_lines.append(
-                    f"> **[{reply_timestamp_str}] {reply_user_display}:**"
-                )
+                transcript_lines.append(f"> **[{reply_timestamp_str}] {reply_user_display}:**")
                 # Indent reply text with quote markers
                 for line in reply_text.split("\n"):
                     transcript_lines.append(f"> {line}")
@@ -415,9 +402,7 @@ def convert_to_transcript(
         all_transcript_lines.append(file_header)
 
         try:
-            lines = process_messages_file(
-                msg_file, user_lookup, include_threads=include_threads
-            )
+            lines = process_messages_file(msg_file, user_lookup, include_threads=include_threads)
             all_transcript_lines.extend(lines)
         except Exception as e:
             print(f"❌ Failed to process {msg_file}: {e}")
@@ -439,9 +424,7 @@ def convert_to_transcript(
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Generate summary of vLLM CI Slack channel"
-    )
+    parser = argparse.ArgumentParser(description="Generate summary of vLLM CI Slack channel")
     parser.add_argument(
         "--days", type=int, default=7, help="Number of days to look back (default: 7)"
     )
@@ -450,9 +433,7 @@ def main():
         default="C07R5PAL2L9",
         help="Slack channel ID (default: vLLM CI SIG)",
     )
-    parser.add_argument(
-        "--output-dir", default="vllm_slack_summary", help="Output directory"
-    )
+    parser.add_argument("--output-dir", default="vllm_slack_summary", help="Output directory")
 
     args = parser.parse_args()
 

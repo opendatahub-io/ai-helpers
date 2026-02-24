@@ -18,8 +18,8 @@ Returns:
     1 on validation errors
 """
 
-import sys
 import re
+import sys
 from pathlib import Path
 from typing import Dict, List, Tuple
 
@@ -41,7 +41,8 @@ def title_to_slug(title: str) -> str:
 def get_filesystem_tools_with_duplicates_check(
     helpers_dir: Path,
 ) -> Tuple[Dict[str, str], List[str]]:
-    """Extract all tool names from the filesystem with their types and check for duplicates across types
+    """Extract all tool names from the filesystem with their types
+    and check for duplicates across types
 
     Returns:
         Tuple of (filesystem_tools dict, list of duplicate errors)
@@ -101,12 +102,11 @@ def get_filesystem_tools_with_duplicates_check(
                 tool_name = item.name
                 if tool_name not in tool_locations:
                     tool_locations[tool_name] = []
-                tool_locations[tool_name].append(
-                    ("agent (incorrect format)", str(item))
-                )
+                tool_locations[tool_name].append(("agent (incorrect format)", str(item)))
                 # Add an error for the incorrect format
                 duplicate_errors.append(
-                    f"Incorrect agent format: '{tool_name}' should be a .md file, not a directory ({item})"
+                    f"Incorrect agent format: '{tool_name}' should"
+                    f" be a .md file, not a directory ({item})"
                 )
                 if tool_name in filesystem_tools:
                     # Already exists with different type
@@ -156,7 +156,8 @@ def get_filesystem_tools_with_duplicates_check(
             for tool_type, location in locations:
                 location_descriptions.append(f"{tool_type} ({location})")
             duplicate_errors.append(
-                f"Duplicate tool name '{tool_name}' found in multiple types: {', '.join(location_descriptions)}"
+                f"Duplicate tool name '{tool_name}' found in"
+                f" multiple types: {', '.join(location_descriptions)}"
             )
 
     return filesystem_tools, duplicate_errors
@@ -185,9 +186,7 @@ def load_categories_yaml(path: Path) -> Dict:
         sys.exit(1)
 
 
-def validate_tool_structure(
-    tool_name: str, index: int, category_name: str = None
-) -> List[str]:
+def validate_tool_structure(tool_name: str, index: int, category_name: str = None) -> List[str]:
     """Validate individual tool structure"""
     errors = []
     tool_identifier = f"tool[{index}]"
@@ -196,9 +195,7 @@ def validate_tool_structure(
 
     # Check tool name is a string and non-empty
     if not isinstance(tool_name, str):
-        errors.append(
-            f"{tool_identifier} must be a string, got {type(tool_name).__name__}"
-        )
+        errors.append(f"{tool_identifier} must be a string, got {type(tool_name).__name__}")
     elif not tool_name.strip():
         errors.append(f"{tool_identifier} is empty or whitespace only")
 
@@ -235,9 +232,7 @@ def validate_tool_names_unique(tools_data: Dict) -> List[str]:
                 continue
 
             if tool_name in seen_names:
-                errors.append(
-                    f"Duplicate tool name: '{tool_name}' in category '{category_name}'"
-                )
+                errors.append(f"Duplicate tool name: '{tool_name}' in category '{category_name}'")
             else:
                 seen_names.add(tool_name)
 
@@ -250,10 +245,11 @@ def validate_tool_names_unique_across_types(helpers_dir: Path) -> List[str]:
     return duplicate_errors
 
 
-def validate_filesystem_tools_consistency(
-    categories_data: Dict, helpers_dir: Path
-) -> List[str]:
-    """Validate filesystem tools consistency (info only - tools not in categories.yaml become General)"""
+def validate_filesystem_tools_consistency(categories_data: Dict, helpers_dir: Path) -> List[str]:
+    """Validate filesystem tools consistency.
+
+    Info only - tools not in categories.yaml become General.
+    """
     errors = []
 
     # Get tools from filesystem
@@ -282,9 +278,7 @@ def validate_filesystem_tools_consistency(
     return errors
 
 
-def validate_categorized_tools_exist(
-    categories_data: Dict, helpers_dir: Path
-) -> List[str]:
+def validate_categorized_tools_exist(categories_data: Dict, helpers_dir: Path) -> List[str]:
     """Validate that tools listed in categories actually exist in the filesystem"""
     errors = []
 
@@ -306,17 +300,13 @@ def validate_categorized_tools_exist(
     return errors
 
 
-def validate_categories_yaml(
-    categories_data: Dict, helpers_dir: Path = None
-) -> List[str]:
+def validate_categories_yaml(categories_data: Dict, helpers_dir: Path = None) -> List[str]:
     """Run all validations on categories.yaml data"""
     errors = []
 
     # Check that the data is a dictionary
     if not isinstance(categories_data, dict):
-        errors.append(
-            "categories.yaml must contain a dictionary with categories as keys"
-        )
+        errors.append("categories.yaml must contain a dictionary with categories as keys")
         return errors
 
     # Validate tools within each category
@@ -336,9 +326,7 @@ def validate_categories_yaml(
 
     # Validate filesystem tools consistency (if helpers_dir is provided)
     if helpers_dir and helpers_dir.exists():
-        errors.extend(
-            validate_filesystem_tools_consistency(categories_data, helpers_dir)
-        )
+        errors.extend(validate_filesystem_tools_consistency(categories_data, helpers_dir))
 
     return errors
 

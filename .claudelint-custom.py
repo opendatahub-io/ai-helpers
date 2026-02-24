@@ -6,15 +6,15 @@ import subprocess
 from typing import List
 
 try:
-    from src.rule import Rule, RuleViolation, Severity
     from src.context import RepositoryContext
+    from src.rule import Rule, RuleViolation, Severity
 except ImportError:
     # Fallback for when running as a custom rule
-    from claudelint import Rule, RuleViolation, Severity, RepositoryContext
+    from claudelint import RepositoryContext, Rule, RuleViolation, Severity
 
 
 class PluginsDocUpToDateRule(Rule):
-    """Check that docs/data.json and images/claude/claude-settings.json are up-to-date by running 'make update'"""
+    """Check that docs/data.json and claude-settings.json are up-to-date."""
 
     @property
     def rule_id(self) -> str:
@@ -22,7 +22,10 @@ class PluginsDocUpToDateRule(Rule):
 
     @property
     def description(self) -> str:
-        return "docs/data.json and images/claude/claude-settings.json must be up-to-date with plugin metadata. Run 'make update' to regenerate."
+        return (
+            "docs/data.json and images/claude/claude-settings.json must be"
+            " up-to-date with plugin metadata. Run 'make update' to regenerate."
+        )
 
     def default_severity(self) -> Severity:
         return Severity.ERROR
@@ -35,9 +38,7 @@ class PluginsDocUpToDateRule(Rule):
             return violations
 
         data_json_path = context.root_path / "docs" / "data.json"
-        claude_settings_path = (
-            context.root_path / "images" / "claude" / "claude-settings.json"
-        )
+        claude_settings_path = context.root_path / "images" / "claude" / "claude-settings.json"
 
         # Check if we have categories.yaml as the source of truth
         categories_yaml_path = context.root_path / "categories.yaml"
@@ -46,13 +47,9 @@ class PluginsDocUpToDateRule(Rule):
 
         try:
             # Read current content of files to check
-            original_data_json = (
-                data_json_path.read_text() if data_json_path.exists() else None
-            )
+            original_data_json = data_json_path.read_text() if data_json_path.exists() else None
             original_claude_settings = (
-                claude_settings_path.read_text()
-                if claude_settings_path.exists()
-                else None
+                claude_settings_path.read_text() if claude_settings_path.exists() else None
             )
 
             # Run build-website.py if it exists
@@ -113,7 +110,8 @@ class PluginsDocUpToDateRule(Rule):
 
                     violations.append(
                         self.violation(
-                            "docs/data.json is out of sync with plugin metadata. Run 'make update' to update.",
+                            "docs/data.json is out of sync with plugin"
+                            " metadata. Run 'make update' to update.",
                             file_path=data_json_path,
                         )
                     )
@@ -128,16 +126,16 @@ class PluginsDocUpToDateRule(Rule):
 
                     violations.append(
                         self.violation(
-                            "images/claude/claude-settings.json is out of sync with plugin metadata. Run 'make update' to update.",
+                            "images/claude/claude-settings.json is out of"
+                            " sync with plugin metadata."
+                            " Run 'make update' to update.",
                             file_path=claude_settings_path,
                         )
                     )
 
         except subprocess.TimeoutExpired:
             violations.append(
-                self.violation(
-                    "'make update' timed out", file_path=categories_yaml_path
-                )
+                self.violation("'make update' timed out", file_path=categories_yaml_path)
             )
         except Exception as e:
             violations.append(
@@ -211,7 +209,8 @@ class MarketplacePluginsUpToDateRule(Rule):
             if missing_plugins:
                 violations.append(
                     self.violation(
-                        f"marketplace.json is missing plugins: {', '.join(sorted(missing_plugins))}",
+                        "marketplace.json is missing plugins:"
+                        f" {', '.join(sorted(missing_plugins))}",
                         file_path=marketplace_path,
                     )
                 )
@@ -223,22 +222,20 @@ class MarketplacePluginsUpToDateRule(Rule):
                     if source_path != expected_source:
                         violations.append(
                             self.violation(
-                                f"Plugin '{plugin_name}' source path should be '{expected_source}', got '{source_path}'",
+                                f"Plugin '{plugin_name}' source path should"
+                                f" be '{expected_source}',"
+                                f" got '{source_path}'",
                                 file_path=marketplace_path,
                             )
                         )
 
         except json.JSONDecodeError as e:
             violations.append(
-                self.violation(
-                    f"Invalid JSON in marketplace.json: {e}", file_path=marketplace_path
-                )
+                self.violation(f"Invalid JSON in marketplace.json: {e}", file_path=marketplace_path)
             )
         except Exception as e:
             violations.append(
-                self.violation(
-                    f"Error checking marketplace.json: {e}", file_path=marketplace_path
-                )
+                self.violation(f"Error checking marketplace.json: {e}", file_path=marketplace_path)
             )
 
         return violations
@@ -253,7 +250,11 @@ class CategoriesYamlValidationRule(Rule):
 
     @property
     def description(self) -> str:
-        return "categories.yaml must have valid structure, consistent categories, proper tool definitions, and no duplicate tool names across types"
+        return (
+            "categories.yaml must have valid structure, consistent"
+            " categories, proper tool definitions, and no duplicate"
+            " tool names across types"
+        )
 
     def default_severity(self) -> Severity:
         return Severity.ERROR
@@ -294,9 +295,7 @@ class CategoriesYamlValidationRule(Rule):
             )
 
             if result.returncode != 0:
-                output = "\n".join(
-                    part for part in [result.stdout, result.stderr] if part
-                )
+                output = "\n".join(part for part in [result.stdout, result.stderr] if part)
                 # Parse the validation errors from the script output
                 error_lines = output.strip().split("\n")
                 # Find the lines that contain actual errors (start with ✗)
