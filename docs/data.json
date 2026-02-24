@@ -66,6 +66,14 @@
     ],
     "skills": [
       {
+        "name": "copy-rich-text",
+        "description": "Copy the most recent assistant output to clipboard as rich text for pasting into Slack, email, or other rich text editors",
+        "category": "general",
+        "file_path": "helpers/skills/copy-rich-text/SKILL.md",
+        "id": "copy-rich-text",
+        "allowed_tools": "Bash"
+      },
+      {
         "name": "git-shallow-clone",
         "description": "Perform a shallow clone of a Git repository to a temporary location.",
         "category": "general",
