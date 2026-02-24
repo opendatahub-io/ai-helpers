@@ -21,12 +21,21 @@ lint: ## Run plugin linter, ruff syntax checker and formatter, and shellcheck
 	@echo "Running ruff syntax checker on Python scripts..."
 	@if command -v ruff >/dev/null 2>&1; then \
 		ruff check .; \
+	elif command -v uv >/dev/null 2>&1; then \
+		uv run ruff check .; \
 	else \
 		echo "ruff not found, skipping Python syntax checking. Install with: pip install ruff"; \
 		exit 1; \
 	fi
 	@echo "Running ruff formatter on Python scripts..."
-	@ruff format --check --diff .
+	@if command -v ruff >/dev/null 2>&1; then \
+		ruff format --check --diff .; \
+	elif command -v uv >/dev/null 2>&1; then \
+		uv run ruff format --check --diff .; \
+	else \
+		echo "ruff not found, skipping Python format check. Install with: pip install ruff"; \
+		exit 1; \
+	fi
 	@echo "Running shellcheck on shell scripts..."
 	@if command -v shellcheck >/dev/null 2>&1; then \
 		find . -name '*.sh' -type f -exec shellcheck {} + && echo "All checks passed!"; \
@@ -47,12 +56,22 @@ lint: ## Run plugin linter, ruff syntax checker and formatter, and shellcheck
 .PHONY: update
 update: ## Update Claude settings and website data
 	@echo "Updating Claude settings..."
-	@python3 scripts/update_claude_settings.py
+	@if command -v uv >/dev/null 2>&1; then \
+		uv run --with pyyaml python scripts/update_claude_settings.py; \
+	else \
+		python3 scripts/update_claude_settings.py; \
+	fi
 	@echo "Building website data..."
-	@python3 scripts/build-website.py
+	@if command -v uv >/dev/null 2>&1; then \
+		uv run --with pyyaml python scripts/build-website.py; \
+	else \
+		python3 scripts/build-website.py; \
+	fi
 	@echo "Formatting Python code with ruff..."
 	@if command -v ruff >/dev/null 2>&1; then \
 		ruff format .; \
+	elif command -v uv >/dev/null 2>&1; then \
+		uv run ruff format .; \
 	else \
 		echo "ruff not found, skipping Python formatting. Install with: pip install ruff"; \
 	fi
