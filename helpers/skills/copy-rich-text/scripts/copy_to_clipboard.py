@@ -197,6 +197,7 @@ def _copy_darwin(text: str, html_content: str) -> None:
 
     pb = NSPasteboard.generalPasteboard()
     pb.clearContents()
+    pb.declareTypes_owner_([NSPasteboardTypeString, NSPasteboardTypeHTML], None)
     pb.setString_forType_(text, NSPasteboardTypeString)
     pb.setString_forType_(html_content, NSPasteboardTypeHTML)
 
