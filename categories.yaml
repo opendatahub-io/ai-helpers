@@ -3,6 +3,13 @@ AIPCC:
   - commit-message-assistant
   - aipcc-adr-assistant
 
+Agility:
+  - agility-automation-finder
+  - agility-priority-advisor
+  - agility-staffing-insights
+  - agility-throughput-analyzer
+  - delivery-strategist
+
 vLLM:
   - vllm-compare-reqs
   - vllm-slack-summary
