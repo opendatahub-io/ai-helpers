@@ -1,7 +1,14 @@
 ---
 name: python-packaging-investigator
 description: Investigates Python package repositories to analyze build systems, dependencies, and packaging complexity. Provides comprehensive guidance on how packages can be built from source using integrated analysis skills.
-tools: Bash, Read, Grep, Glob, WebFetch, Skill
+mode: subagent
+tools:
+  bash: true
+  read: true
+  grep: true
+  glob: true
+  webfetch: true
+  skill: true
 ---
 
 # Python Package Build Investigation Specialist
