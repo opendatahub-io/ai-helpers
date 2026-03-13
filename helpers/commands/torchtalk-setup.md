@@ -6,7 +6,7 @@ description: Install and configure TorchTalk MCP server for PyTorch cross-langua
 odh-ai-helpers:torchtalk-setup
 
 ## Synopsis
-```
+```text
 /torchtalk:setup
 ```
 
@@ -35,7 +35,7 @@ python3 --version
 **Minimum required:** Python 3.10
 
 **If Python is too old or missing:**
-```
+```text
 Python 3.10+ is required for TorchTalk.
 
 Install or upgrade Python:
@@ -71,7 +71,7 @@ If torchtalk is found:
 
 Ask the user where they want to install TorchTalk:
 
-```
+```text
 Where would you like to install TorchTalk?
 
 1. ~/src/torchtalk (recommended)
@@ -111,7 +111,7 @@ torchtalk --help
 - Display error message and suggest checking the TorchTalk README
 
 **If libclang fails to install:**
-```
+```text
 libclang requires the clang development libraries.
 
 Install:
@@ -127,12 +127,12 @@ Install:
 Search common locations:
 
 ```bash
-echo $PYTORCH_SOURCE
+echo "$PYTORCH_SOURCE"
 ls -d ~/pytorch ~/src/pytorch /myworkspace/pytorch 2>/dev/null
 ```
 
 If PyTorch source is found, confirm with the user:
-```
+```text
 Found PyTorch source at: /path/to/pytorch
 
 Is this the correct PyTorch source directory? (y/n)
@@ -140,7 +140,7 @@ Is this the correct PyTorch source directory? (y/n)
 
 #### 3.2 If Not Found, Ask the User
 
-```
+```text
 PyTorch source code is required for TorchTalk to index bindings.
 
 Options:
@@ -151,31 +151,44 @@ Options:
 
 **If cloning:**
 ```bash
-git clone https://github.com/pytorch/pytorch $PYTORCH_CLONE_DIR
+git clone https://github.com/pytorch/pytorch "$PYTORCH_CLONE_DIR"
 ```
 
 Store the PyTorch path as `$PYTORCH_SOURCE`.
 
 #### 3.3 Validate PyTorch Source
 
+Run checks separately so users get actionable error messages:
+
 ```bash
-test -d "$PYTORCH_SOURCE/torch" && \
-  test -f "$PYTORCH_SOURCE/aten/src/ATen/native/native_functions.yaml" && \
-  echo "valid" || echo "invalid"
+test -d "$PYTORCH_SOURCE/torch"
 ```
 
-If invalid:
-```
-The directory does not appear to be a PyTorch checkout (no torch/ subdirectory found).
+If the `torch/` directory is missing:
+```text
+No 'torch/' directory found — does not appear to be a PyTorch checkout.
 Please verify the path and try again.
 ```
+
+```bash
+test -f "$PYTORCH_SOURCE/aten/src/ATen/native/native_functions.yaml"
+```
+
+If `native_functions.yaml` is missing:
+```text
+native_functions.yaml not found (required for operator indexing).
+The PyTorch checkout may be incomplete or too old.
+Consider running: cd "$PYTORCH_SOURCE" && git pull
+```
+
+These checks mirror TorchTalk's `validate_pytorch_path()` which validates both the `torch/` directory and `native_functions.yaml`.
 
 ### Phase 4: Configure TorchTalk
 
 #### 4.1 Run TorchTalk Init
 
 ```bash
-torchtalk init --pytorch-source $PYTORCH_SOURCE
+torchtalk init --pytorch-source "$PYTORCH_SOURCE"
 ```
 
 This writes the PyTorch path to `~/.config/torchtalk/config.toml` so future runs need no arguments.
@@ -199,7 +212,7 @@ claude mcp add torchtalk -s user -- torchtalk mcp-serve
 This registers TorchTalk at user scope, making it available across all Claude Code sessions regardless of working directory.
 
 **If `claude` command is not found:**
-```
+```text
 The Claude Code CLI is required to register MCP servers.
 
 If you're running this from within Claude Code, the registration
@@ -218,7 +231,7 @@ timeout 5 torchtalk mcp-serve 2>&1 || true
 ```
 
 **Display summary:**
-```
+```text
 Setup Complete!
 ===============
 
@@ -256,7 +269,7 @@ Documentation:
 
 After the main setup is complete, inform the user about optional advanced features:
 
-```
+```text
 Optional: C++ Call Graph Support
 ================================
 
@@ -272,7 +285,7 @@ Would you like to:
 ```
 
 If the user wants build instructions:
-```
+```text
 Building PyTorch (one-time, takes 30-60 minutes):
 
   cd $PYTORCH_SOURCE
@@ -284,7 +297,7 @@ will be automatically available on the next Claude Code session.
 
 Check if `compile_commands.json` already exists:
 ```bash
-test -f $PYTORCH_SOURCE/build/compile_commands.json && echo "found" || echo "not found"
+test -f "$PYTORCH_SOURCE/build/compile_commands.json" && echo "found" || echo "not found"
 ```
 
 If found: `compile_commands.json already exists. Call graph features are available.`
@@ -297,7 +310,7 @@ If found: `compile_commands.json already exists. Call graph features are availab
 ## Examples
 
 1. **Fresh install with existing PyTorch source**:
-   ```
+   ```text
    /torchtalk:setup
 
    > Python 3.12.1 detected
@@ -310,7 +323,7 @@ If found: `compile_commands.json already exists. Call graph features are availab
    ```
 
 2. **Fresh install, clone everything**:
-   ```
+   ```text
    /torchtalk:setup
 
    > Python 3.11.5 detected
@@ -323,7 +336,7 @@ If found: `compile_commands.json already exists. Call graph features are availab
    ```
 
 3. **Reconfigure existing installation**:
-   ```
+   ```text
    /torchtalk:setup
 
    > TorchTalk already installed at ~/src/torchtalk
@@ -341,7 +354,7 @@ If found: `compile_commands.json already exists. Call graph features are availab
 **Scenario:** `pip install -e .` fails on the libclang dependency.
 
 **Action:**
-```
+```text
 libclang failed to install. This is usually a missing system package.
 
 Install the clang development libraries:
@@ -357,7 +370,7 @@ Then retry: pip install -e .
 **Scenario:** The PyTorch checkout is missing expected files.
 
 **Action:**
-```
+```text
 The PyTorch source may be incomplete or too old.
 
 Expected files not found:
@@ -375,7 +388,7 @@ Or clone a fresh copy:
 **Scenario:** `claude mcp add` command fails.
 
 **Action:**
-```
+```text
 Failed to register MCP server with Claude Code.
 
 You can register manually by running in a terminal:
