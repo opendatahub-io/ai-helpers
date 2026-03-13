@@ -1,161 +1,195 @@
 ---
 name: python-packaging-license-checker
-description: Assess license compatibility for Python package redistribution using SPDX.org license database. Evaluates whether a given license allows building and distributing wheels, with real-time license information lookup.
-allowed-tools: WebFetch
+description: Check whether a Python package license is compatible with redistribution
+  in Red Hat products, using the Fedora License Data as the authoritative policy source.
+  Produces a structured six-field verdict with escalation guidance for non-trivial cases.
+allowed-tools: Bash Skill WebFetch
 ---
 
 # Python Package License Compatibility Checker
 
-This skill helps you evaluate whether a Python package license is compatible with redistribution, particularly for building and distributing wheels in enterprise environments. It uses the authoritative SPDX License List for accurate, up-to-date license information.
+Evaluate whether a Python package license permits redistribution in Red Hat products.
 
-## Assessment Instructions
+**Policy basis**: Red Hat redistribution policy follows the Fedora Linux license
+policy. Use the Fedora License Data as the authoritative source -- NOT OSI-approval
+status.
 
-When a user provides a license name and asks about compatibility for redistribution, building wheels, or licensing restrictions, follow this methodology:
+## Inputs
 
-### Step-by-Step Process
+- **package_name**: Python package name
+- **source_available**: whether buildable source exists (if already known)
+- **upstream_org**: name and primary country of the maintaining organisation (if already known)
 
-1. **Fetch Current SPDX Data**:
-   ```
-   Use WebFetch to query: https://raw.githubusercontent.com/spdx/license-list-data/main/json/licenses.json
-   ```
+## Step 1: Locate and clone the source repository
 
-2. **License Matching**:
-   - Try exact SPDX ID match first
-   - Try case-insensitive SPDX ID match
-   - Try full name matching
-   - Try partial/fuzzy matching for common variations
+Use the python-packaging-source-finder skill to find the upstream repo URL:
 
-3. **Risk Classification** (check strong copyleft FIRST to prevent misclassification):
-   ```
-   IF (strong_copyleft_pattern):
-       Risk = High, Status = Restricted/Incompatible
-       # GPL, AGPL are ALWAYS restricted regardless of OSI/FSF status
-   ELIF (NOT isOsiApproved):
-       Risk = High, Status = Restricted/Incompatible
-   ELIF (isOsiApproved AND weak_copyleft_pattern):
-       Risk = Medium, Status = Compatible with Requirements
-   ELIF (isOsiApproved AND isFsfLibre AND permissive_pattern):
-       Risk = Low, Status = Compatible
-   ELSE:
-       Risk = High, Status = Unknown - requires manual review
-   ```
+```
+Skill: python-packaging-source-finder
+```
 
-4. **Generate Assessment**:
-   - Include all SPDX metadata
-   - Provide clear compatibility guidance
-   - List specific requirements
-   - Add Red Hat context where relevant
+Then use the git-shallow-clone skill to clone the repository locally:
 
-## License Assessment Framework
+```
+Skill: git-shallow-clone
+```
 
-### Input Processing
-Accept various formats and normalize them:
-- **SPDX Identifiers**: "MIT", "Apache-2.0", "GPL-3.0-only"
-- **Full Names**: "MIT License", "Apache License 2.0", "GNU General Public License v3.0"
-- **Common Aliases**: "Apache 2", "BSD 3-Clause", "GPLv3"
-- **Case Variations**: Handle case-insensitive matching
+This gives a local path to the cloned repo for deterministic license inspection.
 
-### SPDX Data Analysis
-When processing SPDX license data, examine these key fields:
-- `licenseId`: Official SPDX identifier
-- `name`: Full license name
-- `isOsiApproved`: OSI approval status (boolean)
-- `isFsfLibre`: FSF Free Software status (boolean)
-- `isDeprecatedLicenseId`: Whether license is deprecated (boolean)
-- `reference`: URL to full license details
-- `seeAlso`: Array of additional reference URLs
+## Step 2: Read the license from source
 
-### License Pattern Definitions
+Search the cloned repo root for license files in this order:
+LICENSE, LICENSE.txt, LICENSE.md, COPYING, COPYING.txt, LICENCE, LICENCE.txt
 
-Use these explicit pattern lists for classification. Match against the SPDX `licenseId` field (case-insensitive).
+```bash
+find <clone_path> -maxdepth 1 -iname "license*" -o -iname "copying*" -o -iname "licence*" | head -5
+```
 
-#### Permissive Patterns (permissive_pattern)
-Licenses where the `licenseId` contains or matches any of:
-- `MIT`, `Apache-`, `BSD-`, `ISC`, `Unlicense`, `0BSD`, `PSF-`, `Python-`, `Zlib`, `BSL-1.0`, `CC0-`, `WTFPL`, `MulanPSL-`
+Read the first 30 lines of the found file and map to an SPDX identifier.
 
-#### Weak Copyleft Patterns (weak_copyleft_pattern)
-Licenses where the `licenseId` contains or matches any of:
-- `LGPL-`, `MPL-`, `EPL-`, `CDDL-`, `CPL-`, `CeCILL-2.1`, `EUPL-`
+Also check `pyproject.toml` or `setup.cfg` for a `license` field as a secondary
+signal. If the PyPI metadata license differs from the source file, set
+Source verified: MISMATCH (PyPI: [X], repo: [Y]) and use the source file as
+authoritative.
 
-#### Strong Copyleft Patterns (strong_copyleft_pattern)
-Licenses where the `licenseId` contains or matches any of:
-- `GPL-` (but NOT `LGPL-`), `AGPL-`, `SSPL-`, `OSL-`, `CeCILL-` (but NOT `CeCILL-2.1`), `EUPL-` (when used with strong copyleft intent)
+**Normalise to SPDX ID** using exact then fuzzy matching:
+- "Apache 2" -> Apache-2.0, "GPL v2" -> GPL-2.0-only, "BSD" -> BSD-3-Clause,
+  "GPLv3" -> GPL-3.0-or-later, "MIT License" -> MIT, "LGPLv2.1" -> LGPL-2.1-only
 
-**CRITICAL**: `GPL-2.0`, `GPL-3.0`, `GPL-2.0-only`, `GPL-2.0-or-later`, `GPL-3.0-only`, `GPL-3.0-or-later` are ALL strong copyleft. They are NOT permissive. They MUST be classified as Restricted/Incompatible for commercial wheel redistribution.
+**Compound expressions**: If the license contains `AND` or `OR`:
+- `AND`: split and evaluate each component. Apply the license governing the
+  importable library API (not a bundled CLI). Document the split in Notes.
+- `OR`: evaluate each component; use the most permissive allowed one. If none are
+  allowed, the overall verdict is the best individual verdict.
 
-### Compatibility Assessment Logic
+If no license file found and no SPDX mapping possible: Verdict: NEEDS-HUMAN-REVIEW.
 
-Use SPDX flags and the pattern definitions above to determine compatibility:
+Clean up the clone when done:
 
-#### ✅ Highly Compatible (Low Risk)
-- OSI Approved AND FSF Libre AND matches permissive_pattern
-- Examples: MIT, Apache-2.0, BSD-3-Clause, ISC, PSF-2.0
-- No copyleft requirements of any kind
+```bash
+rm -rf <clone_parent_dir>
+```
 
-#### ⚠️ Compatible with Requirements (Medium Risk)
-- OSI Approved AND matches weak_copyleft_pattern
-- Examples: LGPL-2.1-only, LGPL-3.0-or-later, MPL-2.0
-- File-level or library-level copyleft only
+## Step 3: Look up license in Fedora License Data
 
-#### ❌ Restricted/High Risk
-- Matches strong_copyleft_pattern (GPL, AGPL) — regardless of OSI or FSF status
-- Non-OSI approved licenses
-- Proprietary or unclear terms
-- GPL licenses require ALL derivative works to be released under the same GPL license, making them incompatible with proprietary or commercial redistribution of binary wheels
+Fetch the live data:
 
-### Output Format
+```
+WebFetch: https://gitlab.com/fedora/legal/fedora-license-data/-/jobs/artifacts/main/raw/fedora-licenses.json?job=json
+```
 
-Provide a structured assessment with:
+Search for an entry matching the SPDX ID (case-insensitive on `spdx_abbrev`).
+Each entry has `status`: "allowed" or "not-allowed".
 
-1. **SPDX Information**:
-   - Official SPDX ID
-   - Full license name
-   - OSI Approved: Yes/No
-   - FSF Libre: Yes/No
-   - Deprecated: Yes/No (if applicable)
+- `allowed` -> proceed to Step 4 (verdict refinement)
+- `not-allowed` -> Verdict: BLOCKED
+- not found -> Verdict: NEEDS-HUMAN-REVIEW
 
-2. **Compatibility Assessment**:
-   - Status: Compatible/Restricted/Incompatible
-   - Redistribution: Allowed/Restricted/Prohibited
-   - Commercial Use: Allowed/Restricted/Prohibited
+**Fallback table** (use only when the JSON fetch fails):
 
-3. **Requirements**: Key compliance obligations
-4. **Risk Level**: Low/Medium/High for enterprise use
-5. **Red Hat Context**: Special considerations if applicable
+| Status | SPDX identifiers (representative) |
+|---|---|
+| allowed | MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, PSF-2.0, CC0-1.0 |
+| allowed | GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-only, GPL-3.0-or-later |
+| allowed | LGPL-2.0-only, LGPL-2.1-only, LGPL-2.1-or-later, LGPL-3.0-or-later |
+| allowed | AGPL-3.0-only, AGPL-3.0-or-later, MPL-2.0, EUPL-1.2, EPL-2.0 |
+| not-allowed | SSPL-1.0, BUSL-1.1, Commons-Clause |
+| ESCALATE | Any custom/proprietary license not in SPDX |
 
+When using fallback, append to Notes: "Fedora License Data unreachable; fallback
+table used. Verify at https://docs.fedoraproject.org/en-US/legal/allowed-licenses/"
 
-## Red Hat Vendor Agreements
+## Step 4: Verdict refinement (apply in order)
 
-Red Hat has specific licensing agreements with the following hardware vendors:
+**Rule A -- Proprietary or custom license** (not in Fedora data):
 
-- **NVIDIA**: Agreement covers CUDA libraries, runtimes, and related NVIDIA proprietary components
-- **Intel Gaudi**: Agreement covers Gaudi AI accelerator software and libraries
-- **IBM Spyre**: Agreement covers IBM Spyre AI hardware and associated software components
+First check the Vendor Agreements table below. If covered by an agreement:
+Verdict: ALLOWED, Notes: "Covered by Red Hat [Vendor] redistribution agreement."
 
-When evaluating packages with dependencies on these vendor-specific components, note that Red Hat has explicit redistribution rights under these agreements.
+Otherwise:
+- Red Hat / IBM-owned upstream (e.g. Neural Magic):
+  Verdict: ESCALATE-TO-LEGAL.
+  Notes: "Red Hat-owned proprietary license. Must be relicensed before inclusion.
+  Open a ServiceNow opensource-legal ticket."
+- Third-party proprietary:
+  Verdict: ESCALATE-TO-LEGAL.
+  Notes: "Third-party proprietary license. May be includable as a EULA-listed
+  component. Open a legal-review task."
+
+**Rule B -- AGPL-3.0** (status=allowed, SPDX is AGPL-3.0-only or -or-later):
+Verdict: ALLOWED-WITH-CAVEAT.
+Notes: "AGPL-3.0 is allowed for redistribution but is frequently part of a
+dual-licensing strategy, increasing risk. PM sign-off required."
+
+**Rule C -- All other allowed licenses**:
+Verdict: ALLOWED. Notes: omit unless compliance note needed (e.g. LGPL dynamic
+linking does not propagate copyleft).
+
+**Rule D -- Not-allowed**:
+Verdict: BLOCKED.
+Notes: "License is on the Fedora not-allowed list."
+
+## Step 5: Compliance checks
+
+**Build compliance** (independent of license verdict):
+If `source_available` is false or no buildable source exists (no setup.py,
+pyproject.toml, or equivalent):
+- Build compliance: BUILD-COMPLIANCE-FLAG
+- Append to Notes: "No buildable source. Options: (1) request upstream sdist,
+  (2) make dependency optional,
+  (3) file PSX exception with 6-month deadline per PSS.SBR.02.02."
+- Otherwise: Build compliance: OK
+
+**Export compliance** (independent of license verdict):
+If upstream org's primary country is on the US OFAC sanctions list, EU Consolidated
+Sanctions List, or flagged by Red Hat geopolitical policy:
+- Export compliance: EXPORT-COMPLIANCE-FLAG
+- Append to Notes: "Upstream org may require export compliance review. Contact
+  exportcompliance@redhat.com. Geopolitical sensitivity does not automatically block
+  inclusion (precedent: Yandex/Russia cleared for catboost)."
+- Otherwise: Export compliance: OK
+
+## Output Format
+
+Produce ONLY this six-field block. No preamble, no extra text.
+
+```
+_License:_ [SPDX expression, or "non-SPDX: [raw string]" if unmappable]
+_Source verified:_ YES | NO | MISMATCH (PyPI: [X], repo: [Y])
+_Verdict:_ ALLOWED | ALLOWED-WITH-CAVEAT | NEEDS-HUMAN-REVIEW | ESCALATE-TO-LEGAL | BLOCKED
+_Build compliance:_ OK | BUILD-COMPLIANCE-FLAG
+_Export compliance:_ OK | EXPORT-COMPLIANCE-FLAG
+_Notes:_ [Actionable guidance. Omit if verdict is ALLOWED and all flags are OK.]
+```
+
+## Vendor Agreements
+
+| Vendor | Covered components |
+|---|---|
+| NVIDIA | CUDA libraries, runtimes, NCCL, and related NVIDIA components |
+| Intel Gaudi | Gaudi AI accelerator software and libraries |
+| IBM Spyre | IBM Spyre AI hardware and associated software components |
+
+## Quick Reference
+
+| Scenario | Verdict | Build | Export |
+|---|---|---|---|
+| MIT, Apache-2.0, BSD-*, ISC, PSF-2.0 | ALLOWED | OK | OK |
+| GPL-*, LGPL-* | ALLOWED | OK | OK |
+| AGPL-3.0-* | ALLOWED-WITH-CAVEAT | OK | OK |
+| SSPL-1.0, BUSL-1.1, Commons-Clause | BLOCKED | -- | -- |
+| RH-owned proprietary | ESCALATE-TO-LEGAL | -- | -- |
+| Third-party proprietary (no vendor agreement) | ESCALATE-TO-LEGAL | -- | -- |
+| PyPI/repo license mismatch | per repo license (MISMATCH noted) | OK | OK |
+| No buildable source | per license | FLAG | OK |
+| OFAC/sanctions-flagged upstream | per license | OK | FLAG |
 
 ## Error Handling
 
-### SPDX Data Fetch Failures
-If the SPDX license list cannot be retrieved, exit early and warn the user.
-
-### License Not Found in SPDX
-When a license identifier is not found in the SPDX license list:
-1. Check for common typos or variations
-2. Suggest SPDX-compliant alternatives
-3. Recommend contacting package maintainer
-4. Provide conservative risk assessment
-
-### Deprecated Licenses
-For deprecated SPDX licenses:
-1. Note the deprecation status
-2. Suggest migrating to current equivalent
-3. Provide assessment based on deprecated license terms
-4. Recommend updating package licensing
-
-For complex licensing scenarios involving multiple packages or custom license terms, recommend consultation with legal counsel.
-
-## Integration Notes
-
-This skill works best when combined with:
-- **python-packaging-license-finder** - Use to find license names before compatibility assessment
+- **Fedora data unreachable**: Use fallback table; append note.
+- **Source repo not found**: If python-packaging-source-finder returns null/low
+  confidence, set Source verified: NO, verdict: NEEDS-HUMAN-REVIEW.
+- **Source repo private/inaccessible**: Set Source verified: NO. Verdict:
+  NEEDS-HUMAN-REVIEW.
+- **Multiple conflicting LICENSE files**: Source verified: MISMATCH, verdict:
+  NEEDS-HUMAN-REVIEW. Note the conflicting files.
