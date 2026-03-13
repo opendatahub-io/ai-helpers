@@ -142,11 +142,11 @@
       },
       {
         "name": "python-packaging-license-checker",
-        "description": "Assess license compatibility for Python package redistribution using SPDX.org license database. Evaluates whether a given license allows building and distributing wheels, with real-time license information lookup.",
+        "description": "Check whether a Python package license is compatible with redistribution in Red Hat products, using the Fedora License Data as the authoritative policy source. Produces a structured six-field verdict with escalation guidance for non-trivial cases.",
         "category": "general",
         "file_path": "helpers/skills/python-packaging-license-checker/SKILL.md",
         "id": "python-packaging-license-checker",
-        "allowed_tools": "WebFetch"
+        "allowed_tools": "Bash Skill WebFetch"
       },
       {
         "name": "python-packaging-license-finder",
