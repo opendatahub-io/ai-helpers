@@ -170,7 +170,7 @@
         "category": "pytorch",
         "file_path": "helpers/skills/torchtalk-analyzer/SKILL.md",
         "id": "torchtalk-analyzer",
-        "allowed_tools": "Bash, Read, Grep, Glob"
+        "allowed_tools": "Bash Read Grep Glob"
       },
       {
         "name": "unit-test-project-conformant",

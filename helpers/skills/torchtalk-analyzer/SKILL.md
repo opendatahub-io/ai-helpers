@@ -1,7 +1,7 @@
 ---
 name: torchtalk-analyzer
 description: Analyze PyTorch internals across Python, C++, and CUDA layers using the TorchTalk MCP server. Use when asked about how PyTorch operators work internally, where functions are implemented, what would break if code is modified, or finding tests for PyTorch operators.
-allowed-tools: Bash, Read, Grep, Glob
+allowed-tools: Bash Read Grep Glob
 ---
 
 # TorchTalk Analyzer
@@ -24,7 +24,7 @@ This skill enables cross-language analysis of PyTorch internals by leveraging th
 - Run `/torchtalk:setup` if TorchTalk is not yet installed
 
 Verify availability:
-```
+```text
 mcp__torchtalk__get_status
 ```
 
@@ -36,7 +36,7 @@ If the status tool returns data, all tools below are ready.
 
 Before using any tools, confirm the TorchTalk server is running:
 
-```
+```text
 mcp__torchtalk__get_status
 ```
 
