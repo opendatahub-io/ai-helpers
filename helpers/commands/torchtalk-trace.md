@@ -73,8 +73,8 @@ This command requires the TorchTalk MCP server to be running. Run `mcp__torchtal
    Output: Complete trace from Python API through every layer including structured kernel registrations, autograd formula, and all backend implementations.
 
 ## Arguments
-- `$1`: The PyTorch function name to trace (e.g., `matmul`, `conv2d`, `softmax`, `add`). Can be a short name or fully qualified (e.g., `at::native::matmul`).
-- `$2`: Optional focus parameter. One of:
+- `<function-name>`: The PyTorch function name to trace (e.g., `matmul`, `conv2d`, `softmax`, `add`). Can be a short name or fully qualified (e.g., `at::native::matmul`).
+- `[focus]`: Optional focus parameter. One of:
   - `full` (default): Complete binding chain across all layers
   - `dispatch`: Only dispatch key to backend mapping
   - `yaml`: Only the `native_functions.yaml` definition
