@@ -69,6 +69,14 @@
     ],
     "skills": [
       {
+        "name": "gist-upload",
+        "description": "Upload a summary or plan from the current conversation as a GitHub Gist using the `gh` CLI.",
+        "category": "general",
+        "file_path": "helpers/skills/gist-upload/SKILL.md",
+        "id": "gist-upload",
+        "allowed_tools": "Bash"
+      },
+      {
         "name": "git-shallow-clone",
         "description": "Perform a shallow clone of a Git repository to a temporary location.",
         "category": "general",
