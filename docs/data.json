@@ -69,6 +69,14 @@
     ],
     "skills": [
       {
+        "name": "ai-bug-fix-triage",
+        "description": "Triage JIRA bugs against repository code to classify AI fixability. Use when reviewing a backlog of bugs to determine which ones an AI agent can fix.",
+        "category": "general",
+        "file_path": "helpers/skills/ai-bug-fix-triage/SKILL.md",
+        "id": "ai-bug-fix-triage",
+        "allowed_tools": "Bash Read Grep Glob"
+      },
+      {
         "name": "gist-upload",
         "description": "Upload a summary or plan from the current conversation as a GitHub Gist using the `gh` CLI.",
         "category": "general",
