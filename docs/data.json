@@ -109,6 +109,14 @@
         "allowed_tools": "Bash"
       },
       {
+        "name": "jira-aipcc-create",
+        "description": "Create Jira issues in the AIPCC project. Infers summary, description, type, and component from conversation context, confirms with the user before creating. Use when the user wants to file a new AIPCC Jira issue.",
+        "category": "aipcc",
+        "file_path": "helpers/skills/jira-aipcc-create/SKILL.md",
+        "id": "jira-aipcc-create",
+        "allowed_tools": "Bash, AskUserQuestion"
+      },
+      {
         "name": "jira-upload-chat-log",
         "description": "Export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation.",
         "category": "general",

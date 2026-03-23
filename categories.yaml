@@ -2,6 +2,7 @@ AIPCC:
   - aipcc-commit-suggest
   - commit-message-assistant
   - aipcc-adr-assistant
+  - jira-aipcc-create
 
 PyTorch:
   - torchtalk-analyzer
