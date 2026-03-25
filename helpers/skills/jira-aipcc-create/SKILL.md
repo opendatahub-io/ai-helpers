@@ -38,6 +38,8 @@ Analyze the conversation to determine:
    - `Model Validation`
    - `Development Platform`
 
+5. **Parent Epic** (optional): If the user specifies an epic key (e.g. AIPCC-1234), include it as the parent
+
 If any field cannot be confidently inferred, ask the user.
 
 ### Step 2: Confirm with the User
@@ -49,6 +51,7 @@ I'll create the following AIPCC JIRA issue:
 
 **Type**: Bug
 **Component**: Wheel Package Index
+**Parent Epic**: AIPCC-1234 (if specified)
 **Summary**: Fix duplicate CI pipeline runs
 **Description**:
 > [description]
@@ -60,19 +63,40 @@ Wait for user confirmation before proceeding. If the user requests changes, adju
 
 ### Step 3: Create the Issue
 
-Build a JSON file with the following structure:
+Build a JSON file with the following structure.
+
+**Important**: The `description` field MUST be in Atlassian Document Format (ADF), not plain text. `acli` will reject plain text descriptions with an error.
+
+If the user specifies a parent epic, include the `parent` field in `additionalAttributes`. This is the only way to set the epic/parent relationship — `acli jira workitem edit` does not support `additionalAttributes` or custom fields, so the parent must be set at creation time.
 
 ```json
 {
   "projectKey": "AIPCC",
   "summary": "<summary>",
   "type": "<type>",
-  "description": "<description in plain text>",
+  "description": {
+    "version": 1,
+    "type": "doc",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "<description text>"
+          }
+        ]
+      }
+    ]
+  },
   "additionalAttributes": {
-    "components": [{"name": "<component>"}]
+    "components": [{"name": "<component>"}],
+    "parent": {"key": "<EPIC-KEY>"}
   }
 }
 ```
+
+Omit the `parent` field from `additionalAttributes` if no epic is specified.
 
 Write it to a temporary file:
 
