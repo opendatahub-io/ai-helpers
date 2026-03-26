@@ -82,7 +82,7 @@
         "category": "general",
         "file_path": "helpers/skills/coderabbit-review/SKILL.md",
         "id": "coderabbit-review",
-        "allowed_tools": "Bash Read Grep Glob Edit AskUserQuestion"
+        "allowed_tools": "Bash(gh pr view:*) Bash(gh repo view:*) Bash(git remote:*) Bash(git branch:*) Bash(gh pr list:*) Bash(curl:*) Bash(sha256sum:*) Read Glob Grep Edit AskUserQuestion mcp__github__pull_request_read mcp__github__add_reply_to_pull_request_comment mcp__github__add_issue_comment"
       },
       {
         "name": "gist-upload",
