@@ -77,6 +77,14 @@
         "allowed_tools": "Bash Read Grep Glob"
       },
       {
+        "name": "aipcc-package-onboarding-status",
+        "description": "Analyze AIPCC package onboarding backlog to identify stale tickets, workflow anomalies, and items requiring human intervention.",
+        "category": "aipcc",
+        "file_path": "helpers/skills/aipcc-package-onboarding-status/SKILL.md",
+        "id": "aipcc-package-onboarding-status",
+        "allowed_tools": "Bash"
+      },
+      {
         "name": "coderabbit-review",
         "description": "Evaluate CodeRabbit PR comments and fix or reply",
         "category": "general",
