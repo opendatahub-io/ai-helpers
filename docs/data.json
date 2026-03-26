@@ -77,6 +77,14 @@
         "allowed_tools": "Bash Read Grep Glob"
       },
       {
+        "name": "coderabbit-review",
+        "description": "Evaluate CodeRabbit PR comments and fix or reply",
+        "category": "general",
+        "file_path": "helpers/skills/coderabbit-review/SKILL.md",
+        "id": "coderabbit-review",
+        "allowed_tools": "Bash Read Grep Glob Edit AskUserQuestion"
+      },
+      {
         "name": "gist-upload",
         "description": "Upload a summary or plan from the current conversation as a GitHub Gist using the `gh` CLI.",
         "category": "general",
