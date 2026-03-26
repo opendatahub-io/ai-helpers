@@ -181,6 +181,14 @@
         "allowed_tools": "Bash WebSearch WebFetch"
       },
       {
+        "name": "rhoai-install-skill",
+        "description": "Install and configure Red Hat OpenShift AI on an OpenShift cluster, including all prerequisites (cert-manager, Red Hat build of Kueue) and user/group setup. Use when the user asks to install RHOAI, set up OpenShift AI, configure an AI platform on OpenShift, or provision a data science cluster.",
+        "category": "general",
+        "file_path": "helpers/skills/rhoai-install-skill/SKILL.md",
+        "id": "rhoai-install-skill",
+        "allowed_tools": ""
+      },
+      {
         "name": "torchtalk-analyzer",
         "description": "Analyze PyTorch internals across Python, C++, and CUDA layers using the TorchTalk MCP server. Use when asked about how PyTorch operators work internally, where functions are implemented, what would break if code is modified, or finding tests for PyTorch operators.",
         "category": "pytorch",
