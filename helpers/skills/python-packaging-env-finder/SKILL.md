@@ -1,81 +1,42 @@
 ---
 name: python-packaging-env-finder
-description: Investigate environment variables that can be set when building Python wheels for a given project. Analyzes setup.py, CMake files, and other build configuration files to discover customizable build environment variables.
+description: "Investigate environment variables that can be set when building Python wheels for a given project. Analyzes setup.py, CMake files, and other build configuration files to discover customizable build environment variables. Use when the user asks about configurable environment variables for building Python packages, compiling wheels, or customizing build options in setup.py or CMakeLists.txt."
 allowed-tools: Bash Read Grep Glob
 ---
 
 # Python Build Environment Variables Investigation
 
-This skill helps you discover all environment variables that can be set when building Python wheels for a project. It performs a comprehensive analysis of build configuration files to identify customizable environment variables used during the wheel building process.
+Discover all environment variables that can be set when building Python wheels for a project by analyzing build configuration files.
 
 ## Instructions
 
-When a user asks about environment variables for building Python wheels, investigating build configuration, or understanding build customization options:
+### 1. Run the Investigation Script
 
-1. **Run the Environment Variables Investigation Script**:
-   ```bash
-   ./scripts/env_finder.py [project_path]
-   ```
+```bash
+./scripts/env_finder.py [project_path]
+```
 
-2. **Analyze and present the findings** focusing on:
+### 2. Analyze and Present Findings
 
-   ### Build Configuration Variables
-   - **Setup.py Variables**: Environment variables used in setup.py for customizing builds
-   - **CMake Variables**: Variables defined in CMakeLists.txt and related files
-   - **Build Tool Variables**: Variables used by setuptools, distutils, or other build systems
-   - **Compiler Variables**: Variables affecting compilation (CC, CXX, CFLAGS, etc.)
+From the script output, organize discovered variables by category:
 
-   ### Variable Categories
+- **Compiler/Linker**: Variables affecting compilation (e.g., `CC`, `CXX`, `CFLAGS`, `LDFLAGS`)
+- **Path Configuration**: Library and header search paths
+- **Feature Control**: `ENABLE_*`, `WITH_*`, `USE_*`, `DISABLE_*` flags controlling optional components
+- **Python-Specific**: Python headers, library paths, setuptools/pip configuration
 
-   #### Compiler and Linker Variables
-   - `CC`, `CXX` - Compiler selection
-   - `CFLAGS`, `CXXFLAGS` - Compilation flags
-   - `LDFLAGS` - Linker flags
-   - `LIBS` - Additional libraries
+For each variable, report:
+1. **Name**: Exact environment variable
+2. **Purpose**: What it controls
+3. **Default**: Behavior when not set
+4. **Source File**: Where it was discovered
 
-   #### Path Configuration Variables
-   - `PREFIX` - Installation prefix
-   - `LIBRARY_PATH` - Library search paths
-   - `INCLUDE_PATH` - Header file paths
-   - `PKG_CONFIG_PATH` - pkg-config search paths
+### 3. Provide Guidance
 
-   #### Feature Control Variables
-   - `ENABLE_*` - Feature enable/disable flags
-   - `WITH_*` - Optional component inclusion
-   - `USE_*` - Build option selection
-   - `DISABLE_*` - Feature disable flags
+- How to set each variable for custom builds
+- Common use cases and recommended values
+- Potential conflicts or compatibility issues
 
-   #### Python-Specific Variables
-   - `PYTHON_INCLUDE_DIR` - Python headers location
-   - `PYTHON_LIBRARY` - Python library path
-   - `SETUPTOOLS_*` - Setuptools configuration
-   - `PIP_*` - pip-related build variables
+## Edge Cases
 
-   ### Usage Context
-   - **When Variables Are Used**: During which build phase each variable takes effect
-   - **Default Values**: What happens when variables are not set
-   - **Required vs Optional**: Which variables are mandatory for successful builds
-
-3. **Provide actionable guidance**:
-   - How to set each variable for custom builds
-   - Common use cases for each variable
-   - Potential conflicts or compatibility issues
-   - Recommended values for different scenarios
-
-## Output Format
-
-The skill should provide a structured list of environment variables with:
-
-1. **Variable Name**: Exact environment variable name
-2. **Purpose**: Clear description of what the variable controls
-3. **Type**: Expected value type (path, boolean, string, number)
-4. **Default Value**: What happens when not set
-5. **Source File**: Where the variable was discovered
-6. **Usage Context**: When and how the variable is used
-
-## Error Handling and Edge Cases
-
-### No Build Configuration Found
-- Report that no environment variables were found
-- Most packages don't have build configuration so it is fine
-
+If no build configuration is found, report that no environment variables were discovered. Most pure Python packages have no build configuration, which is expected.

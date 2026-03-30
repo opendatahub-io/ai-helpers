@@ -1,168 +1,43 @@
 ---
 name: unit-test-project-conformant
-description: Guides the agent to write unit tests that strictly conform to the project's existing testing structure, patterns, and style by learning from similar tests before writing anything new.
+description: “Write unit tests that strictly conform to a project’s existing testing structure, patterns, and style. Scans existing test files to learn conventions, identifies assertion libraries and test frameworks in use, and generates new tests matching project patterns. Use when the user asks to write unit tests, add test coverage, create test files, generate specs, or update tests after refactoring.”
 ---
-# Unit Test (Project-Conformant) Skill
+# Unit Test (Project-Conformant)
 
-This skill ensures the agent does **not invent test structure** and instead learns how the project already tests similar code, then writes the new test in the same style, location, and pattern.
-
-The goal is for the new test to be **indistinguishable from existing tests**.
-
-## When to Use
-
-- Use this skill every time a unit test must be written or modified.
-- Use this skill when adding coverage for new functions, classes, or behavior.
-- Use this skill when refactoring code that requires corresponding test updates.
-- This skill is required whenever the agent is tempted to create a “clean” or “ideal” test structure.
+Write new tests that are **indistinguishable from existing tests** by learning the project’s testing conventions before writing anything.
 
 ## Instructions
 
-### Step 1 — Discover How the project Tests Similar Code
+### Step 1 — Discover Existing Test Patterns
 
 Before writing any test:
 
-- Identify the file, function, or class to be tested.
-- Search the project for tests covering:
-  - The same module
-  - The same directory
-  - Similar functions
-  - Similar classes
-  - Similar behavior
-- Use search terms such as:
-  - Function name
-  - Class name
-  - Module name
-  - Error messages
-  - Public API names
+1. Identify the file, function, or class to be tested.
+2. Search the project for **at least 2–3 tests** covering the same module, directory, or similar behavior.
+3. From those tests, extract the project’s **testing contract**:
+   - Test file locations and naming conventions (e.g. `test_*.py`, `*.spec.ts`, `*_test.go`)
+   - Test structure: standalone functions, classes, parametrized, fixture-driven, or integration-style
+   - Assertion style, mocking approach, and helper utilities used
+   - What is intentionally *not* tested
 
-You must examine **at least 2–3 similar tests** before proceeding.
+### Step 2 — Match Existing Patterns
 
----
+Follow discovered conventions exactly:
 
-### Step 2 — Extract the Test Pattern
+- **Location**: Add to existing test file if similar code is tested there; only create a new file if similar tests do.
+- **Style**: Mirror naming, imports, assertions, fixtures, mocking, and formatting.
+- **Coverage level**: Match the project’s depth — if only success paths are tested, do the same; if edge cases are covered, include them.
+- **Testing approach**: If similar code is tested indirectly or via integration tests, follow that pattern. Do not create standalone unit tests if the project does not.
+- **Reuse**: Search for and use existing fixtures, base classes, utilities, and shared setup. Do not recreate logic that already exists.
 
-From the discovered tests, learn:
+### Step 3 — Write and Validate the Test
 
-- Where tests are located
-- File naming conventions
-- Test naming conventions
-- Whether tests are:
-  - Standalone functions
-  - Inside classes
-  - Parametrized
-  - Fixture-driven
-  - Integration-style
-- Assertion style
-- Mocking style
-- Helper utilities used
-- What is intentionally *not* tested
+1. Write the test only after completing discovery.
+2. Run the test suite to confirm the new test passes and integrates correctly with existing tests.
 
-You are learning the project’s **testing contract**.
+## Anti-Patterns
 
----
-
-### Step 3 — Decide Where the Test Belongs
-
-Follow existing structure exactly:
-
-- If similar code is tested in a shared file → add to that file
-- If similar code is tested inside a class → add a method there
-- If similar tests extend parametrization → extend it
-- If similar behavior is only tested indirectly → do the same
-
-Do **not** create a new test file unless similar tests do.
-
----
-
-### Step 4 — Match Style Exactly
-
-Mirror the project’s style for:
-
-- Function and variable names
-- Imports
-- Assertion style
-- Fixtures
-- Mocking
-- Test utilities
-- Formatting and layout
-
-Do not introduce new libraries, helpers, or patterns.
-
----
-
-### Step 5 — Respect How the project Chooses to Test
-
-If similar methods:
-
-- Are tested indirectly
-- Are tested via integration tests
-- Are not given standalone unit tests
-
-Then you must follow the same pattern.
-
-Do **not** create standalone unit tests if the project does not.
-
----
-
-### Step 6 — Match the Level of Coverage
-
-Match the project’s expectations:
-
-- If tests check only success paths → do the same
-- If tests include edge cases → include them
-- If tests include error cases → include them
-- If tests use heavy mocking → do the same
-- If tests avoid mocking → avoid it
-
-Do not over-test compared to existing patterns.
-
----
-
-### Step 7 — Reuse Existing Helpers and Fixtures
-
-Search for and reuse:
-
-- Fixtures
-- Base test classes
-- Utilities
-- Custom assertions
-- Shared setup logic
-
-Do not recreate logic that already exists.
-
----
-
-### Step 8 — Write the Test Last
-
-Only after completing all discovery steps should you write the test.
-
-The result should look like it was written by the same author as the surrounding tests.
-
----
-
-## Anti-Patterns (Never Do These)
-
-- Creating new test structure because it seems “better”
-- Writing standalone tests when the project does not
-- Introducing new testing frameworks
-- Adding excessive assertions not seen elsewhere
-- Adding mocks where the project avoids them
-- Guessing where tests belong without searching
-
----
-
-## Final Checklist
-
-Before finishing, confirm:
-
-- Test is in the correct location
-- Naming matches existing tests
-- Structure matches existing tests
-- Assertions match existing tests
-- Fixtures/helpers are reused
-- No new patterns introduced
-- Coverage level matches similar tests
-
----
-
-Use the ask questions tool if you need to clarify requirements with the user.
+- Inventing new test structure, frameworks, or libraries
+- Writing standalone tests when the project uses integration tests
+- Adding excessive assertions or mocks not seen elsewhere
+- Guessing where tests belong without searching first

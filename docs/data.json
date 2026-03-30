@@ -150,7 +150,7 @@
       },
       {
         "name": "python-packaging-bug-finder",
-        "description": "Find known packaging bugs, fixes, and workarounds for Python projects by searching GitHub issues and analyzing their resolution status",
+        "description": "Find known packaging bugs, fixes, and workarounds for Python projects by searching GitHub issues and analyzing their resolution status. Use when the user encounters pip install errors, dependency conflicts, build failures, or wants to check if a packaging problem is a known issue with available fixes or workarounds.",
         "category": "general",
         "file_path": "helpers/skills/python-packaging-bug-finder/SKILL.md",
         "id": "python-packaging-bug-finder",
@@ -158,7 +158,7 @@
       },
       {
         "name": "python-packaging-complexity",
-        "description": "Analyze Python package build complexity by inspecting PyPI metadata. Evaluates compilation requirements, dependencies, distribution types, and provides recommendations for wheel building strategies.",
+        "description": "Analyze Python package build complexity by inspecting PyPI metadata. Evaluates compilation requirements, dependency types, distribution availability, and wheel coverage gaps to recommend build strategies. Use when the user asks about Python package build complexity, wheel availability, compilation requirements, or whether to build from source vs use existing wheels.",
         "category": "general",
         "file_path": "helpers/skills/python-packaging-complexity/SKILL.md",
         "id": "python-packaging-complexity",
@@ -166,7 +166,7 @@
       },
       {
         "name": "python-packaging-env-finder",
-        "description": "Investigate environment variables that can be set when building Python wheels for a given project. Analyzes setup.py, CMake files, and other build configuration files to discover customizable build environment variables.",
+        "description": "Investigate environment variables that can be set when building Python wheels for a given project. Analyzes setup.py, CMake files, and other build configuration files to discover customizable build environment variables. Use when the user asks about configurable environment variables for building Python packages, compiling wheels, or customizing build options in setup.py or CMakeLists.txt.",
         "category": "general",
         "file_path": "helpers/skills/python-packaging-env-finder/SKILL.md",
         "id": "python-packaging-env-finder",
@@ -206,7 +206,7 @@
       },
       {
         "name": "unit-test-project-conformant",
-        "description": "Guides the agent to write unit tests that strictly conform to the project's existing testing structure, patterns, and style by learning from similar tests before writing anything new.",
+        "description": "\u201cWrite unit tests that strictly conform to a project\u2019s existing testing structure, patterns, and style. Scans existing test files to learn conventions, identifies assertion libraries and test frameworks in use, and generates new tests matching project patterns. Use when the user asks to write unit tests, add test coverage, create test files, generate specs, or update tests after refactoring.\u201d",
         "category": "general",
         "file_path": "helpers/skills/unit-test-project-conformant/SKILL.md",
         "id": "unit-test-project-conformant",
@@ -214,7 +214,7 @@
       },
       {
         "name": "vllm-compare-reqs",
-        "description": "Compare vllm requirements files between versions",
+        "description": "Compare vllm requirements files and Dockerfiles between versions to identify dependency changes for AIPCC package onboarding. Identifies added, removed, and changed packages across hardware variants (ROCm, CUDA, CPU, TPU, XPU) and analyzes Dockerfile ARG changes for source-built dependencies. Use when comparing vllm dependency diffs, reviewing version upgrades, debugging build failures from dependency mismatches, or planning AIPCC wheels builder onboarding.",
         "category": "vllm",
         "file_path": "helpers/skills/vllm-compare-reqs/SKILL.md",
         "id": "vllm-compare-reqs",
