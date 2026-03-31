@@ -14,37 +14,13 @@ Fetch CodeRabbit comments from a GitHub PR, evaluate each one, and take action: 
 
 ## Step 1: Resolve the PR and Repository
 
-If `$ARGUMENTS` is provided, use it as the PR number. Get the upstream repo:
-```bash
-gh repo view --json owner,name
-```
-Store: `owner`, `repo`, `pullNumber`.
+Determine the `owner`, `repo`, and `pullNumber`:
 
-If `$ARGUMENTS` is empty, detect the PR from the current branch. PRs are often opened from a fork, so `gh pr view` against the upstream may fail. Use this sequence:
-
-1. Get the upstream owner/repo:
-   ```bash
-   gh repo view --json owner,name
-   ```
-
-2. Try to find the PR on the upstream first:
-   ```bash
-   gh pr view --repo <owner>/<repo> --json number,url,headRefName,baseRefName,title
-   ```
-
-3. If that fails (exit code non-zero or "no pull requests found"), get the current branch name and list all open PRs, matching by `headRefName` and `headRepositoryOwner`. The `--head fork-user:branch` filter is unreliable with `gh pr list` (returns empty even when the PR exists):
-   ```bash
-   branch=$(git branch --show-current)
-   gh pr list --repo <owner>/<repo> --state open --json number,title,headRefName,headRepositoryOwner --limit 50
-   ```
-   Then match the entry where `headRefName == <branch>` AND `headRepositoryOwner.login` matches the expected fork owner. If multiple matches remain, stop and ask the user to pick the PR number explicitly.
-
-4. If still not found (no matching headRefName), ask the user to identify the PR number:
-   ```bash
-   gh pr list --repo <owner>/<repo> --state open --json number,title,headRefName,headRepositoryOwner --limit 20
-   ```
-
-Store: `owner`, `repo`, `pullNumber`.
+- If `$ARGUMENTS` is a PR number, use it directly.
+- Otherwise, detect the PR from the current branch using `gh pr view` or `gh pr list`.
+- Use `gh repo view --json owner,name` to get the upstream coordinates. If that fails (e.g., no default remote set), fall back to parsing `git remote -v` to identify the upstream GitHub repository.
+- The repo may be a fork with multiple remotes. Do not assume names like `upstream`/`origin`. Prefer repo coordinates from PR metadata (`gh pr view --json`), then `gh repo view`, then `git remote -v`. If multiple candidates remain, ask the user.
+- If you cannot determine the PR automatically, ask the user.
 
 ## Step 2: Fetch CodeRabbit Comments
 
@@ -129,28 +105,19 @@ Then show the full evaluation for each comment (bugs and security first, then pe
 
 ---
 
-After presenting ALL comments, use `AskUserQuestion` to offer a **batch option first**:
+After presenting ALL comments, **wait for the user to respond**. The user may want to:
 
-Question: "How would you like to process these comments?"
-Header: "Mode"
-Options:
-  - Auto (Apply recommended action for each: fix valid ones, reply to others)
-  - Per-comment (Review and decide each comment individually)
+- **Discuss** — ask questions, understand a comment better, debate whether it's valid. Act as a knowledgeable colleague: explain the trade-offs, share context, help them form their own opinion. Stay in this discussion mode as long as the user is engaging. Do NOT push toward action or present menus while the user is still exploring.
+- **Act** — when the user indicates they're ready (e.g., "let's fix these", "go ahead", "apply #1 and #3"), proceed with the requested actions.
+- **Decide per-comment** — if the user wants to go through comments one by one, walk through each and ask what to do.
 
-**If "Auto":** proceed with all recommended actions without further prompting, then report what was done.
+When the user is ready to act, the available actions per comment are:
+- **Apply fix** — apply the code change (only when a fix is proposed)
+- **Post reply** — post the draft reply to the PR
+- **Edit & post** — let the user adjust the reply text first, then post
+- **Skip** — do nothing with this comment
 
-**If "Per-comment":** for each comment, ask:
-
-Question: "What should we do with CodeRabbit comment #N ([category]: [short description])?"
-Header: "Action"
-Options:
-  - Apply fix (Apply the code change as shown)      [only when action is `fix`]
-  - Post reply (Post the draft reply to the PR)
-  - Edit & post (Let me adjust the reply first)
-  - Dismiss (Post a brief acknowledgement and move on)  [only when action is `dismiss`]
-  - Skip (Do nothing with this comment)
-
-**If `AskUserQuestion` returns an empty answer:** do not apply fixes or post replies. Mark the comment as `skipped (no explicit approval)` and continue.
+**Critical rule:** Never apply fixes or post replies without explicit user approval. If unsure whether the user wants to act or keep discussing, keep discussing.
 
 ## Step 5: Execute Actions
 
@@ -191,7 +158,7 @@ After all comments are processed, output:
 - Skipped: N comment(s)
 
 ## Next steps:
-- If code was changed: commit and push to the **fork branch** that feeds the PR (not the upstream repo). Use `git remote -v` and `git branch -a` to confirm the correct remote and branch before pushing.
+- If code was changed: do NOT lump all changes into a single generic commit. Group related changes into **separate logical commits**, each with a message that explains *why* the change was made (not just "address CodeRabbit feedback"). Unrelated fixes from different CodeRabbit comments should be separate commits. Push to the **PR head branch** (fork or same-repo, whichever feeds the PR). Use `gh pr view --json headRefName,headRepositoryOwner` plus `git remote -v` and `git branch -a` to confirm destination before pushing.
 - If only replies were posted: CodeRabbit may re-evaluate on re-review trigger
 
 ## Notes
