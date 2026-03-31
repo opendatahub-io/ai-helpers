@@ -5,6 +5,7 @@ description: >-
   all prerequisites (cert-manager, Red Hat build of Kueue) and user/group setup.
   Use when the user asks to install RHOAI, set up OpenShift AI, configure an AI
   platform on OpenShift, or provision a data science cluster.
+allowed-tools: Bash Kubernetes Shell
 ---
 
 # RHOAI Cluster Setup
@@ -57,10 +58,15 @@ Open Data Hub **must not** be installed alongside RHOAI. If RHOAI is already ins
 ### 1.4 Node capacity
 
 ```
-oc get nodes --no-headers | wc -l
+# Count worker nodes only
+oc get nodes -l 'node-role.kubernetes.io/worker' --no-headers | wc -l
+
+# Verify per-worker allocatable CPU and memory
+oc get nodes -l 'node-role.kubernetes.io/worker' -o json \
+  | jq -r '.items[] | [.metadata.name, .status.allocatable.cpu, .status.allocatable.memory] | @tsv'
 ```
 
-Minimum: 2 worker nodes, 8 CPUs / 32 GiB RAM each.
+Minimum: 2 worker nodes, 8 CPUs / 32 GiB RAM each. If the worker count is below 2, or any worker reports fewer than 8 CPUs or less than 32Gi memory, stop and inform the user before proceeding.
 
 ## Phase 2: Install RHOAI Operator
 
@@ -95,7 +101,7 @@ metadata:
   namespace: redhat-ods-operator
 spec:
   name: rhods-operator
-  channel: fast-3.x          # adjust for target version
+  channel: stable-3.x         # adjust for target version; stable-3.x recommended for production
   source: redhat-operators
   sourceNamespace: openshift-marketplace
 ```
@@ -218,7 +224,7 @@ Common issues:
 
 ## Phase 5: Configure Users and Groups
 
-Per the [user management docs](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/3.3/html/managing_openshift_ai/managing-users-and-groups).
+Per the [user management docs](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/<VERSION>/html/managing_openshift_ai/managing-users-and-groups).
 
 ### 5.1 Create groups
 
@@ -230,11 +236,18 @@ oc adm groups new rhods-users
 ### 5.2 Add users to groups
 
 ```bash
+# Validate username format before use (letters, digits, hyphen, underscore, dot, @)
+ADMIN_USERNAME="<admin-username>"
+USER_USERNAME="<user-username>"
+
+[[ "$ADMIN_USERNAME" =~ ^[a-zA-Z0-9._@-]+$ ]] || { echo "Invalid admin username"; exit 1; }
+[[ "$USER_USERNAME"  =~ ^[a-zA-Z0-9._@-]+$ ]] || { echo "Invalid user username"; exit 1; }
+
 # RHOAI admins — can configure settings, manage all projects
-oc adm groups add-users rhods-admins <admin-username>
+oc adm groups add-users rhods-admins -- "$ADMIN_USERNAME"
 
 # Data scientists / regular users — access workbenches, pipelines in own projects
-oc adm groups add-users rhods-users <user-username>
+oc adm groups add-users rhods-users -- "$USER_USERNAME"
 ```
 
 Users who should have both roles go in both groups.

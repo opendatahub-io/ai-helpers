@@ -5,6 +5,9 @@
     "general": {
       "name": "General"
     },
+    "openshift ai": {
+      "name": "OpenShift AI"
+    },
     "aipcc": {
       "name": "AIPCC"
     },
@@ -183,10 +186,10 @@
       {
         "name": "rhoai-install-skill",
         "description": "Install and configure Red Hat OpenShift AI on an OpenShift cluster, including all prerequisites (cert-manager, Red Hat build of Kueue) and user/group setup. Use when the user asks to install RHOAI, set up OpenShift AI, configure an AI platform on OpenShift, or provision a data science cluster.",
-        "category": "general",
+        "category": "openshift ai",
         "file_path": "helpers/skills/rhoai-install-skill/SKILL.md",
         "id": "rhoai-install-skill",
-        "allowed_tools": ""
+        "allowed_tools": "Bash Kubernetes Shell"
       },
       {
         "name": "torchtalk-analyzer",

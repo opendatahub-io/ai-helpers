@@ -4,12 +4,15 @@
 
 | RHOAI Version | Supported OCP Versions | Channel |
 |---|---|---|
-| 3.x (latest) | 4.19, 4.20 | `fast-3.x` |
+| 3.x (latest) | 4.19, 4.20, 4.21 | `stable-3.x` (recommended) or `fast-3.x` |
 | 2.25 | 4.16, 4.17, 4.18, 4.19, 4.20 | `stable-2.x` or `fast-2.x` |
-| 2.22 | 4.16, 4.17, 4.18, 4.19 | `stable-2.x` |
-| 2.16 | 4.14, 4.16, 4.17, 4.18, 4.19 | `stable-2.x` |
+| 2.22 *(older)* | 4.16, 4.17, 4.18, 4.19 | `stable-2.x` |
+| 2.16 *(older)* | 4.14, 4.16, 4.17, 4.18, 4.19 | `stable-2.x` |
 
-RHOAI 3.x is a **new install only** — no upgrade path from 2.x exists.
+RHOAI 3.x is a **new install only** — no upgrade path from 2.x exists. Fresh install or upgrade within 3.x (e.g. 3.2 → 3.3) is supported.
+
+> **Note**: Versions 2.22 and 2.16 are older releases. Verify current support status before using them.  
+> **Last verified**: 2026-03-31. Always re-check [Red Hat OpenShift AI: Supported Configurations](https://access.redhat.com/articles/rhoai-supported-configs) and [RHOAI 3.x Lifecycle](https://access.redhat.com/support/policy/updates/rhoai-sm/lifecycle) before recommending a specific version.
 
 Source: [Red Hat OpenShift AI: Supported Configurations](https://access.redhat.com/articles/rhoai-supported-configs)
 
@@ -71,8 +74,11 @@ The error "This resource cannot be created, updated, or deleted. Please ask your
 
 The user is not in any of the `allowedGroups` configured in the dashboard. Add them:
 
-```
-oc adm groups add-users rhods-users <username>
+```bash
+# Validate the username first (letters, digits, hyphen, underscore, dot, @)
+USERNAME="<username>"
+[[ "$USERNAME" =~ ^[a-zA-Z0-9._@-]+$ ]] || { echo "Invalid username"; exit 1; }
+oc adm groups add-users rhods-users -- "$USERNAME"
 ```
 
 If groups were just changed, the user must log out and log back in for changes to take effect (session management is separate from authentication).

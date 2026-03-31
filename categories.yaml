@@ -1,3 +1,6 @@
+OpenShift AI:
+  - rhoai-install-skill
+
 AIPCC:
   - aipcc-commit-suggest
   - commit-message-assistant
