@@ -14,3 +14,17 @@ updates:
       prefix: "chore"
       prefix-development: "chore"
       include: "scope"
+
+  # Enable version updates for container base images
+  - package-ecosystem: "docker"
+    directory: "/images/claude"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    reviewers:
+      - "@opendatahub-io/ai-helpers-maintainers"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"

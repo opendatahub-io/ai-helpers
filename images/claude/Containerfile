@@ -1,21 +1,32 @@
-FROM quay.io/fedora/fedora:latest
+FROM registry.access.redhat.com/ubi10/ubi:10.1@sha256:1b616c4a90d6444b394d5c8f4bd9e15a394d95dd628925d0ec80c257fdc5099c
 
-# Install Node.js, NPM, Python 3, development tools, and RPM tools
+# Install Node.js (includes NPM), Python 3, development tools, and RPM tools
 RUN dnf install -y nodejs \
-	npm \
     python3 \
     python3-devel \
-    fedora-packager \
-    fedora-review \
-    mock \
     rpm-build \
     rpmdevtools \
     curl \
     git \
     make \
-    shellcheck \
     which \
     && dnf clean all
+
+# Install ShellCheck from pre-built binary (not available in UBI repos)
+ARG SHELLCHECK_VERSION=v0.11.0
+ARG SHELLCHECK_SHA256_X86_64=8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198
+ARG SHELLCHECK_SHA256_AARCH64=12b331c1d2db6b9eb13cfca64306b1b157a86eb69db83023e261eaa7e7c14588
+RUN set -eu; \
+    arch="$(uname -m)"; \
+    case "$arch" in \
+      x86_64)  expected="$SHELLCHECK_SHA256_X86_64" ;; \
+      aarch64) expected="$SHELLCHECK_SHA256_AARCH64" ;; \
+      *) echo "Unsupported arch: $arch" >&2; exit 1 ;; \
+    esac; \
+    curl -LsSf -o /tmp/shellcheck.tar.xz "https://github.com/koalaman/shellcheck/releases/download/${SHELLCHECK_VERSION}/shellcheck-${SHELLCHECK_VERSION}.linux.${arch}.tar.xz"; \
+    echo "${expected}  /tmp/shellcheck.tar.xz" | sha256sum -c -; \
+    tar xJf /tmp/shellcheck.tar.xz --strip-components=1 -C /usr/local/bin/ "shellcheck-${SHELLCHECK_VERSION}/shellcheck"; \
+    rm -f /tmp/shellcheck.tar.xz
 
 
 RUN echo '[google-cloud-cli]' > /etc/yum.repos.d/google-cloud-sdk.repo && \
