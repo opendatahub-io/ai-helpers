@@ -7,6 +7,7 @@ description: >-
   with what was done, or runs /jira-daily-recap.
 user-invocable: true
 argument-hint: "<JIRA-KEY> <owner/repo> [branch] [date]"
+allowed-tools: "Bash, GitHub MCP, Atlassian MCP"
 ---
 
 # Jira Daily Recap
@@ -17,7 +18,7 @@ summarizing what was accomplished on that project only.
 
 ## Usage
 
-```
+```text
 /jira-daily-recap <JIRA-KEY> <owner/repo> [branch] [date]
 ```
 
@@ -35,16 +36,19 @@ it to `YYYY-MM-DD` before proceeding.
 
 ### 1. Resolve identities
 
-- Call GitHub MCP `get_me` to get the authenticated username.
-- Call Jira MCP `getAccessibleAtlassianResources` to get the `cloudId`.
-- Call Jira MCP `getJiraIssue` with `cloudId` and `issueIdOrKey` (the JIRA-KEY)
-  to confirm the ticket exists. Use `responseContentFormat: "markdown"`.
-  Extract the issue summary for context.
+- **GitHub username** — try these in order until one succeeds:
+  1. Call GitHub MCP `get_me`.
+  2. Run `gh api /user --jq .login` (GitHub CLI).
+  3. Run `git config user.name` as a last resort (may differ from GitHub handle).
+- **Jira cloud ID** — call Jira MCP `getAccessibleAtlassianResources` to get the
+  `cloudId`.
+- **Validate ticket** — call Jira MCP `getJiraIssue` with `cloudId` and
+  `issueIdOrKey` (the JIRA-KEY) to confirm the ticket exists. Use
+  `responseContentFormat: "markdown"`. Extract the issue summary for context.
 
 ### 2. Collect GitHub activity (target date only)
 
 Let `TARGET_DATE` = the user-supplied date or today's date as `YYYY-MM-DD`.
-Let `NEXT_DATE` = `TARGET_DATE + 1 day`.
 
 **Commits:**
 - Call GitHub MCP `list_commits` with `owner`, `repo`, `sha` (branch if given),
@@ -56,26 +60,37 @@ Let `NEXT_DATE` = `TARGET_DATE + 1 day`.
 
 **Pull Requests:**
 - Call GitHub MCP `search_pull_requests` with query:
-  `repo:<owner>/<repo> author:<username> updated:<TARGET_DATE>..<NEXT_DATE>`
-  (exclusive upper bound — matches only `TARGET_DATE`)
+  `repo:<owner>/<repo> author:<username> updated:<TARGET_DATE>..<TARGET_DATE>`
+  (GitHub's `..` range is inclusive on both bounds, so using the same date on
+  both sides restricts results to exactly `TARGET_DATE`)
 - Keep: PR title, number, state (open/closed/merged), URL.
 
 ### 3. Collect Cursor chat history (target date only, scoped to repo)
 
+- **Input validation:** Verify that `owner` and `repo` each match the pattern
+  `^[A-Za-z0-9._-]+$`. If either contains path separators (`/`, `\`) or other
+  special characters beyond this set, reject the input and inform the user.
 - Identify the Cursor project folder that corresponds to the specified
-  `owner/repo`. The transcript path contains a project slug derived from the
-  workspace path (e.g. `~/.cursor/projects/Users-<user>-<workspace>/agent-transcripts/`).
-  Match on the repo name portion of the workspace slug.
-- List `.jsonl` files **only under that project's** `agent-transcripts/` folder
-  using `find ... -name '*.jsonl'` and keep only files whose modification
-  timestamp matches **`TARGET_DATE` exactly**.
+  `owner/repo`. Transcript directories live under `~/.cursor/projects/` with
+  platform-specific slugs (e.g. `Users-<user>-CODING-<repo>` on macOS,
+  `home-<user>-<repo>` on Linux). Match on the **repo name portion** of the
+  workspace slug.
+- After resolving the path, verify it is still under `~/.cursor/projects/` to
+  prevent directory traversal.
+- List `.jsonl` files **only under that project's** `agent-transcripts/` folder.
+  Use file mtime as a quick pre-filter: skip files last modified before
+  `TARGET_DATE` (they cannot contain messages from that day).
 - **Do NOT** collect transcripts from other project folders — only the project
   matching the specified repo is in scope.
-- For each matching `.jsonl` file, read its lines and extract user messages:
+- For each candidate `.jsonl` file, read its lines and extract user messages:
+  - If a JSON line contains a timestamp field (e.g. `createdAt`, `timestamp`),
+    use it to determine the message date. **Only include messages whose
+    timestamp falls on `TARGET_DATE`.**
+  - If no per-line timestamp is available, fall back to the file's mtime —
+    include messages only when the file was last modified on `TARGET_DATE`.
   - Prefer text inside `<user_query>...</user_query>` tags.
   - Fall back to the first 200 chars of user message text.
-- A message only counts if the **transcript file was modified on `TARGET_DATE`**
-  — never pull messages from transcripts modified on other dates.
+- Never include messages from other dates regardless of filtering method.
 - Distill into a short list of what the user worked on / asked the agent to do
   **for this project/Jira ticket**.
 - Deduplicate similar entries. Aim for 3-5 distinct activity bullets.
@@ -109,7 +124,7 @@ is commits or transcripts from different dates, that is zero activity for
 
 Merge all sources into a concise progress update. Use this template:
 
-```
+```text
 **Progress update — <TARGET_DATE> (AI generated)**
 
 - <bullet 1: what was done, with PR/commit link if applicable>
@@ -144,7 +159,7 @@ Rules:
 Always display the final comment in chat so the user can review what was posted.
 Format it clearly with a heading like:
 
-```
+```text
 ✅ Comment posted to <JIRA-KEY>:
 <the comment body>
 ```
@@ -153,8 +168,9 @@ Format it clearly with a heading like:
 
 - If Jira MCP is unavailable or auth fails → output the comment in chat and
   instruct the user to paste it manually.
-- If GitHub MCP is unavailable → skip GitHub data, build comment from chat
-  history only.
+- If GitHub MCP is unavailable → try fetching GitHub data via the GitHub CLI
+  (`gh api`) or `curl` against `https://api.github.com` as a fallback. If that
+  also fails, skip GitHub data and build the comment from chat history only.
 - If no transcripts found for `TARGET_DATE` → skip chat data, build comment
   from GitHub only.
 - If both sources are empty for `TARGET_DATE` → inform the user:
@@ -167,7 +183,7 @@ User runs: `/jira-daily-recap RHOAIENG-53408 openshift/kubeflow release-1.9`
 
 Posted comment:
 
-```
+```text
 **Progress update — 2026-04-01 (AI generated)**
 
 - Rebased SDK PR #368 on latest upstream and resolved merge conflicts

@@ -130,7 +130,7 @@
         "category": "general",
         "file_path": "helpers/skills/jira-daily-recap/SKILL.md",
         "id": "jira-daily-recap",
-        "allowed_tools": ""
+        "allowed_tools": "Bash, GitHub MCP, Atlassian MCP"
       },
       {
         "name": "jira-upload-chat-log",
