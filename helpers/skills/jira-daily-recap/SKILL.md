@@ -11,8 +11,9 @@ argument-hint: "<JIRA-KEY> <owner/repo> [branch] [date]"
 
 # Jira Daily Recap
 
-Collect a single day's GitHub activity and Cursor chat history, then post a
-concise comment on a Jira ticket summarizing what was accomplished.
+Collect a single day's GitHub activity and Cursor chat history **scoped to the
+specified repository/project**, then post a concise comment on a Jira ticket
+summarizing what was accomplished on that project only.
 
 ## Usage
 
@@ -59,20 +60,34 @@ Let `NEXT_DATE` = `TARGET_DATE + 1 day`.
   (exclusive upper bound — matches only `TARGET_DATE`)
 - Keep: PR title, number, state (open/closed/merged), URL.
 
-### 3. Collect Cursor chat history (target date only)
+### 3. Collect Cursor chat history (target date only, scoped to repo)
 
-- List `.jsonl` files under `~/.cursor/projects/**/agent-transcripts/` using
-  `find ... -name '*.jsonl'` and keep only files whose modification timestamp
-  matches **`TARGET_DATE` exactly**.
+- Identify the Cursor project folder that corresponds to the specified
+  `owner/repo`. The transcript path contains a project slug derived from the
+  workspace path (e.g. `~/.cursor/projects/Users-<user>-<workspace>/agent-transcripts/`).
+  Match on the repo name portion of the workspace slug.
+- List `.jsonl` files **only under that project's** `agent-transcripts/` folder
+  using `find ... -name '*.jsonl'` and keep only files whose modification
+  timestamp matches **`TARGET_DATE` exactly**.
+- **Do NOT** collect transcripts from other project folders — only the project
+  matching the specified repo is in scope.
 - For each matching `.jsonl` file, read its lines and extract user messages:
   - Prefer text inside `<user_query>...</user_query>` tags.
   - Fall back to the first 200 chars of user message text.
 - A message only counts if the **transcript file was modified on `TARGET_DATE`**
   — never pull messages from transcripts modified on other dates.
-- Distill into a short list of what the user worked on / asked the agent to do.
+- Distill into a short list of what the user worked on / asked the agent to do
+  **for this project/Jira ticket**.
 - Deduplicate similar entries. Aim for 3-5 distinct activity bullets.
 - Ignore meta/skill invocations (e.g. `/jira-daily-recap`, `/update-internship-tasks`,
   single-word messages, or messages that are only tool scaffolding).
+- **Exclude any work unrelated to the specified repo or Jira ticket** — even if
+  it appears in matching transcripts (e.g. side conversations about other projects).
+- **Only extract concrete, actionable progress** — code changes, bug fixes, new
+  features, config updates, PR/review work, or investigation with a clear outcome.
+  Discard casual conversation, questions about how things work, troubleshooting
+  that led nowhere, setup/environment chatter, and requests to run this skill.
+  If a transcript message didn't result in a tangible deliverable, skip it.
 
 ### 4. Gate check — verify real activity exists for TARGET_DATE
 
@@ -111,6 +126,8 @@ Rules:
 - Do NOT list raw commit SHAs unless there's no PR to link.
 - Do NOT include filler like "continued working on…" — be specific.
 - Only include work from **`TARGET_DATE`**. Never include work from other days.
+- **Only include work related to the specified repo and Jira ticket.** Do NOT
+  mix in activity from other projects, repos, or unrelated Jira tickets.
 - If no activity found for a source, omit it silently.
 
 ### 6. Post to Jira
