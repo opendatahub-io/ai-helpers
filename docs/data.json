@@ -125,6 +125,14 @@
         "allowed_tools": "Bash, AskUserQuestion"
       },
       {
+        "name": "jira-daily-recap",
+        "description": "Post a daily work summary as a Jira comment by collecting GitHub commits/PRs and Cursor chat history for the day. Use when the user asks to update a Jira ticket with today's work, log daily progress on a ticket, post a Jira comment with what was done, or runs /jira-daily-recap.",
+        "category": "general",
+        "file_path": "helpers/skills/jira-daily-recap/SKILL.md",
+        "id": "jira-daily-recap",
+        "allowed_tools": ""
+      },
+      {
         "name": "jira-upload-chat-log",
         "description": "Export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation.",
         "category": "general",
