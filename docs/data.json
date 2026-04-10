@@ -69,6 +69,14 @@
     ],
     "skills": [
       {
+        "name": "adr-review",
+        "description": "Review an Architectural Decision Record (ADR) using a team of six specialist reviewer subagents and produce a consolidated report as both PDF and PPTX slide deck. Use this skill whenever the user asks to review, critique, audit, or get feedback on an ADR, architecture decision, design doc, or RFC \u2014 whether the input is a Markdown file, a .docx document, or pasted text. Trigger even if the user does not explicitly say \"ADR\"; phrases like \"review this architecture decision\", \"critique this design doc\", or \"run the reviewer panel on this\" should also invoke this skill.",
+        "category": "general",
+        "file_path": "helpers/skills/adr-review/SKILL.md",
+        "id": "adr-review",
+        "allowed_tools": ""
+      },
+      {
         "name": "ai-bug-fix-triage",
         "description": "Triage JIRA bugs against repository code to classify AI fixability. Use when reviewing a backlog of bugs to determine which ones an AI agent can fix.",
         "category": "general",
