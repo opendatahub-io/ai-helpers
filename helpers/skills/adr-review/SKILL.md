@@ -120,11 +120,11 @@ Create a `adr-review/` subdirectory next to the input ADR file. Write outputs th
 
 The PDF is the detailed, self-contained artifact. Err on the side of too much context per concern rather than too little — the reader may not have been in the review conversation.
 
-**PPTX structure** — use the `document-skills:pptx` skill:
+**PPTX structure** — use the `document-skills:pptx` skill (or `python-pptx` directly if the skill isn't available). Follow the styling rules in `references/report_templates.md` (color palette, typography, slide layout) to produce a clean, professional deck — not plain white slides with default fonts:
 
-1. Title slide
+1. Title slide — dark background, ADR name, date, verdict badge
 2. Executive summary (overall assessment + top 3 risks)
-3. One slide per reviewer (assessment + top 2 concerns + top recommendation)
+3. One slide per reviewer (verdict badge + top 2 concerns with severity colors + top recommendation)
 4. Synthesis slide (agreements / tensions / gaps)
 5. Next steps / recommendation slide
 
