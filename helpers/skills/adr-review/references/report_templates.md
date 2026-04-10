@@ -18,7 +18,12 @@
     ## <Reviewer Name>
     Overall: <Strong | Acceptable | Concerns | Blocking>
     Strengths: ...
-    Concerns (with severity): ...
+    Concerns:
+      For each concern:
+        [severity: low / med / high] Short title
+        What: specific gap or problem in the ADR (1-2 sentences)
+        So what: concrete consequence if unaddressed (implementer confusion, production risk, etc.)
+        Suggested fix: what the author should add/change/clarify to resolve it
     Open questions: ...
     Recommendations: ...
 
@@ -63,7 +68,7 @@ Slide 10 — Next Steps
 
 ## Style notes
 
-- PDF is the detailed artifact; preserve full reviewer text.
+- PDF is the detailed artifact; preserve full reviewer text including _What / So what / Suggested fix_ for every concern. A reader should be able to understand consequences and act on findings without external context.
 - Slides are for a meeting — bullets, not paragraphs. Max 5 bullets/slide, max ~10 words/bullet.
 - Use severity color cues where possible (red = high, amber = med, grey = low).
 - Keep the title slide and exec summary self-contained — someone should be able to get the bottom line from those two alone.

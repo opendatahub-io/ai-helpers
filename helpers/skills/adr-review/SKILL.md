@@ -56,10 +56,21 @@ Each reviewer must return a structured finding in this shape:
 ## [Reviewer Name]
 **Overall assessment:** [Strong / Acceptable / Concerns / Blocking]
 **Strengths:** [bullets]
-**Concerns:** [bullets, each tagged severity: low / med / high]
+**Concerns:** [bullets, each with the structure below]
 **Open questions:** [bullets]
 **Recommendations:** [bullets]
 ```
+
+Each concern must include enough detail for an architect unfamiliar with the review to understand the issue and act on it. Use this structure per concern:
+
+```
+- **[severity: low / med / high] [Short title]**
+  _What:_ One or two sentences describing the specific gap or problem found in the ADR.
+  _So what:_ Why this matters — the concrete consequence if the ADR is accepted without addressing it (e.g., implementer confusion, production risk, blocked downstream ADR).
+  _Suggested fix:_ What the author should add, change, or clarify in the document to resolve it. Be specific enough that the author can act without re-reading the full review.
+```
+
+This level of detail applies to both the **PDF report** and **Step 3.5** (human-in-the-loop review). The user needs the full _What / So what / Suggested fix_ context to make informed agree/disagree decisions. Only the **PPTX** should use short-form bullets (title + severity) to stay scannable for meetings.
 
 ### Step 3.5 — Human-in-the-loop review of findings
 
@@ -104,9 +115,11 @@ Create a `adr-review/` subdirectory next to the input ADR file. Write outputs th
 
 1. Title page — ADR name, date of review, overall recommendation
 2. Executive summary — 3-5 bullets, top risks, overall recommendation
-3. One section per reviewer with their full finding
+3. One section per reviewer with their full finding. Each concern must include the verbose _What / So what / Suggested fix_ detail so a reader can understand consequences and act on the finding without external context.
 4. Synthesis section — agreements, tensions, gaps
 5. Appendix — the original ADR text
+
+The PDF is the detailed, self-contained artifact. Err on the side of too much context per concern rather than too little — the reader may not have been in the review conversation.
 
 **PPTX structure** — use the `document-skills:pptx` skill:
 
