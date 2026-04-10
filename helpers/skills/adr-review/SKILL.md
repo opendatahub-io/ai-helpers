@@ -52,7 +52,7 @@ The six reviewers are:
 
 Each reviewer must return a structured finding in this shape:
 
-```
+```markdown
 ## [Reviewer Name]
 **Overall assessment:** [Strong / Acceptable / Concerns / Blocking]
 **Strengths:** [bullets]
@@ -63,7 +63,7 @@ Each reviewer must return a structured finding in this shape:
 
 Each concern must include enough detail for an architect unfamiliar with the review to understand the issue and act on it. Use this structure per concern:
 
-```
+```markdown
 - **[severity: low / med / high] [Short title]**
   _What:_ One or two sentences describing the specific gap or problem found in the ADR.
   _So what:_ Why this matters — the concrete consequence if the ADR is accepted without addressing it (e.g., implementer confusion, production risk, blocked downstream ADR).

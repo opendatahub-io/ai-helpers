@@ -2,7 +2,7 @@
 
 ## PDF Template
 
-```
+```text
 [TITLE PAGE]
   ADR Review: <ADR title>
   Reviewed: <date>
