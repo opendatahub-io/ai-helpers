@@ -81,5 +81,7 @@ RUN cp /home/claude/.local/bin/claude /usr/bin/claude && \
     chmod +x /usr/bin/claude
 USER claude
 
-# Set Claude Code as the default command
-ENTRYPOINT ["claude"]
+# Set entrypoint wrapper as the default command.  The wrapper passes
+# through to `claude` directly unless CLAUDE_CI_STREAM=1 is set, in
+# which case it enables human-readable streaming output for CI.
+ENTRYPOINT ["/opt/ai-helpers/images/claude/claude-ci-entrypoint.sh"]

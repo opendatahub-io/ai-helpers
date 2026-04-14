@@ -195,6 +195,41 @@ claude-container() {
 }
 ```
 
+### CI Streaming Mode
+
+When running Claude Code non-interactively in CI pipelines, set `CLAUDE_CI_STREAM=1` to get
+human-readable streaming output instead of raw JSON. The container automatically adds the
+required flags and pipes output through a built-in parser that renders thinking blocks, tool
+use, token stats, and errors as readable log lines.
+
+```bash
+podman run --rm \
+  --userns=keep-id:uid=1000,gid=1000 \
+  -e CLAUDE_CODE_USE_VERTEX=1 \
+  -e CLOUD_ML_REGION=your-ml-region \
+  -e ANTHROPIC_VERTEX_PROJECT_ID=your-project-id \
+  -e DISABLE_AUTOUPDATER=1 \
+  -e CLAUDE_CI_STREAM=1 \
+  -e CLAUDE_CI_LOG_FILE=/workspace/.claude-output.txt \
+  -v ~/.config/gcloud:/home/claude/.config/gcloud:ro,z \
+  -v $(pwd):/workspace:z \
+  -w /workspace \
+  ghcr.io/opendatahub-io/ai-helpers:latest \
+  --permission-mode bypassPermissions \
+  -p "Fix the bug described in ISSUE-123"
+```
+
+**CI Streaming Environment Variables:**
+
+| Variable | Default | Description |
+|---|---|---|
+| `CLAUDE_CI_STREAM` | _(unset)_ | Set to `1` to enable streaming mode |
+| `CLAUDE_CI_LOG_FILE` | _(unset)_ | Path (inside the container) to write a plain-text log without ANSI codes |
+| `CLAUDE_CI_WRAP` | `0` | Word-wrap output at N columns (0 = no wrapping) |
+| `NO_COLOR` | _(unset)_ | Set to `1` to disable ANSI color codes in output |
+
+Without `CLAUDE_CI_STREAM`, the container behaves identically to running `claude` directly.
+
 ### Running Cursor Agent CLI in a Container
 
 A container image is also available with the Cursor Agent CLI and all development tools pre-installed:

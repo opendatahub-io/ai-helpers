@@ -57,6 +57,16 @@ update: ## Update Claude settings and website data
 		echo "ruff not found, skipping Python formatting. Install with: pip install ruff"; \
 	fi
 
+.PHONY: test
+test: ## Run tests
+	@echo "Running tests..."
+	@if command -v pytest >/dev/null 2>&1; then \
+		pytest images/claude/tests/ -v; \
+	else \
+		echo "pytest not found. Install with: pip install pytest"; \
+		exit 1; \
+	fi
+
 .PHONY: build
 build: build-claude build-cursor ## Build all container images
 
