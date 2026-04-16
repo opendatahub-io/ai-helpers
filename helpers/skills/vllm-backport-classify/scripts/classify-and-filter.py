@@ -83,7 +83,11 @@ def file_exists_at_tag(repo_path, tag, filepath):
             capture_output=True, check=True, timeout=10, cwd=repo_path,
         )
         return True
-    except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+    except subprocess.CalledProcessError:
+        return False
+    except subprocess.TimeoutExpired:
+        print(f"  Warning: git cat-file timed out for {filepath} at {tag}",
+              file=sys.stderr)
         return False
 
 
