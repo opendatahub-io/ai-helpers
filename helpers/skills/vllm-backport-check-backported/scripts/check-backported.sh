@@ -39,9 +39,12 @@ fi
 WORK=$(mktemp -d)
 trap 'rm -rf -- "$WORK"' EXIT
 
+git -C "$DOWNSTREAM" rev-parse --verify "$BRANCH" >/dev/null 2>&1 \
+  || { echo "Error: branch '$BRANCH' not found in $DOWNSTREAM" >&2; exit 1; }
+
 >&2 echo "Building backported SHA set from ${DOWNSTREAM} branch ${BRANCH}..."
 
-git -C "$DOWNSTREAM" log --oneline "$BRANCH" --grep="cherry picked from commit" 2>/dev/null \
+git -C "$DOWNSTREAM" log --oneline "$BRANCH" --grep="cherry picked from commit" \
   | grep -oP '(?<=cherry picked from commit )[a-f0-9]+' > "$WORK/shas.txt" \
   || true
 
@@ -51,9 +54,11 @@ git -C "$DOWNSTREAM" log --oneline "$BRANCH" --grep="cherry picked from commit" 
 DOWNSTREAM_REPO=$(git -C "$DOWNSTREAM" remote get-url origin 2>/dev/null \
   | sed -E 's|.*github.com[:/](.*)\.git$|\1|; s|.*github.com[:/](.*)$|\1|')
 
-gh pr list --repo "$DOWNSTREAM_REPO" --state merged --base "$BRANCH" --limit 500 \
-  --json number,title --jq '.[].title' > "$WORK/titles.txt" 2>/dev/null \
-  || true
+if ! gh pr list --repo "$DOWNSTREAM_REPO" --state merged --base "$BRANCH" --limit 500 \
+  --json number,title --jq '.[].title' > "$WORK/titles.txt" 2>/dev/null; then
+  >&2 echo "Warning: gh pr list failed for $DOWNSTREAM_REPO — treating as no downstream PRs"
+  : > "$WORK/titles.txt"
+fi
 
 >&2 echo "  Found $(wc -l < "$WORK/titles.txt") downstream PRs"
 

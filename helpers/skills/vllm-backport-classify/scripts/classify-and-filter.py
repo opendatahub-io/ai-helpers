@@ -118,8 +118,15 @@ def detect_subsystems(files):
 
 
 def fetch_files(pr_number):
-    raw = run(["gh", "pr", "view", str(pr_number), "--repo", REPO,
-               "--json", "files", "--jq", ".files[].path"], check=False)
+    result = subprocess.run(
+        ["gh", "pr", "view", str(pr_number), "--repo", REPO,
+         "--json", "files", "--jq", ".files[].path"],
+        capture_output=True, text=True, timeout=120)
+    if result.returncode != 0:
+        print(f"  Warning: gh pr view #{pr_number} failed: {result.stderr.strip()}",
+              file=sys.stderr)
+        return []
+    raw = result.stdout.strip()
     return raw.split("\n") if raw else []
 
 
@@ -129,11 +136,13 @@ def process_pr(pr, repo_path, tag):
     labels = pr.get("label_names", [])
     classification = classify_pr(title, labels)
 
-    if classification == "not_bugfix":
+    if classification in ("not_bugfix", "platform_specific"):
         return {
             **pr,
             "classification": classification,
-            "skip_reason": "not a bugfix (Feature/Perf/CI/Refactor)",
+            "skip_reason": "not a bugfix (Feature/Perf/CI/Refactor)"
+                           if classification == "not_bugfix"
+                           else "platform-specific (ROCm/TPU/XPU)",
             "verdict": "SKIP",
         }
 
@@ -178,6 +187,13 @@ def main():
     parser.add_argument("--tag", required=True, help="Target release tag (e.g. v0.13.0)")
     parser.add_argument("--output", required=True, help="Output path for filtered.json")
     args = parser.parse_args()
+
+    try:
+        subprocess.run(["git", "rev-parse", "--verify", args.tag],
+                       capture_output=True, check=True, cwd=args.repo)
+    except subprocess.CalledProcessError:
+        print(f"Error: tag '{args.tag}' not found in {args.repo}", file=sys.stderr)
+        sys.exit(1)
 
     with open(args.input) as f:
         prs = json.load(f)
