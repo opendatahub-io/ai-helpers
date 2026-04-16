@@ -48,7 +48,7 @@ def compute_score(pr):
     s = SEVERITY_SCORE.get(pr.get("severity", ""), 0)
     sc = SCOPE_SCORE.get(pr.get("affected_scope", ""), 0)
     r = RISK_SCORE.get(pr.get("backport_risk", ""), 0)
-    self_contained = 10 if pr.get("self_contained") is True else 0
+    self_contained = 10 if pr.get("self_contained") else 0
     return v + s + sc + r + self_contained
 
 
