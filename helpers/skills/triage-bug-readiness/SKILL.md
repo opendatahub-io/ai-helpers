@@ -1,7 +1,7 @@
 ---
 name: triage-bug-readiness
 description: Assess a Jira bug ticket for AI autofix readiness. Produces a structured JSON verdict (ready/needs_info/not_fixable) based on a three-gate rubric. Designed for CI pipeline use with the jira-triage orchestrator.
-allowed-tools: Bash Read Grep Glob Write
+allowed-tools: Read Grep Glob Write
 ---
 
 # Skill: Triage Bug Readiness
@@ -32,14 +32,16 @@ If none of these files exist, explore the repository from scratch: check `go.mod
 
 ## Step 3: Explore the actual code
 
-This step is ALWAYS performed. Context files are a map, not the territory. Use `Grep`, `Glob`, and `Read` to:
+**Prerequisite**: This step requires a known target repository. If Gate 1 fails because the repo is unknown or ambiguous (no URL found, component name is ambiguous), skip this step entirely -- record the Gate 1 failure in the verdict with rationale, set `repo_readiness` fields to `false` with a note explaining the repo could not be identified, and proceed directly to Step 4.
+
+When a target repo is available, context files are a map, not the territory. Use `Grep`, `Glob`, and `Read` to:
 
 - **Locate the code area** referenced by the bug description. Verify it exists at the expected path. If the ticket mentions a function, CRD field, API endpoint, or error message, search for it.
 - **Confirm references are current** -- function names, API paths, CRD fields, or error messages in the ticket must match the actual codebase. Flag stale references.
 - **Check for test coverage** -- Look for tests near the bug area (`*_test.go`, `*.test.ts`, `test_*.py`, etc.). Repos with tests near the bug area are much more likely to produce a good autofix.
-- **Review recent git history** -- Run `git log --oneline -20 -- <path>` for the relevant code area. Recent refactors may explain the bug or indicate the area is actively changing.
+- **Review recent git history** (if shell access is available) -- Run `git log --oneline -20 -- <path>` for the relevant code area. Recent refactors may explain the bug or indicate the area is actively changing. If shell access is not available, skip this sub-step.
 - **Assess agent-readiness of the repo** -- Check for `AGENTS.md`, `CLAUDE.md`, or `CONTRIBUTING.md`. Also look for `Makefile` targets (`make lint`, `make test`, `make build`) and CI config (`.github/workflows/`, `.gitlab-ci.yml`). Repos with agent docs AND working build/test targets have significantly higher autofix success rates. Record what you find -- this feeds into the `repo_readiness` field in the verdict.
-- **Check build/lint/test infrastructure** -- Run `head -60 Makefile` (or equivalent) to see available targets. If there is no way to validate a fix (no linter, no tests, no build target), the autofix agent may produce untestable patches. Note this as a risk factor but do NOT fail the ticket on this alone.
+- **Check build/lint/test infrastructure** -- Read the first ~60 lines of `Makefile` (or equivalent) to see available targets. If there is no way to validate a fix (no linter, no tests, no build target), the autofix agent may produce untestable patches. Note this as a risk factor but do NOT fail the ticket on this alone.
 - **Check cross-component impact** -- Does the bug area touch shared code (e.g., `pkg/`, `lib/`, `utils/`) used by multiple consumers? If so, the fix has wider blast radius.
 
 ## Step 4: Assess readiness using the rubric
@@ -109,7 +111,7 @@ Even with perfect information, some bugs are not appropriate for automated fixin
 
 ### Verdict Logic
 
-```
+```text
 if Gate 1 fails:
     verdict = "needs_info"
 elif Gate 3 fails:
@@ -122,7 +124,7 @@ else:
 
 ## Step 5: Write structured verdict to file
 
-Write the verdict as JSON to `.triage-verdict.json` in the repository root. Use the Write tool or `echo` to create this file. Do NOT just print it to stdout.
+Write the verdict as JSON to `.triage-verdict.json` in the repository root. Use the Write tool to create this file. Do NOT just print it to stdout.
 
 The JSON schema:
 
@@ -190,7 +192,7 @@ Field requirements:
 
 For `needs_info` verdicts, the `message_to_opener` MUST be specific to what is actually missing. Do NOT produce generic "please add more info" messages. Structure the message as:
 
-```
+```markdown
 **Needed** (without these, the autofix agent cannot proceed):
 
 1. [Specific missing item referencing the failed gate]
