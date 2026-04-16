@@ -218,7 +218,7 @@
         "category": "general",
         "file_path": "helpers/skills/triage-bug-readiness/SKILL.md",
         "id": "triage-bug-readiness",
-        "allowed_tools": "Bash Read Grep Glob Write"
+        "allowed_tools": "Read Grep Glob Write"
       },
       {
         "name": "unit-test-project-conformant",
