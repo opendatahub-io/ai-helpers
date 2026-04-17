@@ -1,0 +1,204 @@
+product_id: rhoai
+display_name: Red Hat OpenShift AI
+jira:
+  project_keys: [RHOAIENG]
+  version_field: fixVersions
+  component_field: components
+context_sources:
+  - source_type: architecture_context
+    repo: opendatahub-io/architecture-context
+    description: "Component design docs with API contracts and integration patterns. Relevant when ticket references a component with architecture docs."
+    branch_hint: main
+    path_hints:
+      - "architecture/rhoai-{version}/{component}.md"
+  - source_type: documentation
+    repo: opendatahub-io/opendatahub-documentation
+    description: "Published AsciiDoc modules and assemblies. Provides existing writing style, module structure, and feature coverage. Always relevant for documentation review and gap analysis."
+    always_include: true
+    branch_hint: main
+    path_hints:
+      - "modules/**/*.adoc"
+      - "assemblies/**/*.adoc"
+  - source_type: operator_manifests
+    repo: red-hat-data-services/rhods-operator
+    description: "RHOAI operator CRD Go types and ClusterServiceVersion manifests. Provides authoritative API schema for DataScienceCluster, DSCInitialization, and component CRDs. Always relevant for operator-related documentation."
+    always_include: true
+    branch_hint: main
+    path_hints:
+      - "api/**/*_types.go"
+      - "config/manifests/**/*.yaml"
+      - "config/rhoai/manifests/**/*.yaml"
+version_mappings:
+  - jira_version_pattern: "rhoai-(\\d+\\.\\d+)(?:\\.(?:EA|GA)\\d*)?"
+    branch_template: "release-{version}"
+component_source_defaults:
+  branch_hint: main
+  path_hints:
+    - "README.md"
+    - "config/crd/**/*.yaml"
+    - "api/**/*_types.go"
+component_resolver:
+  type: static
+  components:
+    - key: argo-workflows
+      repo: red-hat-data-services/argo-workflows
+      jira_names: [Argo Workflows]
+    - key: batch-gateway
+      repo: red-hat-data-services/batch-gateway
+      jira_names: [batch-gateway]
+    - key: customer-exploration-test
+      repo: null
+      jira_names: [Customer Exploration & Test]
+    - key: data-science-pipelines
+      repo: red-hat-data-services/data-science-pipelines
+      jira_names: [Data Science Pipelines]
+    - key: data-science-pipelines-operator
+      repo: red-hat-data-services/data-science-pipelines-operator
+      jira_names: [Data Science Pipelines Operator, DSPO]
+    - key: devops
+      repo: null
+      jira_names: [DevOps]
+    - key: documentation
+      repo: opendatahub-io/opendatahub-documentation
+      jira_names: [Documentation]
+    - key: distributed-workloads
+      repo: red-hat-data-services/distributed-workloads
+      jira_names: [Distributed Workloads]
+    - key: eval-hub
+      repo: red-hat-data-services/eval-hub
+      jira_names: [EvalHub, AI Hub, AI Evaluations]
+    - key: feast
+      repo: red-hat-data-services/feast
+      jira_names: [Feast Operator, Feature Store]
+    - key: fms-guardrails-orchestrator
+      repo: red-hat-data-services/fms-guardrails-orchestrator
+      jira_names: [FMS Guardrails Orchestrator]
+    - key: guardrails-detectors
+      repo: red-hat-data-services/guardrails-detectors
+      jira_names: [Guardrails Detectors]
+    - key: guardrails-regex-detector
+      repo: red-hat-data-services/guardrails-regex-detector
+      jira_names: [Guardrails Regex Detector]
+    - key: kserve
+      repo: red-hat-data-services/kserve
+      jira_names: [kserve, KServe]
+    - key: kube-auth-proxy
+      repo: red-hat-data-services/kube-auth-proxy
+      jira_names: [kube-auth-proxy]
+    - key: kubeflow
+      repo: red-hat-data-services/kubeflow
+      jira_names: [ODH Notebook Controller, Kubeflow Unified SDK]
+    - key: kuberay
+      repo: red-hat-data-services/kuberay
+      jira_names: [KubeRay Operator]
+    - key: llama-stack-distribution
+      repo: red-hat-data-services/llama-stack-distribution
+      jira_names: [Llama Stack Distribution]
+    - key: llama-stack-k8s-operator
+      repo: red-hat-data-services/llama-stack-k8s-operator
+      jira_names: [llama-stack-k8s-operator]
+    - key: llama-stack-provider-ragas
+      repo: red-hat-data-services/llama-stack-provider-ragas
+      jira_names: [llama-stack-provider-ragas]
+    - key: llama-stack-provider-trustyai-garak
+      repo: red-hat-data-services/llama-stack-provider-trustyai-garak
+      jira_names: [TrustyAI Garak Llama Stack Provider]
+    - key: llm-d-inference-scheduler
+      repo: red-hat-data-services/llm-d-inference-scheduler
+      jira_names: [llm-d Inference Scheduler, llm-d]
+    - key: llm-d-kv-cache
+      repo: red-hat-data-services/llm-d-kv-cache
+      jira_names: [llm-d-kv-cache]
+    - key: lm-evaluation-harness
+      repo: red-hat-data-services/lm-evaluation-harness
+      jira_names: [LM Evaluation Harness, LMES Job]
+    - key: mlflow
+      repo: red-hat-data-services/mlflow
+      jira_names: [MLflow]
+    - key: mlflow-operator
+      repo: red-hat-data-services/mlflow-operator
+      jira_names: [MLflow Operator]
+    - key: ml-metadata
+      repo: red-hat-data-services/ml-metadata
+      jira_names: [ML Metadata, MLMD gRPC Server]
+    - key: mlserver
+      repo: red-hat-data-services/MLServer
+      jira_names: [MLServer]
+    - key: model-metadata-collection
+      repo: red-hat-data-services/model-metadata-collection
+      jira_names: [Model Metadata Collection]
+    - key: model-registry
+      repo: red-hat-data-services/model-registry
+      jira_names: [Model Registry]
+    - key: model-registry-operator
+      repo: red-hat-data-services/model-registry-operator
+      jira_names: [Model Registry Operator]
+    - key: models-as-a-service
+      repo: red-hat-data-services/models-as-a-service
+      jira_names: [Models as a Service, MaaS, Model as a Service]
+    - key: nemo-guardrails
+      repo: red-hat-data-services/NeMo-Guardrails
+      jira_names: [NeMo Guardrails]
+    - key: notebooks
+      repo: red-hat-data-services/notebooks
+      jira_names: [Notebooks, Workbench Images]
+    - key: odh-dashboard
+      repo: red-hat-data-services/odh-dashboard
+      jira_names: [dashboard, ODH Dashboard, AI Core Dashboard, Gen AI Studio, RAG_Agentic]
+    - key: odh-model-controller
+      repo: red-hat-data-services/odh-model-controller
+      jira_names: [model-serving, odh-model-controller, Model Serving]
+    - key: openvino-model-server
+      repo: red-hat-data-services/openvino_model_server
+      jira_names: [OpenVINO Model Server, OVMS]
+    - key: pipelines-components
+      repo: red-hat-data-services/pipelines-components
+      jira_names: [Kubeflow Pipelines Components]
+    - key: rhods-operator
+      repo: red-hat-data-services/rhods-operator
+      jira_names: [RHOAI Operator, rhods-operator, AI Core Platform, AI Core Platform Security]
+    - key: spark-operator
+      repo: red-hat-data-services/spark-operator
+      jira_names: [Spark Operator]
+    - key: trainer
+      repo: red-hat-data-services/trainer
+      jira_names: [Kubeflow Trainer, AutoML]
+    - key: testops
+      repo: null
+      jira_names: [TestOps]
+    - key: training-operator
+      repo: red-hat-data-services/training-operator
+      jira_names: [Kubeflow Training Operator, KFTO, Training Kubeflow]
+    - key: trustyai-explainability
+      repo: red-hat-data-services/trustyai-explainability
+      jira_names: [TrustyAI Explainability, AI Safety]
+    - key: trustyai-service-operator
+      repo: red-hat-data-services/trustyai-service-operator
+      jira_names: [trustyai, TrustyAI Service Operator, AutoRAG]
+    - key: vllm-cpu
+      repo: red-hat-data-services/vllm-cpu
+      jira_names: [vLLM CPU, Model Runtimes]
+    - key: vllm-gaudi
+      repo: red-hat-data-services/vllm-gaudi
+      jira_names: [vLLM Hardware Plugin for Intel Gaudi]
+    - key: vllm-orchestrator-gateway
+      repo: red-hat-data-services/vllm-orchestrator-gateway
+      jira_names: [vllm-orchestrator-gateway]
+    - key: workload-variant-autoscaler
+      repo: red-hat-data-services/workload-variant-autoscaler
+      jira_names: [Workload-Variant-Autoscaler, WVA]
+docs:
+  repo: opendatahub-io/opendatahub-documentation
+  branch_template: main
+  framework: asciidoc-modular
+  attribute_files: [_artifacts/document-attributes-global.adoc]
+  module_prefixes:
+    concept: "con_"
+    procedure: "proc_"
+    reference: "ref_"
+    assembly: "assembly_"
+    snippet: "snip_"
+  variants: [upstream, self-managed]
+  vale_config:
+    type: discover
+validators: [yaml_syntax, vale]

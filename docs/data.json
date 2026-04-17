@@ -93,6 +93,70 @@
         "allowed_tools": "Bash(gh pr view:*) Bash(gh repo view:*) Bash(git remote:*) Bash(git branch:*) Bash(gh pr list:*) Bash(gh api:*) Bash(curl:*) Bash(sha256sum:*) Read Glob Grep Edit AskUserQuestion"
       },
       {
+        "name": "doc-gap",
+        "description": "Analyze context sufficiency for documentation generation. Reads workspace/context-package.json and produces workspace/gap-report.json with severity-rated gaps and a proceed/gather-more/stop recommendation.\n",
+        "category": "general",
+        "file_path": "helpers/skills/doc-gap/SKILL.md",
+        "id": "doc-gap",
+        "allowed_tools": ""
+      },
+      {
+        "name": "doc-gather",
+        "description": "Gather context for a Jira ticket or PR. Resolves ticket metadata, clones relevant repos, collects candidate files, runs filtering pipeline, and produces workspace/context-package.json.\n",
+        "category": "general",
+        "file_path": "helpers/skills/doc-gather/SKILL.md",
+        "id": "doc-gather",
+        "allowed_tools": ""
+      },
+      {
+        "name": "doc-generate",
+        "description": "Generate AsciiDoc documentation modules from gathered context. Reads context package and gap report, generates content, then self-validates with iterative correction (up to 3 retries). Produces generated files and workspace/generation-report.json.\n",
+        "category": "general",
+        "file_path": "helpers/skills/doc-generate/SKILL.md",
+        "id": "doc-generate",
+        "allowed_tools": ""
+      },
+      {
+        "name": "doc-pipeline",
+        "description": "Full pipeline orchestrator. Sequences doc-gather, doc-gap, doc-validate, doc-review, and doc-generate skills based on the requested pipeline mode.\n",
+        "category": "general",
+        "file_path": "helpers/skills/doc-pipeline/SKILL.md",
+        "id": "doc-pipeline",
+        "allowed_tools": ""
+      },
+      {
+        "name": "doc-plan",
+        "description": "STRAT-level documentation planning. Traverses a strategic initiative's child epics and stories to produce a systematic doc plan identifying what documentation is needed, what type, and at what priority.\n",
+        "category": "general",
+        "file_path": "helpers/skills/doc-plan/SKILL.md",
+        "id": "doc-plan",
+        "allowed_tools": ""
+      },
+      {
+        "name": "doc-post",
+        "description": "Post validation and review findings as comments on a GitHub PR or GitLab MR. Reads workspace findings files and formats them as inline or summary comments.\n",
+        "category": "general",
+        "file_path": "helpers/skills/doc-post/SKILL.md",
+        "id": "doc-post",
+        "allowed_tools": ""
+      },
+      {
+        "name": "doc-review",
+        "description": "Adversarial review of AsciiDoc documentation against context sources. Checks factual accuracy, completeness, consistency, and hallucination. Produces workspace/review-findings.json.\n",
+        "category": "general",
+        "file_path": "helpers/skills/doc-review/SKILL.md",
+        "id": "doc-review",
+        "allowed_tools": ""
+      },
+      {
+        "name": "doc-validate",
+        "description": "Validate AsciiDoc documentation for technical accuracy using Extract-Identify-Validate pattern. Runs Vale, asciidoctor, lychee, YAML syntax checks, and LLM-powered cross-reference validation. Produces workspace/validation-findings.json.\n",
+        "category": "general",
+        "file_path": "helpers/skills/doc-validate/SKILL.md",
+        "id": "doc-validate",
+        "allowed_tools": ""
+      },
+      {
         "name": "gist-upload",
         "description": "Upload a summary or plan from the current conversation as a GitHub Gist using the `gh` CLI.",
         "category": "general",
