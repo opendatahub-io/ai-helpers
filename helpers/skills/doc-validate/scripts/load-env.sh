@@ -20,8 +20,6 @@ if [[ -f "$_LOAD_ENV_FILE" ]]; then
     while IFS= read -r line || [[ -n "$line" ]]; do
         # Skip comments and blank lines
         [[ -z "$line" || "$line" == \#* ]] && continue
-        # Strip inline comments (only if preceded by whitespace)
-        line="${line%%[[:space:]]#*}"
         # Extract key=value
         if [[ "$line" == *=* ]]; then
             key="${line%%=*}"
@@ -30,9 +28,17 @@ if [[ -f "$_LOAD_ENV_FILE" ]]; then
             if ! [[ "$key" =~ ^[A-Z_][A-Z0-9_]*$ ]]; then
                 continue
             fi
-            # Remove surrounding quotes from value
-            value="${value#\"}" ; value="${value%\"}"
-            value="${value#\'}" ; value="${value%\'}"
+            # Remove surrounding quotes from value; quoted values
+            # preserve # characters. Only strip inline comments
+            # from unquoted values.
+            if [[ "$value" == \"*\" ]]; then
+                value="${value#\"}" ; value="${value%\"}"
+            elif [[ "$value" == \'*\' ]]; then
+                value="${value#\'}" ; value="${value%\'}"
+            else
+                # Strip inline comments (only if preceded by whitespace)
+                value="${value%%[[:space:]]#*}"
+            fi
             # Only set if not already defined
             if [[ -z "${!key+x}" ]]; then
                 export "$key=$value"
