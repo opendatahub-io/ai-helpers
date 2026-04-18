@@ -38,17 +38,10 @@ fi
 
 # When MCP is not available, attempt to use the Jira REST API directly.
 # Requires JIRA_URL, JIRA_EMAIL, JIRA_TOKEN environment variables.
-ALLOWED_JIRA_HOST="issues.redhat.com"
-JIRA_URL="${JIRA_URL:-https://${ALLOWED_JIRA_HOST}}"
+JIRA_URL="${JIRA_URL:-https://issues.redhat.com}"
 
-if ! [[ "${JIRA_URL}" =~ ^https:// ]]; then
-    echo "Error: JIRA_URL must use https." >&2
-    exit 1
-fi
-
-JIRA_HOST="$(printf '%s' "${JIRA_URL}" | sed -E 's#^https?://([^/]+).*$#\1#')"
-if [[ "${JIRA_HOST}" != "${ALLOWED_JIRA_HOST}" ]]; then
-    echo "Error: JIRA_URL host must be ${ALLOWED_JIRA_HOST}." >&2
+if ! [[ "${JIRA_URL}" =~ ^https?:// ]]; then
+    echo "Error: JIRA_URL must use http or https." >&2
     exit 1
 fi
 
