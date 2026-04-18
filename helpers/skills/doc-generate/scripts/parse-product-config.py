@@ -61,9 +61,11 @@ _load_dotenv()
 
 def load_config(path: str) -> dict:
     """Load and return the YAML config as a dict."""
-    config_path = Path(path)
+    config_path = Path(path).expanduser()
     allowed_root = Path(os.environ.get("PRODUCT_CONFIG_ROOT", Path.cwd())).resolve()
-    resolved = config_path.expanduser().resolve()
+    if not config_path.is_absolute():
+        config_path = allowed_root / config_path
+    resolved = config_path.resolve()
     if allowed_root != resolved and allowed_root not in resolved.parents:
         print(f"Error: config path escapes allowed root: {path}", file=sys.stderr)
         sys.exit(1)
@@ -297,8 +299,7 @@ def main() -> None:
         if result is None:
             print(json.dumps({"found": False, "name": args.resolve_component}))
         else:
-            result["found"] = True
-            print(json.dumps(result))
+            print(json.dumps({"found": True, **result}))
         return
 
     if args.resolve_version:
