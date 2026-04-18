@@ -117,6 +117,7 @@ for file in "${FILES[@]}"; do
         # Look for [source,yaml] blocks
         IN_YAML=false
         YAML_BLOCK=""
+        YAML_DELIM=""
         LINE_NUM=0
         BLOCK_START=0
         PREV_LINE=""
@@ -124,7 +125,7 @@ for file in "${FILES[@]}"; do
         while IFS= read -r line; do
             LINE_NUM=$((LINE_NUM + 1))
             if [[ "$IN_YAML" == true ]]; then
-                if [[ "$line" == "----" || "$line" == "====" ]]; then
+                if [[ "$line" == "$YAML_DELIM" ]]; then
                     IN_YAML=false
                     if [[ -n "$YAML_BLOCK" ]]; then
                         # Validate YAML
@@ -135,12 +136,14 @@ for file in "${FILES[@]}"; do
                         fi
                     fi
                     YAML_BLOCK=""
+                    YAML_DELIM=""
                 else
                     YAML_BLOCK="${YAML_BLOCK}${line}"$'\n'
                 fi
             elif [[ "$line" == "----" || "$line" == "====" ]]; then
                 if [[ "${PREV_LINE,,}" =~ \[source,[^]]*yaml[^]]*\] ]]; then
                     IN_YAML=true
+                    YAML_DELIM="$line"
                     BLOCK_START=$LINE_NUM
                 fi
             fi
