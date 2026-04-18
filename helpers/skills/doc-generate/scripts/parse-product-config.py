@@ -33,6 +33,9 @@ from pathlib import Path
 import yaml
 
 
+_DOTENV_DENY_KEYS = frozenset({"PRODUCT_CONFIG_ROOT"})
+
+
 def _load_dotenv() -> None:
     """Load .env file from project root (cwd) if it exists. Existing env vars take precedence."""
     env_path = Path.cwd() / ".env"
@@ -48,6 +51,8 @@ def _load_dotenv() -> None:
             key, _, value = line.partition("=")
             key = key.strip()
             value = value.strip().strip("\"'")
+            if key in _DOTENV_DENY_KEYS:
+                continue
             if key not in os.environ:
                 os.environ[key] = value
 
