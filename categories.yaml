@@ -9,6 +9,16 @@ PyTorch:
   - torchtalk-setup
   - torchtalk-trace
 
+Documentation:
+  - doc-gap
+  - doc-gather
+  - doc-generate
+  - doc-pipeline
+  - doc-plan
+  - doc-post
+  - doc-review
+  - doc-validate
+
 vLLM:
   - vllm-compare-reqs
   - vllm-slack-summary
