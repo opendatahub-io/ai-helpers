@@ -74,8 +74,15 @@ def load_config(path: str) -> dict:
     if not resolved.is_file():
         print(f"Error: config file not found: {path}", file=sys.stderr)
         sys.exit(1)
-    with open(resolved, encoding="utf-8") as f:
-        data = yaml.safe_load(f)
+    try:
+        with open(resolved, encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+    except OSError as exc:
+        print(f"Error: cannot read config file: {exc}", file=sys.stderr)
+        sys.exit(1)
+    except yaml.YAMLError as exc:
+        print(f"Error: invalid YAML in config file: {exc}", file=sys.stderr)
+        sys.exit(1)
     if not isinstance(data, dict):
         print(
             f"Error: config root must be a YAML mapping/object, got {type(data).__name__}",
