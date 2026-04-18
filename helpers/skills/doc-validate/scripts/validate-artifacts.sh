@@ -111,46 +111,55 @@ fi
 # --- YAML Syntax ---
 YAML_FINDINGS='[]'
 YAML_STATUS="pass"
-for file in "${FILES[@]}"; do
-    # Extract YAML blocks from AsciiDoc files
-    if [[ "$file" == *.adoc ]]; then
-        # Look for [source,yaml] blocks
-        IN_YAML=false
-        YAML_BLOCK=""
-        YAML_DELIM=""
-        LINE_NUM=0
-        BLOCK_START=0
-        PREV_LINE=""
-        CURRENT_FILE="$file"
-        while IFS= read -r line; do
-            LINE_NUM=$((LINE_NUM + 1))
-            if [[ "$IN_YAML" == true ]]; then
-                if [[ "$line" == "$YAML_DELIM" ]]; then
-                    IN_YAML=false
-                    if [[ -n "$YAML_BLOCK" ]]; then
-                        # Validate YAML
-                        if ! echo "$YAML_BLOCK" | python3 -c "import sys, yaml; yaml.safe_load(sys.stdin)" 2>/dev/null; then
-                            YAML_FINDINGS=$(echo "$YAML_FINDINGS" | jq --arg f "$CURRENT_FILE" --argjson line "$BLOCK_START" \
-                                '. + [{file: $f, line: $line, message: "Invalid YAML syntax in code block", severity: "high", tool: "yaml_syntax"}]')
-                            YAML_STATUS="fail"
+_HAVE_PYTHON3=false
+if command -v python3 >/dev/null 2>&1; then
+    _HAVE_PYTHON3=true
+else
+    echo "Warning: python3 not found, skipping YAML syntax checks" >&2
+    YAML_STATUS="skipped"
+fi
+if [[ "$_HAVE_PYTHON3" == true ]]; then
+    for file in "${FILES[@]}"; do
+        # Extract YAML blocks from AsciiDoc files
+        if [[ "$file" == *.adoc ]]; then
+            # Look for [source,yaml] blocks
+            IN_YAML=false
+            YAML_BLOCK=""
+            YAML_DELIM=""
+            LINE_NUM=0
+            BLOCK_START=0
+            PREV_LINE=""
+            CURRENT_FILE="$file"
+            while IFS= read -r line; do
+                LINE_NUM=$((LINE_NUM + 1))
+                if [[ "$IN_YAML" == true ]]; then
+                    if [[ "$line" == "$YAML_DELIM" ]]; then
+                        IN_YAML=false
+                        if [[ -n "$YAML_BLOCK" ]]; then
+                            # Validate YAML
+                            if ! echo "$YAML_BLOCK" | python3 -c "import sys, yaml; yaml.safe_load(sys.stdin)" 2>/dev/null; then
+                                YAML_FINDINGS=$(echo "$YAML_FINDINGS" | jq --arg f "$CURRENT_FILE" --argjson line "$BLOCK_START" \
+                                    '. + [{file: $f, line: $line, message: "Invalid YAML syntax in code block", severity: "high", tool: "yaml_syntax"}]')
+                                YAML_STATUS="fail"
+                            fi
                         fi
+                        YAML_BLOCK=""
+                        YAML_DELIM=""
+                    else
+                        YAML_BLOCK="${YAML_BLOCK}${line}"$'\n'
                     fi
-                    YAML_BLOCK=""
-                    YAML_DELIM=""
-                else
-                    YAML_BLOCK="${YAML_BLOCK}${line}"$'\n'
+                elif [[ "$line" == "----" || "$line" == "====" ]]; then
+                    if [[ "${PREV_LINE,,}" =~ \[source,[^]]*yaml[^]]*\] ]]; then
+                        IN_YAML=true
+                        YAML_DELIM="$line"
+                        BLOCK_START=$LINE_NUM
+                    fi
                 fi
-            elif [[ "$line" == "----" || "$line" == "====" ]]; then
-                if [[ "${PREV_LINE,,}" =~ \[source,[^]]*yaml[^]]*\] ]]; then
-                    IN_YAML=true
-                    YAML_DELIM="$line"
-                    BLOCK_START=$LINE_NUM
-                fi
-            fi
-            PREV_LINE="$line"
-        done < "$file" 2>/dev/null || true
-    fi
-done
+                PREV_LINE="$line"
+            done < "$file" 2>/dev/null || true
+        fi
+    done
+fi
 RESULTS=$(echo "$RESULTS" | jq --arg status "$YAML_STATUS" --argjson findings "$YAML_FINDINGS" \
     '. + {yaml_syntax: {status: $status, findings: $findings}}')
 
