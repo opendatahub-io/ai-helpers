@@ -70,7 +70,7 @@
     "skills": [
       {
         "name": "adr-review",
-        "description": "Review an Architectural Decision Record (ADR) using a team of six specialist reviewer subagents and produce a consolidated report as both PDF and PPTX slide deck. Use this skill whenever the user asks to review, critique, audit, or get feedback on an ADR, architecture decision, design doc, or RFC \u2014 whether the input is a Markdown file, a .docx document, or pasted text. Trigger even if the user does not explicitly say \"ADR\"; phrases like \"review this architecture decision\", \"critique this design doc\", or \"run the reviewer panel on this\" should also invoke this skill.",
+        "description": "Review an Architectural Decision Record (ADR) using a team of six specialist reviewer subagents and produce a consolidated report as both PDF and PPTX slide deck. Use this skill whenever the user asks to review, critique, audit, or get feedback on an ADR, architecture decision, design doc, or RFC — whether the input is a Markdown file, a .docx document, or pasted text. Trigger even if the user does not explicitly say \"ADR\"; phrases like \"review this architecture decision\", \"critique this design doc\", or \"run the reviewer panel on this\" should also invoke this skill.",
         "category": "general",
         "file_path": "helpers/skills/adr-review/SKILL.md",
         "id": "adr-review",
@@ -230,7 +230,7 @@
       },
       {
         "name": "vllm-backport-check-backported",
-        "description": "Check which candidate PRs have already been cherry-picked into the downstream branch. Use after classify-and-filter to mark already_backported on each PR. Fully deterministic \u2014 compares merge SHAs and PR titles.\n",
+        "description": "Check which candidate PRs have already been cherry-picked into the downstream branch. Use after classify-and-filter to mark already_backported on each PR. Fully deterministic — compares merge SHAs and PR titles.\n",
         "category": "vllm",
         "file_path": "helpers/skills/vllm-backport-check-backported/SKILL.md",
         "id": "vllm-backport-check-backported",

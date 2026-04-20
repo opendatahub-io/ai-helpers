@@ -407,8 +407,8 @@ if __name__ == "__main__":
     output_file = Path(__file__).parent.parent / "docs" / "data.json"
     output_file.parent.mkdir(exist_ok=True)
 
-    with open(output_file, "w") as f:
-        json.dump(data, f, indent=2)
+    with open(output_file, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
 
     print(f"Website data written to {output_file}")
 
