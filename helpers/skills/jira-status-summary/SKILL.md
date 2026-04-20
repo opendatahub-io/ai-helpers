@@ -26,6 +26,11 @@ ticket with an AI-generated health-color summary.
 This skill takes a single ticket key as input and produces a formatted status
 summary written to the Jira "Status Summary" custom field.
 
+If the user asks for a **dry run** (or uses the words "dry run", "preview",
+"don't write", "show me first"), add `--dry-run` to the write command in
+Step 4. This prints the formatted summary without writing to Jira, so the
+user can review before committing.
+
 ## Implementation
 
 ### Step 1: Determine the Ticket Key
@@ -85,6 +90,8 @@ shebang:
 
 ```bash
 ./scripts/write_status_summary.py <TICKET-KEY> --color <color> --summary "<summary text>"
+# Or for dry run:
+./scripts/write_status_summary.py <TICKET-KEY> --color <color> --summary "<summary text>" --dry-run
 ```
 
 The script will:
@@ -95,10 +102,20 @@ The script will:
 
 ### Step 5: Report Result
 
-If the write succeeds, inform the user:
+**Normal run:** If the write succeeds, inform the user:
 
 > Updated the Status Summary on <TICKET-KEY> with health color: <Color>.
 > View: https://redhat.atlassian.net/browse/<TICKET-KEY>
+
+**Dry run:** Show the formatted summary and ask:
+
+> Here is the status summary that would be written to <TICKET-KEY>:
+>
+> (show the output)
+>
+> Would you like me to write this to Jira?
+
+If the user confirms, re-run Step 4 without `--dry-run`.
 
 If the write fails, display the error message and suggest checking credentials
 and ticket permissions.

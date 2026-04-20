@@ -17,11 +17,13 @@ Authentication:
 
 Usage:
   write_status_summary.py <ticket-key> --color green --summary "Summary text."
+  write_status_summary.py <ticket-key> --color green --summary "Summary text." --dry-run
 
 Examples:
   write_status_summary.py AIPCC-12345 --color green --summary "On track. Two epics completed."
   write_status_summary.py AIPCC-12345 --color yellow --summary "Some delays on Epic X."
   write_status_summary.py AIPCC-12345 --color red --summary "Blocked on dependency Y."
+  write_status_summary.py AIPCC-12345 --color green --summary "On track." --dry-run
 """
 
 import argparse
@@ -129,10 +131,22 @@ def main() -> None:
         required=True,
         help="AI-generated summary text (2-4 sentences)",
     )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print the formatted status text without writing to Jira",
+    )
     args = parser.parse_args()
 
-    auth = get_auth()
     status_text = build_status_text(args.color, args.summary)
+
+    if args.dry_run:
+        print("[DRY RUN] Would write to", args.ticket_key)
+        print()
+        print(status_text)
+        return
+
+    auth = get_auth()
     adf_value = text_to_adf(status_text)
     field_id = find_field_id(STATUS_FIELD_NAME, auth)
     write_field(args.ticket_key, field_id, adf_value, auth)
