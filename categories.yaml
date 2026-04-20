@@ -3,6 +3,7 @@ AIPCC:
   - commit-message-assistant
   - aipcc-adr-assistant
   - jira-aipcc-create
+  - jira-status-summary
 
 PyTorch:
   - torchtalk-analyzer

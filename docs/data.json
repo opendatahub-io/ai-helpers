@@ -133,6 +133,14 @@
         "allowed_tools": "Bash, AskUserQuestion"
       },
       {
+        "name": "jira-status-summary",
+        "description": "Update the Status Summary field on AIPCC Feature and Initiative tickets. Fetches child ticket activity via the jira-activity skill, generates a health-color summary (green/yellow/red), and writes it to Jira. Use when asked to update the status summary for a Jira ticket.\n",
+        "category": "aipcc",
+        "file_path": "helpers/skills/jira-status-summary/SKILL.md",
+        "id": "jira-status-summary",
+        "allowed_tools": "Bash"
+      },
+      {
         "name": "jira-upload-chat-log",
         "description": "Export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation.",
         "category": "general",
