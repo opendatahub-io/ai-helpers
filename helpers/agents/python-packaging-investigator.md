@@ -139,6 +139,10 @@ Launch subagents in parallel using the Task tool for:
 5. python-packaging-bug-finder skill
    - Task description: "Find known packaging issues for [package_name/repository]"
    - Purpose: Identify blockers, workarounds, and resolution status
+
+6. python-packaging-security-audit skill
+   - Task description: "Run security audit for [package_name]"
+   - Purpose: Static analysis and git history scan for supply-chain threats
 ```
 
 The results from these parallel subagent analyses will populate the corresponding sections in the comprehensive report template detailed in the "Report Structure" section.
@@ -161,6 +165,7 @@ Use all available skills in a coordinated manner to gather comprehensive data, t
 3. **license-checker** → License Compatibility section
 4. **env-finder** → Environment Investigation table
 5. **bug-finder** → Packaging Issue Analysis table
+6. **security-audit** → Security Assessment section
 
 **MANDATORY TEMPLATE STRUCTURE:**
 YOU MUST use this EXACT template structure for ALL analysis outputs. Do NOT deviate from this format under any circumstances:
@@ -251,6 +256,15 @@ YOU MUST use this EXACT template structure for ALL analysis outputs. Do NOT devi
 - **Third-Party Licenses**: [dependency license concerns]
 - **Redistribution Rights**: [wheel building and distribution permissions]
 
+## Security Assessment
+[Use security-audit skill: Run hexora static analysis and git history scan against the cloned repository to detect supply-chain threats, malicious patterns, and suspicious commits in packaging files]
+
+- **Risk Rating**: [no_issues/low_risk/needs_review/critical from security-audit skill]
+- **Summary**: [1-2 sentence summary from security-audit skill]
+- **Hexora Findings**: [N total (X critical, Y suspicious, Z likely legitimate)]
+- **Git History Flags**: [N commits touching sensitive files with suspicious patterns]
+- **Recommendations**: [Key actions from security-audit skill]
+
 ## Documentation Review
 - **Build Instructions**: [README, INSTALL, BUILDING files analysis]
 - **Development Setup**: [CONTRIBUTING, docs/ directory findings]
@@ -319,7 +333,7 @@ YOU MUST use this EXACT template structure for ALL analysis outputs. Do NOT devi
 - Highlight critical blockers and solutions immediately
 - Assume Claude understands Python packaging concepts
 
-Leverage all analysis skills (source-finder, complexity, license-checker, env-finder, bug-finder) to provide comprehensive automated insights that enable successful package building from source.
+Leverage all analysis skills (source-finder, complexity, license-checker, env-finder, bug-finder, security-audit) to provide comprehensive automated insights that enable successful package building from source.
 
 ## FINAL REMINDER: MANDATORY REPORT FORMAT
 

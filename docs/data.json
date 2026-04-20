@@ -205,6 +205,14 @@
         "allowed_tools": "Bash Skill"
       },
       {
+        "name": "python-packaging-security-audit",
+        "description": "Evaluate the security of a Python package repository with static code analysis and a scan of git history for suspicious commits, then triaging findings to produce an actionable security report with a risk rating.",
+        "category": "general",
+        "file_path": "helpers/skills/python-packaging-security-audit/SKILL.md",
+        "id": "python-packaging-security-audit",
+        "allowed_tools": "Bash Read Grep Skill"
+      },
+      {
         "name": "python-packaging-source-finder",
         "description": "Locate source code repositories for Python packages by analyzing PyPI metadata, project URLs, and code hosting platforms like GitHub, GitLab, and Bitbucket. Provides deterministic results with confidence levels.",
         "category": "general",
