@@ -17,6 +17,7 @@ ticket with an AI-generated health-color summary.
 ## Prerequisites
 
 - Python 3 and `uv` must be installed and available in PATH
+- `acli` must be installed and authenticated (`acli jira auth`)
 - `JIRA_API_TOKEN` environment variable must be set with a valid API token for https://redhat.atlassian.net
 - `JIRA_EMAIL` environment variable must be set with the email address associated with your Atlassian account
 - The `jira-activity` skill must be installed (provides child ticket activity data)
@@ -28,7 +29,7 @@ summary written to the Jira "Status Summary" custom field.
 
 If the user asks for a **dry run** (or uses the words "dry run", "preview",
 "don't write", "show me first"), add `--dry-run` to the write command in
-Step 4. This prints the formatted summary without writing to Jira, so the
+Step 5. This prints the formatted summary without writing to Jira, so the
 user can review before committing.
 
 ## Implementation
@@ -39,7 +40,22 @@ user can review before committing.
 2. Otherwise, search the conversation history for JIRA ticket references (e.g., "AIPCC-1234")
 3. If no ticket is found in context, ask the user: "Which ticket should I update the Status Summary for? (e.g., AIPCC-1234)"
 
-### Step 2: Fetch Child Ticket Activity
+### Step 2: Fetch Previous Status Summary
+
+Use `acli` to retrieve the current Status Summary value from the ticket:
+
+```bash
+acli jira workitem view <TICKET-KEY> -f 'customfield_10814' --json
+```
+
+Parse the JSON output to extract the previous summary text. If the field is
+empty or unset, treat it as no previous summary. Save this output for use
+in Step 4.
+
+If the command fails (e.g., due to permissions or network issues), continue
+with Step 3 and generate the summary without prior context.
+
+### Step 3: Fetch Child Ticket Activity
 
 Run the fetch script from the `jira-activity` skill to gather activity data
 for the ticket and its entire child hierarchy. Execute the script directly
@@ -54,9 +70,9 @@ with levels, statuses, assignees, recent comments, and changelog entries.
 
 Capture the full JSON output for analysis in the next step.
 
-### Step 3: Analyze Activity and Generate Summary
+### Step 4: Analyze Activity and Generate Summary
 
-Analyze the JSON output from Step 2 and determine:
+Analyze the JSON output from Step 3 and determine:
 
 #### Health Color
 
@@ -77,12 +93,16 @@ Write a brief summary (2-4 sentences) for leadership consumption covering:
 - Key completions or milestones since last update
 - Active risks, blockers, or dependencies (if any)
 - What is coming next
+- Follow-up on items from the previous status (if a previous summary was
+  retrieved in Step 2): address open questions, note whether raised risks
+  or blockers have been resolved, and flag anything that was mentioned
+  previously but still has no progress
 
 The summary must be self-contained and understandable without reading the
 child tickets. Do NOT include the date, color name, emoji, or disclaimer
 in the summary text -- those are added automatically by the script.
 
-### Step 4: Write to Jira
+### Step 5: Write to Jira
 
 Run the write script located at `scripts/write_status_summary.py` relative
 to this skill. Execute it directly (not via `python`) to invoke uv via the
@@ -100,7 +120,7 @@ The script will:
 - Write the value to the "Status Summary" custom field on the ticket
 - Print a success or error message
 
-### Step 5: Report Result
+### Step 6: Report Result
 
 **Normal run:** If the write succeeds, inform the user:
 
@@ -115,7 +135,7 @@ The script will:
 >
 > Would you like me to write this to Jira?
 
-If the user confirms, re-run Step 4 without `--dry-run`.
+If the user confirms, re-run Step 5 without `--dry-run`.
 
 If the write fails, display the error message and suggest checking credentials
 and ticket permissions.
