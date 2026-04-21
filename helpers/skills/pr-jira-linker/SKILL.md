@@ -14,7 +14,7 @@ Detects PRs/MRs missing Jira references, finds or creates the matching Jira issu
 - **GitHub** (MCP: user-github): `list_pull_requests`, `pull_request_read`, `update_pull_request`
 - **GitLab** (MCP: plugin-gitlab-GitLab): `get_merge_request`, `get_merge_request_commits`, `search`, `create_workitem_note`
 - **Jira** (MCP: user-mcp-atlassian): `jira_search`, `jira_add_comment`, `jira_create_issue`
-- **Shell** — git commands, `curl` for GitLab API fallback
+- **Shell** — git commands, `curl` for GitLab API fallback (constrained; see safety rules below)
 
 ## Configuration
 
@@ -50,8 +50,16 @@ If found, mark as **candidate key detected** and verify bidirectional linkage (P
 
 ### Step 1: Read the PR/MR
 
-Use `pull_request_read` (GitHub) or `get_merge_request` (GitLab). If GitLab MCP is down, fall back to `curl --negotiate -u:` against the GitLab REST API **only for hosts explicitly allowlisted in `config.yaml`**.
-When using shell, pass URL/host/path as separate, safely quoted arguments (never string-concatenate untrusted input into commands). Enforce timeouts and limit redirects. Extract title, description, branch name, author.
+Use `pull_request_read` (GitHub) or `get_merge_request` (GitLab). If GitLab MCP is down, fall back to `curl --negotiate -u:` against the GitLab REST API under the following **mandatory safety constraints**:
+
+1. **Host allowlist**: Only issue requests to hostnames explicitly listed in `config.yaml` under `repos.gitlab[].host`. Reject any target not in the allowlist.
+2. **No raw IPs**: Reject URLs containing raw IP addresses (IPv4 or IPv6). Resolve hostnames and reject any that resolve to private/reserved ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16, ::1, fc00::/7, fe80::/10) to prevent SSRF.
+3. **URL canonicalization**: Parse the URL, verify scheme is `https://`, and reconstruct from validated components. Do not pass user-supplied URLs directly to shell commands.
+4. **Safe argument passing**: Pass URL, host, and path as separate, safely shell-quoted arguments. Never string-concatenate untrusted input into commands. Pass credentials via environment variables (e.g., `GITLAB_TOKEN`), not interpolated into command strings.
+5. **Resource limits**: Always use `--max-time 30 --max-redirs 3` to enforce timeouts and limit redirects.
+6. **Protocol restriction**: Use `--proto '=https'` to prevent protocol downgrade or scheme switching.
+
+Extract title, description, branch name, author.
 
 ### Step 2: Detect Jira Reference
 
@@ -103,7 +111,7 @@ When no matching Jira exists, the skill can create one:
 
 | Error | Action |
 |-------|--------|
-| GitLab MCP down | Fall back to `curl --negotiate -u:` only for allowlisted GitLab hosts; reject non-allowlisted targets |
+| GitLab MCP down | Fall back to `curl --negotiate -u:` **only** for hosts allowlisted in `config.yaml`; reject non-allowlisted targets and raw IPs; enforce `--max-time 30 --max-redirs 3 --proto '=https'`; pass credentials via env vars |
 | GitHub MCP not available | Skip GitHub repos, process GitLab only |
 | PR/MR already linked | Verify bidirectional linkage, report and skip if confirmed |
 | Jira search returns nothing | Offer to create new or enter key manually |
