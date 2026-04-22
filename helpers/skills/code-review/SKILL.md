@@ -1,0 +1,175 @@
+---
+name: code-review
+description: >
+  Perform AI code review on a GitLab MR or local branch. Reviews all commits
+  since the base branch, produces structured JSON feedback with inline comments,
+  and posts results to GitLab (CI) or displays them locally.
+  Use when asked to review code changes, do a code review, or run ai-review.
+allowed-tools: Bash Read Grep Glob
+user-invocable: true
+argument-hint: "[additional review instructions]"
+compatibility: Requires python3, uv, and git. For CI posting requires GITLAB_API_TOKEN.
+metadata:
+  author: ODH
+  version: "1.0"
+  tags: code-review, gitlab, ci
+---
+
+# AI Code Review
+
+Perform a structured code review of the current branch's changes and post
+results to GitLab (in CI) or display them locally.
+
+## Step 1: Detect Environment
+
+Determine the execution context by checking environment variables:
+
+```bash
+echo "CI=${CI:-}" "MR_IID=${CI_MERGE_REQUEST_IID:-}"
+```
+
+- If `$CI` is set and `$CI_MERGE_REQUEST_IID` is set: **GitLab CI/MR mode** (will post review to GitLab)
+- Otherwise: **Local mode** (will display results in terminal)
+
+In CI/MR mode, the git workspace is already checked out with the branch to
+review. Use git commands to inspect the changes. Do NOT access the GitLab API
+or fetch the merge request remotely (e.g., using `glab` commands) — all the
+code you need is already in the local repository.
+
+## Step 2: Review Code Changes
+
+Review ALL commits in the branch since the base branch. Use git commands to
+understand the scope:
+
+```bash
+git log --oneline origin/main..HEAD
+git diff origin/main..HEAD
+```
+
+Adjust the base branch name if different from `main` (e.g., `master`, `develop`).
+In CI, `$CI_MERGE_REQUEST_DIFF_BASE_SHA` identifies the exact base commit.
+
+### Review Guidelines
+
+$ARGUMENTS
+
+If no additional instructions were provided above, follow these defaults:
+
+Provide constructive feedback that helps maintain code quality and follows
+project best practices. Be selective and focused: only comment on issues that
+genuinely matter. Do not comment for the sake of commenting. If the code is
+well-written and follows best practices, it is perfectly acceptable to return
+zero inline comments. Prioritize critical and major issues over minor stylistic
+preferences. Avoid repeating the same type of feedback across multiple
+locations — one representative comment is sufficient.
+
+## Step 3: Produce Review JSON
+
+Write your review output as a JSON file at `/tmp/ai-review-output.json`.
+
+The JSON **must** be a valid object matching this schema exactly:
+
+```json
+{
+  "summary": "Brief overall assessment of the changes (2-4 sentences, markdown allowed inside this string)",
+  "positive_aspects": ["List of good practices and well-implemented features"],
+  "inline_comments": [
+    {
+      "file": "path/to/file (relative to repo root)",
+      "line": 42,
+      "severity": "critical|major|minor|suggestion",
+      "comment": "Description of the issue and suggested fix (markdown allowed inside this string)"
+    }
+  ],
+  "fix_prompt": "Optional: a copy-paste prompt to fix all issues found. Omit this field if there are no actionable fixes."
+}
+```
+
+### Rules for `inline_comments`
+
+- ONLY comment on lines that appear in the diff (changed or added lines).
+  Do NOT comment on unchanged lines.
+- Use the line number as it appears in the NEW version of the file.
+- `file` must be the path relative to the repository root
+  (e.g., `src/main.py`, not `/workspace/src/main.py`).
+- Severity levels:
+  - **critical**: Security vulnerabilities, build-breaking changes
+  - **major**: Significant logic errors, pattern violations
+  - **minor**: Style issues, minor improvements
+  - **suggestion**: Optional improvements for code quality
+- Each comment should be self-contained and actionable.
+- If there are no inline issues to report, use an empty array `[]`.
+
+### Rules for `summary`
+
+- Keep it short (2-4 sentences). The inline comments carry the detail.
+- Mention the overall quality and any critical concerns.
+
+### Rules for `positive_aspects`
+
+- List 1-3 things done well. If nothing stands out, use an empty array `[]`.
+
+### Rules for `fix_prompt`
+
+- Omit this field entirely if there are no actionable fixes.
+
+## Step 4: Post or Display Results
+
+Run the `review.py` script from this skill's `scripts/` directory.
+Execute it directly (not via `python`) to invoke uv via the shebang:
+
+**In GitLab CI/MR mode** (both `$CI` and `$CI_MERGE_REQUEST_IID` are set):
+
+```bash
+./scripts/review.py post /tmp/ai-review-output.json
+```
+
+**In local mode:**
+
+```bash
+./scripts/review.py display /tmp/ai-review-output.json
+```
+
+The script auto-detects the platform and handles:
+
+- JSON validation and chill-mode filtering (controlled by `$CHILL_MODE` env var)
+- Deduplication against previous reviews (skips comments on unchanged code)
+- Deleting previous AI review discussions on the MR (GitLab)
+- Posting inline comments and a summary note to the MR (GitLab)
+- Formatted terminal display for local mode
+
+If the script reports a JSON parse error, fix the JSON in
+`/tmp/ai-review-output.json` and re-run the command.
+
+## Step 5: Report Results
+
+After the script completes successfully:
+
+- **GitLab CI/MR mode**: Confirm the review was posted to the merge request
+- **Local mode**: The script displays results directly in the terminal
+- **Errors**: Report any failures from the script output
+
+## Environment Variables
+
+The Python script reads these from the environment. In GitLab CI, most are
+set automatically — no manual configuration needed.
+
+### GitLab
+
+| Variable | Required for | Default | Description |
+|----------|-------------|---------|-------------|
+| `GITLAB_API_TOKEN` | CI/MR | — | GitLab Personal Access Token |
+| `CI_SERVER_URL` | — | `https://gitlab.com` | GitLab server URL |
+| `CI_PROJECT_ID` | CI/MR | — | GitLab project ID |
+| `CI_MERGE_REQUEST_IID` | CI/MR | — | Merge request IID |
+| `CI_MERGE_REQUEST_DIFF_BASE_SHA` | CI/MR | — | Base SHA for diff positioning |
+| `CI_COMMIT_SHA` | CI/MR | — | Head commit SHA |
+| `CI_JOB_NAME` | — | `ai-review` | Job name for summary footer |
+| `CI_JOB_URL` | — | `#` | Job URL for summary footer |
+
+### Common
+
+| Variable | Required for | Default | Description |
+|----------|-------------|---------|-------------|
+| `CHILL_MODE` | — | `true` | Filter out suggestion-level comments |
+| `VERBOSE` | — | `false` | Show detailed API error responses |
