@@ -76,7 +76,14 @@ Analyze the JSON output from Step 3 and determine:
 
 #### Health Color
 
-Assign exactly one of these colors:
+First, check the ticket's due date. If the due date is **more than 14 days
+away**, assign **green** — early-stage features with ample time remaining
+should not be penalized for low completion. Only override this to yellow or
+red if child tickets have **explicit blockers** (status "Blocked", flagged
+impediments, or unresolved dependency comments).
+
+If the due date is 14 days away or fewer (or no due date is set), assign a
+color based on progress and risk:
 
 - **green**: Work is progressing normally. Child tickets are moving through
   statuses, no significant blockers.
