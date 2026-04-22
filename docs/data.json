@@ -88,6 +88,14 @@
         "allowed_tools": "Bash Read Grep Glob"
       },
       {
+        "name": "code-review",
+        "description": "Perform AI code review on a GitLab MR or local branch. Reviews all commits since the base branch, produces structured JSON feedback with inline comments, and posts results to GitLab (CI) or displays them locally. Use when asked to review code changes, do a code review, or run ai-review.\n",
+        "category": "general",
+        "file_path": "helpers/skills/code-review/SKILL.md",
+        "id": "code-review",
+        "allowed_tools": "Bash Read Grep Glob"
+      },
+      {
         "name": "coderabbit-review",
         "description": "Evaluate CodeRabbit PR comments and fix or reply",
         "category": "general",
