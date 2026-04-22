@@ -114,7 +114,7 @@
         "category": "general",
         "file_path": "helpers/skills/gitlab-pipeline-debugger/SKILL.md",
         "id": "gitlab-pipeline-debugger",
-        "allowed_tools": "Bash Read"
+        "allowed_tools": "Bash(glab:*)"
       },
       {
         "name": "jira-activity",
