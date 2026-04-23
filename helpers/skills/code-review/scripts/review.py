@@ -716,7 +716,10 @@ def _resolve_verbose(args: argparse.Namespace) -> bool:
 
 
 def cmd_post(args: argparse.Namespace) -> None:
-    """Post review results to the detected platform."""
+    """Post review results to the detected platform.
+
+    Falls back to terminal display when no CI platform is detected.
+    """
     platform = _detect_platform()
 
     if platform == "gitlab":
@@ -724,8 +727,8 @@ def cmd_post(args: argparse.Namespace) -> None:
     elif platform == "github":
         _github_post(args)
     else:
-        _error("No CI platform detected. Use 'display' for local review output.")
-        sys.exit(1)
+        _step("No CI platform detected — displaying review locally.")
+        cmd_display(args)
 
 
 def cmd_display(args: argparse.Namespace) -> None:

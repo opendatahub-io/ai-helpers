@@ -20,26 +20,11 @@ metadata:
 Perform a structured code review of the current branch's changes and post
 results to GitLab (in CI) or display them locally.
 
-## Step 1: Detect Environment
+## Step 1: Review Code Changes
 
-Determine the execution context by checking environment variables:
-
-```bash
-echo "CI=${CI:-}" "MR_IID=${CI_MERGE_REQUEST_IID:-}"
-```
-
-- If `$CI` is set and `$CI_MERGE_REQUEST_IID` is set: **GitLab CI/MR mode** (will post review to GitLab)
-- Otherwise: **Local mode** (will display results in terminal)
-
-In CI/MR mode, the git workspace is already checked out with the branch to
-review. Use git commands to inspect the changes. Do NOT access the GitLab API
-or fetch the merge request remotely (e.g., using `glab` commands) — all the
-code you need is already in the local repository.
-
-## Step 2: Review Code Changes
-
-Review ALL commits in the branch since the base branch. Use git commands to
-understand the scope:
+Review ALL commits in the branch since the base branch. The git workspace is
+already checked out with the branch to review. Use git commands to inspect the
+changes — do NOT access remote APIs (e.g., `glab` commands).
 
 ```bash
 git log --oneline origin/main..HEAD
@@ -63,7 +48,7 @@ zero inline comments. Prioritize critical and major issues over minor stylistic
 preferences. Avoid repeating the same type of feedback across multiple
 locations — one representative comment is sufficient.
 
-## Step 3: Produce Review JSON
+## Step 2: Produce Review JSON
 
 Write your review output as a JSON file at `/tmp/ai-review-output.json`.
 
@@ -113,40 +98,32 @@ The JSON **must** be a valid object matching this schema exactly:
 
 - Omit this field entirely if there are no actionable fixes.
 
-## Step 4: Post or Display Results
+## Step 3: Post Results
 
 Run the `review.py` script from this skill's `scripts/` directory.
 Execute it directly (not via `python`) to invoke uv via the shebang:
-
-**In GitLab CI/MR mode** (both `$CI` and `$CI_MERGE_REQUEST_IID` are set):
 
 ```bash
 ./scripts/review.py post /tmp/ai-review-output.json
 ```
 
-**In local mode:**
-
-```bash
-./scripts/review.py display /tmp/ai-review-output.json
-```
-
-The script auto-detects the platform and handles:
+The script auto-detects the platform (GitLab CI, GitHub, or local) and handles:
 
 - JSON validation and chill-mode filtering (controlled by `$CHILL_MODE` env var)
 - Deduplication against previous reviews (skips comments on unchanged code)
 - Deleting previous AI review discussions on the MR (GitLab)
 - Posting inline comments and a summary note to the MR (GitLab)
-- Formatted terminal display for local mode
+- Falling back to formatted terminal display when no CI platform is detected
 
 If the script reports a JSON parse error, fix the JSON in
 `/tmp/ai-review-output.json` and re-run the command.
 
-## Step 5: Report Results
+## Step 4: Report Results
 
 After the script completes successfully:
 
-- **GitLab CI/MR mode**: Confirm the review was posted to the merge request
-- **Local mode**: The script displays results directly in the terminal
+- **CI**: Confirm the review was posted to the merge request
+- **Local**: The script displays results directly in the terminal
 - **Errors**: Report any failures from the script output
 
 ## Environment Variables
