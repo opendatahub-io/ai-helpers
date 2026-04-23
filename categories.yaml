@@ -29,3 +29,12 @@ vLLM:
   - vllm-backport-score-rank
   - vllm-backport-push-report
   - vllm-backport-cherry-pick
+
+Jira Management:
+  - acli-setup-check
+  - jira-workitem-view
+  - jira-workitem-comment
+  - jira-workitem-attach
+  - jira-workitem-search
+  - jira-activity
+  - jira-upload-chat-log

@@ -1,4 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --quiet --script
+# /// script
+# dependencies = ["pyyaml"]
+# ///
 """
 Update Claude Code marketplace by scanning tools from categories.yaml configuration.
 
@@ -13,11 +16,7 @@ import sys
 from pathlib import Path
 from typing import Dict, List
 
-try:
-    import yaml
-except ImportError:
-    print("Error: PyYAML is required. Install with: pip install pyyaml", file=sys.stderr)
-    sys.exit(1)
+import yaml
 
 # Import duplicate detection function from validate_tools.py
 try:
@@ -80,7 +79,7 @@ def get_filesystem_tools(helpers_dir: Path) -> Dict[str, str]:
     skills_dir = helpers_dir / "skills"
     if skills_dir.exists() and skills_dir.is_dir():
         for item in skills_dir.iterdir():
-            if item.is_dir():
+            if item.is_dir() and not item.name.startswith("_"):
                 tool_name = item.name
                 if tool_name in filesystem_tools:
                     print(

@@ -16,6 +16,9 @@
     },
     "vllm": {
       "name": "vLLM"
+    },
+    "jira management": {
+      "name": "Jira Management"
     }
   },
   "tools": {
@@ -71,6 +74,14 @@
       }
     ],
     "skills": [
+      {
+        "name": "acli-setup-check",
+        "description": "Verify acli installation and authentication. Checks if acli is installed, properly configured, and can access Jira. Use when troubleshooting acli issues or setting up acli for the first time.",
+        "category": "jira management",
+        "file_path": "helpers/skills/acli-setup-check/SKILL.md",
+        "id": "acli-setup-check",
+        "allowed_tools": "Bash"
+      },
       {
         "name": "adr-review",
         "description": "Review an Architectural Decision Record (ADR) using a team of six specialist reviewer subagents and produce a consolidated report as both PDF and PPTX slide deck. Use this skill whenever the user asks to review, critique, audit, or get feedback on an ADR, architecture decision, design doc, or RFC — whether the input is a Markdown file, a .docx document, or pasted text. Trigger even if the user does not explicitly say \"ADR\"; phrases like \"review this architecture decision\", \"critique this design doc\", or \"run the reviewer panel on this\" should also invoke this skill.",
@@ -202,7 +213,7 @@
       {
         "name": "jira-activity",
         "description": "Summarize Jira ticket activity, including child tickets, to detect stale tickets in the backlog. Use when user asks to review one or more Jira tickets to determine if they are being worked on.",
-        "category": "general",
+        "category": "jira management",
         "file_path": "helpers/skills/jira-activity/SKILL.md",
         "id": "jira-activity",
         "allowed_tools": "Bash"
@@ -226,10 +237,42 @@
       {
         "name": "jira-upload-chat-log",
         "description": "Export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation.",
-        "category": "general",
+        "category": "jira management",
         "file_path": "helpers/skills/jira-upload-chat-log/SKILL.md",
         "id": "jira-upload-chat-log",
-        "allowed_tools": ""
+        "allowed_tools": "Skill, AskUserQuestion"
+      },
+      {
+        "name": "jira-workitem-attach",
+        "description": "Upload file attachments to Jira tickets. Verifies file exists and uploads via Jira API. Use when user wants to attach files to tickets.",
+        "category": "jira management",
+        "file_path": "helpers/skills/jira-workitem-attach/SKILL.md",
+        "id": "jira-workitem-attach",
+        "allowed_tools": "Bash, Skill"
+      },
+      {
+        "name": "jira-workitem-comment",
+        "description": "Add comments to Jira tickets using simple text or Jira markup (ADF JSON). Supports rich formatting with code blocks, lists, mentions, and links. Use when user wants to comment on a ticket.",
+        "category": "jira management",
+        "file_path": "helpers/skills/jira-workitem-comment/SKILL.md",
+        "id": "jira-workitem-comment",
+        "allowed_tools": "Bash, AskUserQuestion, Skill"
+      },
+      {
+        "name": "jira-workitem-search",
+        "description": "Search Jira tickets using JQL queries. Provides common query templates and flexible output formats. Use when user needs to find or filter tickets.",
+        "category": "jira management",
+        "file_path": "helpers/skills/jira-workitem-search/SKILL.md",
+        "id": "jira-workitem-search",
+        "allowed_tools": "Bash, AskUserQuestion, Skill"
+      },
+      {
+        "name": "jira-workitem-view",
+        "description": "Retrieve and display full details of a Jira ticket. Fetches all fields and formats them for conversation context. Use when user needs ticket information or wants to examine a ticket.",
+        "category": "jira management",
+        "file_path": "helpers/skills/jira-workitem-view/SKILL.md",
+        "id": "jira-workitem-view",
+        "allowed_tools": "Bash, Skill"
       },
       {
         "name": "learning-mode",

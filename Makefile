@@ -47,9 +47,9 @@ lint: ## Run plugin linter, ruff syntax checker and formatter, and shellcheck
 .PHONY: update
 update: ## Update Claude settings and website data
 	@echo "Updating Claude settings..."
-	@python3 scripts/update_claude_settings.py
+	@UV_CACHE_DIR=$${TMPDIR:-/tmp}/uv-cache ./scripts/update_claude_settings.py
 	@echo "Building website data..."
-	@python3 scripts/build-website.py
+	@UV_CACHE_DIR=$${TMPDIR:-/tmp}/uv-cache ./scripts/build-website.py
 	@echo "Formatting Python code with ruff..."
 	@if command -v ruff >/dev/null 2>&1; then \
 		ruff format .; \

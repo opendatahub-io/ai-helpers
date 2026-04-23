@@ -38,7 +38,7 @@ user can review before committing.
 ### Step 1: Determine the Ticket Key
 
 1. If a ticket key is provided by the user, use it
-2. Otherwise, search the conversation history for JIRA ticket references (e.g., "AIPCC-1234")
+2. Otherwise, search the conversation history for JIRA ticket references matching the pattern `[A-Z]+-\d+`
 3. If no ticket is found in context, ask the user: "Which ticket should I update the Status Summary for? (e.g., AIPCC-1234)"
 
 ### Step 2: Fetch Previous Status Summary and Color Status
