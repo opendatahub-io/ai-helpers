@@ -34,6 +34,10 @@ git diff origin/main..HEAD
 Adjust the base branch name if different from `main` (e.g., `master`, `develop`).
 In CI, `$CI_MERGE_REQUEST_DIFF_BASE_SHA` identifies the exact base commit.
 
+**Only review the committed diff between branches.** Do NOT run `git status`,
+do NOT report on untracked files, and do NOT include uncommitted working-tree
+changes in your review.
+
 ### Review Guidelines
 
 $ARGUMENTS
