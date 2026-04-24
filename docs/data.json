@@ -192,6 +192,14 @@
         "allowed_tools": "Bash(glab:*)"
       },
       {
+        "name": "google-workspace",
+        "description": "Fetch and query data from Google Workspace using the gws CLI — Gmail, Calendar, Docs, Sheets, Slides, and Drive. Use this skill whenever the user mentions email, inbox, messages, calendar, meetings, schedule, agenda, Google Docs, spreadsheets, presentations, or Drive files. Trigger on phrases like \"check my email\", \"what meetings do I have\", \"read this doc\", \"open this spreadsheet\", \"find files in Drive\", or any Google URL (docs.google.com, drive.google.com).\n",
+        "category": "general",
+        "file_path": "helpers/skills/google-workspace/SKILL.md",
+        "id": "google-workspace",
+        "allowed_tools": "Bash"
+      },
+      {
         "name": "jira-activity",
         "description": "Summarize Jira ticket activity, including child tickets, to detect stale tickets in the backlog. Use when user asks to review one or more Jira tickets to determine if they are being worked on.",
         "category": "general",
