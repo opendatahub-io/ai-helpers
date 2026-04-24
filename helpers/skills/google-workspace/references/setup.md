@@ -70,7 +70,9 @@ URL: `https://console.cloud.google.com/apis/credentials?project=YOUR_PROJECT_ID`
 
 ```bash
 mkdir -p ~/.config/gws
+chmod 700 ~/.config/gws
 mv ~/Downloads/client_secret_*.json ~/.config/gws/client_secret.json
+chmod 600 ~/.config/gws/client_secret.json
 ```
 
 ## Step 5: Enable APIs

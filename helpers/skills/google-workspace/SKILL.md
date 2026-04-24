@@ -48,11 +48,11 @@ Many requests include a Google URL. Extract the document ID before calling `gws`
 | Drive file | `drive.google.com/file/d/<ID>/...` | between `/d/` and next `/` |
 | Drive folder | `drive.google.com/drive/folders/<ID>` | after `/folders/` |
 
-Use `grep -oP` or shell parameter expansion to parse the ID:
+Extract the ID with `sed` (works on both macOS and Linux):
 
 ```bash
 URL="https://docs.google.com/document/d/1aBcDeFgHiJkLmNoPqRsTuVwXyZ/edit"
-DOC_ID=$(echo "$URL" | grep -oP '/d/\K[^/]+')
+DOC_ID=$(echo "$URL" | sed -E 's|.*/d/([A-Za-z0-9_-]+).*|\1|')
 ```
 
 ## Shell Tips
@@ -171,7 +171,7 @@ gws docs documents get --params '{"documentId": "<DOC_ID>"}' \
 ### Typical workflow: "read this Google Doc" (user provides URL)
 
 ```bash
-DOC_ID=$(echo "$URL" | grep -oP '/d/\K[^/]+')
+DOC_ID=$(echo "$URL" | sed -E 's|.*/d/([A-Za-z0-9_-]+).*|\1|')
 gws docs documents get --params "{\"documentId\": \"$DOC_ID\"}" \
   | jq -r '[.. | .textRun? // empty | .content] | join("")'
 ```
@@ -198,8 +198,8 @@ Users often share URLs like `...edit?gid=1937078361`. The gid is a numeric tab
 ID, not a tab name. Resolve it before reading:
 
 ```bash
-SHEET_ID=$(echo "$URL" | grep -oP '/d/\K[^/]+')
-GID=$(echo "$URL" | grep -oP 'gid=\K[0-9]+')
+SHEET_ID=$(echo "$URL" | sed -E 's|.*/d/([A-Za-z0-9_-]+).*|\1|')
+GID=$(echo "$URL" | sed -E 's|.*gid=([0-9]+).*|\1|')
 
 # Get all tab names and their IDs
 gws sheets spreadsheets get \
@@ -212,7 +212,7 @@ Then use the resolved tab name in the `+read` command.
 ### Typical workflow: "read this spreadsheet" (user provides URL)
 
 ```bash
-SHEET_ID=$(echo "$URL" | grep -oP '/d/\K[^/]+')
+SHEET_ID=$(echo "$URL" | sed -E 's|.*/d/([A-Za-z0-9_-]+).*|\1|')
 # If the URL has a gid= parameter, resolve the tab name first (see above)
 gws sheets +read --spreadsheet "$SHEET_ID" --range Sheet1
 ```
@@ -236,7 +236,7 @@ gws slides presentations get --params '{"presentationId": "<PRES_ID>"}' \
 ### Typical workflow: "read this presentation" (user provides URL)
 
 ```bash
-PRES_ID=$(echo "$URL" | grep -oP '/d/\K[^/]+')
+PRES_ID=$(echo "$URL" | sed -E 's|.*/d/([A-Za-z0-9_-]+).*|\1|')
 gws slides presentations get --params "{\"presentationId\": \"$PRES_ID\"}" \
   | jq -r '.slides[] | [.pageElements[]? | .shape?.textContent?.textElements[]? | .textRun?.content? // empty] | join("")'
 ```
@@ -304,7 +304,7 @@ gws drive files export \
 ### List files in a folder (from URL)
 
 ```bash
-FOLDER_ID=$(echo "$URL" | grep -oP 'folders/\K[^?]+')
+FOLDER_ID=$(echo "$URL" | sed -E 's|.*folders/([A-Za-z0-9_-]+).*|\1|')
 gws drive files list \
   --params "{\"q\": \"'$FOLDER_ID' in parents and trashed=false\", \"pageSize\": 20, \"fields\": \"files(id,name,mimeType,modifiedTime,webViewLink)\"}"
 ```
@@ -321,7 +321,7 @@ gws gmail +triage --query 'from:alice@example.com' --max 1 --format json
 # 2. Read it and look for a Google Sheets URL in the body
 gws gmail +read --id <MESSAGE_ID>
 # 3. Extract the spreadsheet ID from the URL and read it
-SHEET_ID=$(echo "$SHEET_URL" | grep -oP '/d/\K[^/]+')
+SHEET_ID=$(echo "$SHEET_URL" | sed -E 's|.*/d/([A-Za-z0-9_-]+).*|\1|')
 gws sheets +read --spreadsheet "$SHEET_ID" --range Sheet1
 ```
 
@@ -331,7 +331,7 @@ gws sheets +read --spreadsheet "$SHEET_ID" --range Sheet1
 # 1. Get the next event
 gws calendar +agenda --days 1 --format json
 # 2. If the event description has a Google Doc link, read it
-DOC_ID=$(echo "$DOC_URL" | grep -oP '/d/\K[^/]+')
+DOC_ID=$(echo "$DOC_URL" | sed -E 's|.*/d/([A-Za-z0-9_-]+).*|\1|')
 gws docs documents get --params "{\"documentId\": \"$DOC_ID\"}" \
   | jq -r '[.. | .textRun? // empty | .content] | join("")'
 ```
