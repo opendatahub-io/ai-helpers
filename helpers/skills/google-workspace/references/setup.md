@@ -100,6 +100,12 @@ Do NOT run `gws auth setup` -- it automates via gcloud and tends to fail.
 gws auth login -s <comma-separated services they chose>
 ```
 
+If the user prefers read-only access, suggest adding the `--readonly` flag to request only read scopes:
+
+```bash
+gws auth login -s <comma-separated services they chose> --readonly
+```
+
 Example: if they chose Drive, Docs, and Sheets -> `gws auth login -s drive,docs,sheets`
 
 Keep it under ~25 scopes -- Google rejects consent for unverified apps with too many.
