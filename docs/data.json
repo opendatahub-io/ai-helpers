@@ -224,6 +224,14 @@
         "allowed_tools": ""
       },
       {
+        "name": "learning-mode",
+        "description": "Hands-on mentoring: the agent scaffolds work, then pauses so the engineer writes small, meaningful code (roughly 5–15 lines) for practice. Use when the user enables learning mode, asks for guided mentoring, hands-on practice, collaborative coding, or teaching while building a feature.",
+        "category": "general",
+        "file_path": "helpers/skills/learning-mode/SKILL.md",
+        "id": "learning-mode",
+        "allowed_tools": ""
+      },
+      {
         "name": "oci-cve-checker",
         "description": "Compare CVE vulnerabilities between two OCI container images and generate reports showing fixed and new CVEs.",
         "category": "general",
