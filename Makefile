@@ -16,8 +16,12 @@ help: ## Show this help message
 
 .PHONY: lint
 lint: ## Run plugin linter, ruff syntax checker and formatter, and shellcheck
-	@echo "Running claudelint with $(CONTAINER_RUNTIME)..."
-	$(CONTAINER_RUNTIME) run --rm -v $(PWD):/workspace:Z ghcr.io/stbenjam/claudelint:main -v --strict
+	@if [ "$$(uname -m)" = "x86_64" ]; then \
+		echo "Running claudelint with $(CONTAINER_RUNTIME)..."; \
+		$(CONTAINER_RUNTIME) run --rm -v $(PWD):/workspace:Z $(CLAUDELINT_IMAGE) -v --strict; \
+	else \
+		echo "Skipping claudelint on $$(uname -m) architecture (x86_64 required)"; \
+	fi
 	@echo "Running ruff syntax checker on Python scripts..."
 	@if command -v ruff >/dev/null 2>&1; then \
 		ruff check .; \
@@ -46,6 +50,11 @@ lint: ## Run plugin linter, ruff syntax checker and formatter, and shellcheck
 
 .PHONY: update
 update: ## Update Claude settings and website data
+	@if ! command -v uv >/dev/null 2>&1; then \
+		echo "Error: uv is not installed. Install it with:"; \
+		echo "  curl -LsSf https://astral.sh/uv/install.sh | sh"; \
+		exit 1; \
+	fi
 	@echo "Updating Claude settings..."
 	@UV_CACHE_DIR=$${TMPDIR:-/tmp}/uv-cache ./scripts/update_claude_settings.py
 	@echo "Building website data..."
