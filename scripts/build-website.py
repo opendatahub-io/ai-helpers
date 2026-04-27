@@ -1,4 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --quiet --script
+# /// script
+# dependencies = ["pyyaml"]
+# ///
 """
 Build website data for ODH ai-helpers Github Pages
 Loads tool information from centralized tools.yaml configuration
@@ -45,7 +48,7 @@ def get_filesystem_tools(helpers_dir: Path) -> Dict[str, str]:
     skills_dir = helpers_dir / "skills"
     if skills_dir.exists() and skills_dir.is_dir():
         for item in skills_dir.iterdir():
-            if item.is_dir():
+            if item.is_dir() and not item.name.startswith("_"):
                 filesystem_tools[item.name] = "skill"
 
     # Commands - .md files in helpers/commands/
@@ -246,21 +249,12 @@ def get_tool_metadata(tool: Dict, category: str, base_path: Path) -> Dict:
                 with open(gemini_gems_path) as f:
                     gems_data = yaml.safe_load(f)
 
-                # Find matching gem by converting gem title to kebab-case
-                def title_to_kebab_case(title):
-                    """Convert gem title to kebab-case for matching with tool names"""
-                    import re
-
-                    # Replace spaces and special characters with hyphens
-                    kebab = re.sub(r"[^\w\s-]", "", title.lower())
-                    kebab = re.sub(r"[-\s]+", "-", kebab)
-                    return kebab.strip("-")
-
+                # Find matching gem by converting gem title to slug format
                 tool_name = tool["name"]
 
                 for gem in gems_data.get("gems", []):
                     gem_title = gem.get("title", "")
-                    if gem_title and title_to_kebab_case(gem_title) == tool_name:
+                    if gem_title and title_to_slug(gem_title) == tool_name:
                         link = gem.get("link", "")
                         # Use description from gems.yaml if available
                         if "description" in gem:

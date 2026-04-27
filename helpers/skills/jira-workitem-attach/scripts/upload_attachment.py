@@ -1,25 +1,25 @@
-#!/usr/bin/env -S uv run --script
+#!/usr/bin/env -S uv run --quiet --script
 # /// script
 # dependencies = [
 #     "jira>=3.0.0",
 # ]
 # ///
 """
-Upload a chat log file as an attachment to a JIRA ticket.
+Upload a file as an attachment to a JIRA ticket.
 
-This script uploads a markdown file (or any file) as an attachment to a
-specified JIRA ticket on https://redhat.atlassian.net.
+This script uploads any file as an attachment to a specified JIRA ticket
+on https://redhat.atlassian.net.
 
 Authentication:
   JIRA_API_TOKEN environment variable must be set with a valid API token
   JIRA_EMAIL environment variable must be set with your Atlassian account email
 
 Usage:
-  upload_chat_log.py <ticket-key> <file-path>
+  upload_attachment.py <ticket-key> <file-path>
 
 Examples:
-  upload_chat_log.py AIPCC-7354 /tmp/chat-log-2025-01-20.md
-  JIRA_API_TOKEN=xyz123 upload_chat_log.py PROJ-123 ./conversation.md
+  upload_attachment.py AIPCC-1234 /tmp/error.log
+  JIRA_API_TOKEN=xyz123 upload_attachment.py PROJ-567 ./screenshot.png
 """
 
 import argparse
@@ -55,6 +55,7 @@ def get_jira_credentials() -> tuple[str, str]:
             file=sys.stderr,
         )
         sys.exit(1)
+
     email = os.environ.get("JIRA_EMAIL")
     if not email:
         print(
@@ -70,6 +71,7 @@ def get_jira_credentials() -> tuple[str, str]:
             file=sys.stderr,
         )
         sys.exit(1)
+
     return email, token
 
 
@@ -85,6 +87,16 @@ def validate_file(file_path: str) -> Path:
     if not os.access(path, os.R_OK):
         print(f"ERROR: File is not readable: {file_path}", file=sys.stderr)
         sys.exit(1)
+
+    # Check file size (warn if > 10MB)
+    file_size = path.stat().st_size
+    if file_size > 10 * 1024 * 1024:  # 10 MB
+        print(
+            f"WARNING: File is {file_size / (1024 * 1024):.1f} MB, "
+            "which may exceed Jira's attachment size limit (typically 10MB).",
+            file=sys.stderr,
+        )
+
     return path
 
 
@@ -131,7 +143,7 @@ def upload_attachment(ticket_key: str, file_path: Path) -> None:
 
         print(f"\n✓ Successfully uploaded attachment to {ticket_key}")
         print(f"  Attachment: {attachment.filename}")
-        print(f"  Size: {attachment.size} bytes")
+        print(f"  Size: {attachment.size:,} bytes")
         print(f"  View ticket: {jira_url}/browse/{ticket_key}")
 
     except Exception as e:
@@ -151,12 +163,6 @@ def main() -> None:
     parser.add_argument(
         "file_path",
         help="Path to the file to upload as an attachment",
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="Enable verbose output",
     )
 
     args = parser.parse_args()
