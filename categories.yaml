@@ -38,3 +38,10 @@ Jira Management:
   - jira-workitem-search
   - jira-activity
   - jira-upload-chat-log
+
+Autofix:
+  - jira-autofix-implement
+  - jira-autofix-research
+  - jira-autofix-resolve
+  - jira-autofix-review
+  - jira-autofix-status
