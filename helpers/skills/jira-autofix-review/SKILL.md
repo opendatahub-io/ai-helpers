@@ -31,11 +31,10 @@ git diff -U0 HEAD~1..HEAD | grep '^+' | grep -v '^+++' | \
 
 # Check for large commented-out code blocks (3+ consecutive added comment lines)
 git diff -U0 HEAD~1..HEAD | grep '^+' | grep -v '^+++' | \
-  grep -E '^\+\s*(//|#|/\*|\*)' | \
-  awk 'NR==1{run=1;next} {run++} run>=3{found=1} END{exit !found}'
+  awk '/^\+[[:space:]]*(\/\/|#|\/\*|\*)/{run++; if(run>=3) found=1; next} {run=0} END{exit !found}'
 ```
 
-The last command exits 0 (found) if there is a run of 3+ consecutive added comment lines. If it exits 0, flag a finding for large commented-out code blocks.
+The awk tracks streaks of added comment lines and resets the counter when a non-comment added line appears. Exits 0 if any streak reaches 3+. If it exits 0, flag a finding for large commented-out code blocks.
 
 Record any findings.
 
@@ -44,11 +43,12 @@ Record any findings.
 Read the verdict file at `autofix-output/.autofix-verdict.json`. This is the authoritative source for validation status.
 
 - If the file does not exist, flag a critical finding: "No verdict file found -- implement skill may not have run."
-- If the file exists and code changes were made (`files_changed` is non-empty):
-  - If `lint_passed` is `false` or `null`, flag a critical finding: "Lint was not run or failed."
-  - If `tests_passed` is `false` or `null`, flag a critical finding: "Tests were not run or failed."
-- If `lint_passed` and `tests_passed` are both `true`, validation is confirmed.
-- A value of `null` is acceptable only when `files_changed` is empty (no code changes to validate).
+- If `files_changed` is empty, `null` values for all three fields are acceptable — no code changes to validate.
+- If `files_changed` is non-empty, evaluate each field using the same rule:
+  - `false` → critical finding (that step ran and failed).
+  - `true` → pass.
+  - `null` → check the `observations` array for an explanation of why the step was skipped (e.g., "repo has no linter", "tests require a running cluster"). If an explanation exists, accept `null`. If no explanation exists, flag a critical finding: that step was not run and no justification was provided.
+- Apply this rule identically to `lint_passed`, `build_passed`, and `tests_passed`. Do not treat any of the three differently.
 
 ## Step 3: Semantic review
 
