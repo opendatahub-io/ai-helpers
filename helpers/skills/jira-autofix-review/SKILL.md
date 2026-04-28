@@ -22,24 +22,33 @@ Run these checks on changed files via Bash:
 git diff --stat HEAD~1
 
 # Check for debug prints left behind
-git diff HEAD~1 | grep -n '^\+' | grep -iE 'console\.log|print\(|fmt\.Print|System\.out|log\.Debug'
+git diff -U0 HEAD~1..HEAD | grep '^+' | grep -v '^+++' | \
+  grep -iE 'console\.log|print\(|fmt\.Print|System\.out|log\.Debug'
 
 # Check for TODO/FIXME/HACK/XXX markers in new lines
-git diff HEAD~1 | grep -n '^\+' | grep -iE 'TODO|FIXME|HACK|XXX'
+git diff -U0 HEAD~1..HEAD | grep '^+' | grep -v '^+++' | \
+  grep -iE 'TODO|FIXME|HACK|XXX'
 
-# Check for large commented-out code blocks (3+ consecutive comment lines added)
-git diff HEAD~1 | grep -n '^\+'
+# Check for large commented-out code blocks (3+ consecutive added comment lines)
+git diff -U0 HEAD~1..HEAD | grep '^+' | grep -v '^+++' | \
+  grep -E '^\+\s*(//|#|/\*|\*)' | \
+  awk 'NR==1{run=1;next} {run++} run>=3{found=1} END{exit !found}'
 ```
+
+The last command exits 0 (found) if there is a run of 3+ consecutive added comment lines. If it exits 0, flag a finding for large commented-out code blocks.
 
 Record any findings.
 
 ## Step 2: Verify validation was run
 
-Check the session context for evidence that the implement skill ran lint/build/test commands. Look for:
-- Output from `make lint`, `make test`, `go test`, `pytest`, `npm test`, or similar
-- Mentions of `lint_passed` or `tests_passed` in the conversation
+Read the verdict file at `autofix-output/.autofix-verdict.json`. This is the authoritative source for validation status.
 
-If there is no evidence that validation was executed, flag it as a critical finding.
+- If the file does not exist, flag a critical finding: "No verdict file found -- implement skill may not have run."
+- If the file exists and code changes were made (`files_changed` is non-empty):
+  - If `lint_passed` is `false` or `null`, flag a critical finding: "Lint was not run or failed."
+  - If `tests_passed` is `false` or `null`, flag a critical finding: "Tests were not run or failed."
+- If `lint_passed` and `tests_passed` are both `true`, validation is confirmed.
+- A value of `null` is acceptable only when `files_changed` is empty (no code changes to validate).
 
 ## Step 3: Semantic review
 

@@ -2,8 +2,8 @@
 name: jira-autofix-research
 description: >-
   Research a Jira spike ticket with no associated repository.
-  Investigates the topic and writes structured findings to the
-  standard verdict file.
+  Investigates the topic and writes structured findings to
+  autofix-output/.autofix-verdict.json.
 allowed-tools: Read Write Glob Grep Bash
 ---
 
@@ -33,7 +33,7 @@ Focus on answering the ticket's question. Do not go on tangents.
 
 ## Step 3: Write verdict
 
-Write `.autofix-verdict.json` to the workspace root:
+Create the `autofix-output/` directory if it doesn't exist, then write `autofix-output/.autofix-verdict.json`:
 
 ```json
 {
@@ -57,5 +57,7 @@ Write `.autofix-verdict.json` to the workspace root:
 ```
 
 The `verdict` field must always be `"research"`. Put your detailed findings in `observations` as an array of strings -- each string should be a distinct finding or recommendation. Use `summary` for a concise 1-2 sentence overview. Use `risks` and `blockers` if the research uncovered obstacles. Use `upstream_consideration` if relevant upstream work was found.
+
+The canonical output location is `autofix-output/.autofix-verdict.json`, matching the other autofix skills.
 
 Do not create any files other than the verdict. Do not modify any source code.

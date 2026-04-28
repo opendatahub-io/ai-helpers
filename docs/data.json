@@ -236,7 +236,7 @@
       },
       {
         "name": "jira-autofix-research",
-        "description": "Research a Jira spike ticket with no associated repository. Investigates the topic and writes structured findings to the standard verdict file.",
+        "description": "Research a Jira spike ticket with no associated repository. Investigates the topic and writes structured findings to autofix-output/.autofix-verdict.json.",
         "category": "general",
         "file_path": "helpers/skills/jira-autofix-research/SKILL.md",
         "id": "jira-autofix-research",
