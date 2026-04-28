@@ -56,6 +56,9 @@ Conversational AI assistants created within Google's Gemini platform. Each Gem i
 
 ### Development Workflow (All Platforms)
 
+0. **Know Your Audience**
+   - This repository is for Red Hat associates using RHEL/Fedora and macOS. When referencing upstream documentation, curate rather than copy — only include steps relevant to this audience (eg. include dnf/brew steps, omit apt/nix/etc.)
+
 1. **Plan Your Tool**
    - Identify the specific task or workflow to automate
    - Choose the appropriate platform based on requirements
