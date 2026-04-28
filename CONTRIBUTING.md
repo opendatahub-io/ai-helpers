@@ -189,7 +189,7 @@ Example: `feat: add Python dependency resolver skill`
    - Type of contribution
    - Testing and validation checklist
    - Ethical guidelines compliance
-3. **At least one maintainer review** is required before merging.
+3. **At least one maintainer review** is required before merging. [Mergify](https://mergify.com) automatically adds PRs to the merge queue when CI passes and: maintainer-authored PRs have one approval, or other PRs have two approvals.
 4. **Respond to review feedback** promptly. Reviewers may ask for changes or have questions.
 5. **Keep PRs focused** -- one tool or logical change per PR makes review easier.
 
