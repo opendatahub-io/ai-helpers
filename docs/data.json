@@ -22,6 +22,9 @@
     },
     "cve remediation": {
       "name": "CVE Remediation"
+    },
+    "autofix": {
+      "name": "Autofix"
     }
   },
   "tools": {
@@ -284,6 +287,38 @@
         "file_path": "helpers/skills/jira-autofix-cve-resolve/SKILL.md",
         "id": "jira-autofix-cve-resolve",
         "allowed_tools": "Read Write Bash Skill"
+      },
+      {
+        "name": "jira-autofix-implement",
+        "description": "Use when implementing a code fix for a Jira bug ticket. Investigates the codebase, evaluates fix strategy, writes code changes, adds tests where feasible, validates, and commits.",
+        "category": "autofix",
+        "file_path": "helpers/skills/jira-autofix-implement/SKILL.md",
+        "id": "jira-autofix-implement",
+        "allowed_tools": "Read Write Glob Grep Bash"
+      },
+      {
+        "name": "jira-autofix-research",
+        "description": "Use when researching a Jira spike ticket with no associated repository. Investigates the topic and writes structured findings to autofix-output/.autofix-verdict.json.",
+        "category": "autofix",
+        "file_path": "helpers/skills/jira-autofix-research/SKILL.md",
+        "id": "jira-autofix-research",
+        "allowed_tools": "Read Write Glob Grep"
+      },
+      {
+        "name": "jira-autofix-resolve",
+        "description": "Use when orchestrating a Jira ticket fix end-to-end. Calls implement and review in sequence, handles both resolve and iterate modes, and uses agent judgment to decide iteration based on review severity.",
+        "category": "autofix",
+        "file_path": "helpers/skills/jira-autofix-resolve/SKILL.md",
+        "id": "jira-autofix-resolve",
+        "allowed_tools": "Read Write Bash Skill"
+      },
+      {
+        "name": "jira-autofix-review",
+        "description": "Use when reviewing code changes made by the implement skill against the ticket requirements. Checks for mechanical issues and does semantic analysis. Writes structured findings with severity to .autofix-context/review-findings.json.",
+        "category": "autofix",
+        "file_path": "helpers/skills/jira-autofix-review/SKILL.md",
+        "id": "jira-autofix-review",
+        "allowed_tools": "Read Write Glob Grep Bash"
       },
       {
         "name": "jira-status-summary",

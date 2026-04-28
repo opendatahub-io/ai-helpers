@@ -45,3 +45,9 @@ CVE Remediation:
   - cve-fix-apply
   - cve-verify
   - cve-vex-assess
+
+Autofix:
+  - jira-autofix-implement
+  - jira-autofix-research
+  - jira-autofix-resolve
+  - jira-autofix-review
