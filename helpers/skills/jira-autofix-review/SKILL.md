@@ -15,24 +15,50 @@ Shift your mindset: you did NOT write this code. You are looking for problems.
 
 ## Step 1: Mechanical checks
 
-Run these checks on changed files via Bash:
+Determine the changed file list, then run checks scoped to those files:
 
 ```bash
-# Get the changed file list
-git diff --stat HEAD~1
+# Get changed files from the verdict (authoritative source).
+# Exit code 0 = files list obtained (may be empty for no-code-change verdicts).
+# Exit code 1 = verdict missing or unreadable, use git fallback.
+VERDICT_READ=true
+FILES=()
+while IFS= read -r f; do
+  [[ -n "$f" ]] && FILES+=("$f")
+done < <(python3 -c "
+import json, sys
+try:
+    v = json.load(open('autofix-output/.autofix-verdict.json'))
+    for f in v.get('files_changed', []):
+        print(f)
+except Exception:
+    sys.exit(1)
+" 2>/dev/null) || VERDICT_READ=false
 
-# Check for debug prints left behind
-git diff -U0 HEAD~1..HEAD | grep '^+' | grep -v '^+++' | \
-  grep -iE 'console\.log|print\(|fmt\.Print|System\.out|log\.Debug'
+# Fallback: extract from git if verdict was unreadable
+if [[ "$VERDICT_READ" == false ]]; then
+  while IFS= read -r f; do
+    [[ -n "$f" ]] && FILES+=("$f")
+  done < <(git diff --name-only HEAD~1 2>/dev/null)
+fi
 
-# Check for TODO/FIXME/HACK/XXX markers in new lines
-git diff -U0 HEAD~1..HEAD | grep '^+' | grep -v '^+++' | \
-  grep -iE 'TODO|FIXME|HACK|XXX'
+# Run mechanical checks only if there are files to check
+if [[ ${#FILES[@]} -gt 0 ]]; then
+  # Check for debug prints left behind
+  git diff -U0 HEAD~1..HEAD -- "${FILES[@]}" | grep '^+' | grep -v '^+++' | \
+    grep -iE 'console\.log|print\(|fmt\.Print|System\.out|log\.Debug'
 
-# Check for large commented-out code blocks (3+ consecutive added comment lines)
-git diff -U0 HEAD~1..HEAD | grep '^+' | grep -v '^+++' | \
-  awk '/^\+[[:space:]]*(\/\/|#|\/\*|\*)/{run++; if(run>=3) found=1; next} {run=0} END{exit !found}'
+  # Check for TODO/FIXME/HACK/XXX markers in new lines
+  git diff -U0 HEAD~1..HEAD -- "${FILES[@]}" | grep '^+' | grep -v '^+++' | \
+    grep -iE 'TODO|FIXME|HACK|XXX'
+
+  # Check for large commented-out code blocks (3+ consecutive added comment lines)
+  git diff -U0 HEAD~1..HEAD -- "${FILES[@]}" | grep '^+' | grep -v '^+++' | \
+    awk '/^\+[[:space:]]*(\/\/|#|\/\*|\*)/{run++; if(run>=3) found=1; next} {run=0} END{exit !found}'
+fi
 ```
+
+The `FILES` array is built from the verdict's `files_changed` (one entry per line to handle paths with spaces). If the verdict is unreadable, the fallback uses `git diff --name-only HEAD~1`. If `files_changed` is an intentional empty array (no-code-change verdict), no fallback is triggered and mechanical checks are correctly skipped.
 
 The awk tracks streaks of added comment lines and resets the counter when a non-comment added line appears. Exits 0 if any streak reaches 3+. If it exits 0, flag a finding for large commented-out code blocks.
 

@@ -5,6 +5,7 @@ description: >-
   in sequence. Handles both resolve and iterate modes. Uses agent
   judgment to decide iteration based on review severity.
 allowed-tools: Read Write Bash Skill
+user-invocable: true
 ---
 
 # Skill: Resolve / Iterate Orchestrator
@@ -57,8 +58,8 @@ Maximum 3 total `/jira-autofix-implement` invocations per run. If you have alrea
 
 When the cap is reached, determine the verdict from the agent's state:
 
-- **`committed`** -- the agent committed code at any point during the run (success case, even if findings remain)
-- **`blocked`** -- the cap was reached with unresolved critical findings and no successful commit
+- **`committed`** -- the agent committed code at any point during the run (success case, even if findings remain). Unresolved findings go into `observations` for the human reviewer.
+- **`blocked`** -- the cap was reached with no successful commit despite attempts
 - **`no_changes`** -- the cap was reached because only minor/nitpick findings remain and no code changes were necessary
 - **`insufficient_info`** -- the cap was reached because the agent lacks information needed to proceed
 
@@ -95,7 +96,7 @@ Create the `autofix-output/` directory if it doesn't exist, then write `.autofix
 - `research` -- spike/research ticket with no code changes
 - `no_changes` -- catch-all for other no-code-change cases
 
-The verdict reflects what the agent DID, not whether self-review is perfectly clean. CI and a human reviewer are the real quality gates.
+**Important:** A verdict of `committed` means the agent produced a commit -- it does NOT mean the fix is perfect or ready to merge. The commit will be pushed to a branch, a merge request created, and CI will run. A human reviewer is always expected to review the MR before merge. Unresolved self-review findings are included in `observations` for the human reviewer. Further iterate cycles may also address remaining issues.
 
 ## Guardrails
 
