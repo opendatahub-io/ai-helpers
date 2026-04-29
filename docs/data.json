@@ -19,6 +19,9 @@
     },
     "jira management": {
       "name": "Jira Management"
+    },
+    "autofix": {
+      "name": "Autofix"
     }
   },
   "tools": {
@@ -225,6 +228,38 @@
         "file_path": "helpers/skills/jira-aipcc-create/SKILL.md",
         "id": "jira-aipcc-create",
         "allowed_tools": "Bash, AskUserQuestion"
+      },
+      {
+        "name": "jira-autofix-implement",
+        "description": "Plan and implement a code fix for a Jira ticket. Investigates the codebase, evaluates fix strategy, writes code changes, adds tests where feasible, validates, and commits.",
+        "category": "autofix",
+        "file_path": "helpers/skills/jira-autofix-implement/SKILL.md",
+        "id": "jira-autofix-implement",
+        "allowed_tools": "Read Write Glob Grep Bash"
+      },
+      {
+        "name": "jira-autofix-research",
+        "description": "Research a Jira spike ticket with no associated repository. Investigates the topic and writes structured findings to autofix-output/.autofix-verdict.json.",
+        "category": "autofix",
+        "file_path": "helpers/skills/jira-autofix-research/SKILL.md",
+        "id": "jira-autofix-research",
+        "allowed_tools": "Read Write Glob Grep Bash"
+      },
+      {
+        "name": "jira-autofix-resolve",
+        "description": "Orchestrate a Jira ticket fix by calling implement and review in sequence. Handles both resolve and iterate modes. Uses agent judgment to decide iteration based on review severity.",
+        "category": "autofix",
+        "file_path": "helpers/skills/jira-autofix-resolve/SKILL.md",
+        "id": "jira-autofix-resolve",
+        "allowed_tools": "Read Write Bash Skill"
+      },
+      {
+        "name": "jira-autofix-review",
+        "description": "Adversarial review of code changes against the ticket requirements. Checks for mechanical issues and does semantic analysis. Writes structured findings with severity to review-findings.json.",
+        "category": "autofix",
+        "file_path": "helpers/skills/jira-autofix-review/SKILL.md",
+        "id": "jira-autofix-review",
+        "allowed_tools": "Read Write Glob Grep Bash"
       },
       {
         "name": "jira-status-summary",
