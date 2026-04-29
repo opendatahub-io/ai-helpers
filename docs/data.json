@@ -227,6 +227,14 @@
         "allowed_tools": "Bash, AskUserQuestion"
       },
       {
+        "name": "jira-daily-recap",
+        "description": "Post a daily work summary as a Jira comment by collecting GitHub commits/PRs and Cursor chat history for the day. Use when the user asks to update a Jira ticket with today's work, log daily progress on a ticket, post a Jira comment with what was done, or runs /jira-daily-recap.",
+        "category": "jira management",
+        "file_path": "helpers/skills/jira-daily-recap/SKILL.md",
+        "id": "jira-daily-recap",
+        "allowed_tools": "Bash, GitHub MCP, Atlassian MCP"
+      },
+      {
         "name": "jira-status-summary",
         "description": "Update the Status Summary and Color Status fields on AIPCC Feature and Initiative tickets. Fetches child ticket activity via the jira-activity skill, generates a brief summary and sets the red/yellow/green color status. Use when asked to update the status summary for a Jira ticket.\n",
         "category": "aipcc",
