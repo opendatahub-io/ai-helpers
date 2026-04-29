@@ -30,16 +30,20 @@ summarizing what was accomplished on that project only.
 
 If the user omits required arguments, ask for them before proceeding.
 The date can also be given in natural language (e.g. "for March 3rd") — resolve
-it to `YYYY-MM-DD` before proceeding.
+it to `YYYY-MM-DD`, then **validate** it matches `^\d{4}-\d{2}-\d{2}$` and is a
+real calendar date; reject ambiguous inputs.
 
 ## Step-by-Step
 
 ### 1. Resolve identities
 
+- **Validate `JIRA-KEY`** — must match `^[A-Za-z][A-Za-z0-9]+-\d+$`. If it does
+  not, stop and ask for a valid key (prevents injection oddities in API calls).
 - **GitHub username** — try these in order until one succeeds:
   1. Call GitHub MCP `get_me`.
   2. Run `gh api /user --jq .login` (GitHub CLI).
-  3. Run `git config user.name` as a last resort (may differ from GitHub handle).
+  3. Run `git config user.name` only as a last resort — **warn the user** this may
+     not match their GitHub login and can skew author-filtered results.
 - **Jira cloud ID** — call Jira MCP `getAccessibleAtlassianResources` to get the
   `cloudId`.
 - **Validate ticket** — call Jira MCP `getJiraIssue` with `cloudId` and
@@ -53,7 +57,8 @@ Let `TARGET_DATE` = the user-supplied date or today's date as `YYYY-MM-DD`.
 **Commits:**
 - Call GitHub MCP `list_commits` with `owner`, `repo`, `sha` (branch if given),
   and `author` set to the GitHub username from step 1.
-- Filter to commits where `commit.author.date` starts with `TARGET_DATE`.
+- Filter to commits where `commit.author.date` is ISO 8601 and its UTC date
+  part equals `TARGET_DATE` (compare date portion only to avoid timezone drift).
 - Keep: commit message (first line) and SHA (short, first 7 chars).
 - If no commits match `TARGET_DATE` exactly, record zero commits — do NOT
   include commits from other days.
@@ -75,8 +80,9 @@ Let `TARGET_DATE` = the user-supplied date or today's date as `YYYY-MM-DD`.
   platform-specific slugs (e.g. `Users-<user>-CODING-<repo>` on macOS,
   `home-<user>-<repo>` on Linux). Match on the **repo name portion** of the
   workspace slug.
-- After resolving the path, verify it is still under `~/.cursor/projects/` to
-  prevent directory traversal.
+- After resolving the path, `realpath` (or equivalent) it and verify the
+  result is still under `~/.cursor/projects/` — reject `..`, symlinks outside
+  the tree, or traversal.
 - List `.jsonl` files **only under that project's** `agent-transcripts/` folder.
   Use file mtime as a quick pre-filter: skip files last modified before
   `TARGET_DATE` (they cannot contain messages from that day).
@@ -107,11 +113,10 @@ Let `TARGET_DATE` = the user-supplied date or today's date as `YYYY-MM-DD`.
 ### 4. Gate check — verify real activity exists for TARGET_DATE
 
 Before composing any comment, confirm that **at least one** of the following is true:
-- There is at least one GitHub commit authored on **`TARGET_DATE`**.
-- There is at least one PR updated on **`TARGET_DATE`**.
-- There is at least one transcript file modified on **`TARGET_DATE`** containing
-  substantive user messages (coding questions, feature work, debugging, design
-  decisions).
+- There is at least one GitHub commit authored on **`TARGET_DATE`** (per step 2).
+- There is at least one PR updated on **`TARGET_DATE`** (per step 2).
+- Step 3 yields **at least one substantive user message dated `TARGET_DATE`**
+  (per-line timestamp or mtime rules above); empty or irrelevant chatter alone does not pass.
 
 **If none of these are true → STOP. Do NOT post a Jira comment. Tell the user:**
 > "No activity found for <TARGET_DATE>. No Jira comment was posted."
@@ -136,6 +141,8 @@ Merge all sources into a concise progress update. Use this template:
 Rules:
 - 3-5 bullets max. Each bullet is one sentence.
 - Lead with the most impactful work.
+- **Sanitize content:** paraphrase transcript snippets into plain sentences; do
+  not paste raw user text wholesale (reduces markdown/HTML surprises in Jira).
 - Inline GitHub links where relevant: `[PR #123](https://github.com/owner/repo/pull/123)`.
 - Combine related commits + chat activity into a single bullet when they describe the same work.
 - Do NOT list raw commit SHAs unless there's no PR to link.
@@ -166,6 +173,8 @@ Format it clearly with a heading like:
 
 ## Failure Handling
 
+- On any MCP/API error → show a **short, user-safe message** (no tokens, raw
+  headers, or stack traces).
 - If Jira MCP is unavailable or auth fails → output the comment in chat and
   instruct the user to paste it manually.
 - If GitHub MCP is unavailable → try fetching GitHub data via the GitHub CLI

@@ -1,0 +1,27 @@
+queue_rules:
+  - name: default
+    merge_method: squash
+
+pull_request_rules:
+  - name: queue maintainer PRs with one approval
+    conditions:
+      - "author=@opendatahub-io/ai-helpers"
+      - "#approved-reviews-by>=1"
+      - check-success=Lint
+      - check-success=Test
+      - -draft
+      - -conflict
+    actions:
+      queue:
+        name: default
+
+  - name: queue PRs with two approvals
+    conditions:
+      - "#approved-reviews-by>=2"
+      - check-success=Lint
+      - check-success=Test
+      - -draft
+      - -conflict
+    actions:
+      queue:
+        name: default
