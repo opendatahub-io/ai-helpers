@@ -1,6 +1,6 @@
 ---
 name: python-packaging-license-checker
-description: Check whether a Python package license is compatible with redistribution
+description: Use this skill to check whether a Python package license is compatible with redistribution
   in Red Hat products, using the Fedora License Data as the authoritative policy source.
   Produces a structured six-field verdict with escalation guidance for non-trivial cases.
 allowed-tools: Bash Skill WebFetch

@@ -1,10 +1,10 @@
 ---
 name: doc-validate
 description: >
-  Validate AsciiDoc documentation for technical accuracy using
-  Extract-Identify-Validate pattern. Runs Vale, asciidoctor, lychee,
-  YAML syntax checks, and LLM-powered cross-reference validation.
-  Produces workspace/validation-findings.json.
+  Use when you need to validate AsciiDoc documentation for technical
+  accuracy using Extract-Identify-Validate pattern. Runs Vale,
+  asciidoctor, lychee, YAML syntax checks, and LLM-powered
+  cross-reference validation. Produces workspace/validation-findings.json.
 argument-hint: "<file-or-directory> [--context workspace/context-package.json]"
 model: claude-sonnet-4-5
 effort: high
@@ -72,6 +72,8 @@ Ask the LLM:
 
 Check AsciiDoc structure requirements:
 
+Source the AsciiDoc conventions helper (which internally sources `scripts/load-env.sh` for credentials and uses `scripts/parse-product-config.py` to resolve module prefixes):
+
 ```bash
 source "${CLAUDE_SKILL_DIR}/scripts/asciidoc-conventions.sh"
 for file in <files>; do
@@ -129,6 +131,12 @@ Write `workspace/validation-findings.json` with the compiled results.
 
 Primary: `workspace/validation-findings.json`
 Report to caller: total findings by severity, which tools ran vs skipped.
+
+## Gotchas
+
+- Vale, asciidoctor, and lychee are optional dependencies; if any are missing, that validator is silently skipped. Check `tools_skipped` in the output to confirm which ran.
+- Cross-reference validation (Step 4) requires a context package; without it, only deterministic checks run and the results may miss technical inaccuracies.
+- Link checking via lychee can be slow on files with many external URLs and may produce false positives for rate-limited sites.
 
 ## Stop conditions
 

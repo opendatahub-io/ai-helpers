@@ -145,3 +145,9 @@ Tell the user where the outputs landed and give a brief summary (overall recomme
 
 - `references/reviewer_prompts.md` — The full role prompt for each of the six reviewer subagents. Read this when dispatching the panel.
 - `references/report_templates.md` — PDF and PPTX structure templates with example content.
+
+## Gotchas
+
+- All six reviewer subagents must be launched in parallel in a single message — serializing them defeats the design and wastes time.
+- User corrections from Step 3.5 must be applied before synthesis; feeding raw uncorrected findings into the report produces inaccurate verdicts.
+- The PPTX deck is intentionally short-form (bullets only) — do not duplicate the full _What / So what / Suggested fix_ detail from the PDF into slides.

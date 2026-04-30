@@ -1,6 +1,6 @@
 ---
 name: coderabbit-review
-description: Evaluate CodeRabbit PR comments and fix or reply
+description: Use when you need to evaluate CodeRabbit PR comments and fix or reply
 argument-hint: [pr-number]
 compatibility: Requires gh CLI.
 allowed-tools: Bash(gh pr view:*) Bash(gh repo view:*) Bash(git remote:*) Bash(git branch:*) Bash(gh pr list:*) Bash(gh api:*) Bash(curl:*) Bash(sha256sum:*) Read Glob Grep Edit AskUserQuestion
@@ -169,3 +169,9 @@ After all comments are processed, output:
 - Be professional and concise in replies — acknowledge valid points, politely explain disagreements
 - For nitpicks: "Thanks, noted — will address in a cleanup pass" is often the right reply
 - NEVER post a reply or edit a file without explicit user approval
+
+## Gotchas
+
+- CodeRabbit's bot login is exactly `coderabbitai[bot]` — using any other string (e.g., `coderabbit`) will silently miss all comments.
+- Walkthrough and summary posts look like actionable comments but must be filtered out by checking for `<!-- walkthrough_start -->` markers.
+- Externally-sourced values in CodeRabbit suggestions (SHA256 hashes, version strings) can be wrong — always verify independently before applying.

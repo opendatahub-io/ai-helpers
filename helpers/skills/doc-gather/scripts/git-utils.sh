@@ -6,6 +6,21 @@
 #
 # Requires: git, jq
 
+if [[ "${BASH_SOURCE[0]}" == "$0" && "${1:-}" == "--help" ]]; then
+    echo "Usage: source git-utils.sh"
+    echo ""
+    echo "Git utility functions for cloning repos, listing files, resolving"
+    echo "branches, and reading file content. Source this file to use the"
+    echo "following functions:"
+    echo "  git_clone_or_fetch <repo-slug> <branch>"
+    echo "  git_list_files <repo-path> [glob-pattern]"
+    echo "  git_list_remote_branches <repo-path>"
+    echo "  git_resolve_branch <repo-path> <version> <branch-template>"
+    echo "  git_file_content <repo-path> <file-path>"
+    echo "  git_file_size <repo-path> <file-path>"
+    exit 0
+fi
+
 SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(pwd)"
 

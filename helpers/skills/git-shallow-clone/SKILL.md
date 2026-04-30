@@ -1,6 +1,6 @@
 ---
 name: git-shallow-clone
-description: Perform a shallow clone of a Git repository to a temporary location.
+description: Use this skill to perform a shallow clone of a Git repository to a temporary location.
 allowed-tools: Bash
 ---
 

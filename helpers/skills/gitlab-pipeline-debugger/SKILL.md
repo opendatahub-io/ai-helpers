@@ -83,6 +83,18 @@ If any value fails validation, reject it and ask the user to provide a corrected
     - Then, retrieve the full log of the failed job (step 4)
     - Analyze the log output to identify the error and suggest fixes
 
+## Examples
+
+```bash
+# Check CI pipeline status for the current branch
+glab ci get -d
+```
+
+```bash
+# Debug a failed pipeline by viewing the failed job's logs
+glab ci trace 789012 -R my-org/my-project
+```
+
 ## Error Handling
 
 - If `glab` is not found, instruct the user to install it

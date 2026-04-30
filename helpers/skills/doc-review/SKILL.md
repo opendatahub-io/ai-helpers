@@ -1,7 +1,7 @@
 ---
 name: doc-review
 description: >
-  Adversarial review of AsciiDoc documentation against context sources.
+  Use this skill to perform adversarial review of AsciiDoc documentation against context sources.
   Checks factual accuracy, completeness, consistency, and hallucination.
   Produces workspace/review-findings.json.
 argument-hint: "<file-or-directory> [--context workspace/context-package.json]"

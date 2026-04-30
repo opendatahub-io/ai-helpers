@@ -1,6 +1,6 @@
 ---
 name: python-packaging-source-finder
-description: Locate source code repositories for Python packages by analyzing PyPI metadata, project URLs, and code hosting platforms like GitHub, GitLab, and Bitbucket. Provides deterministic results with confidence levels.
+description: Use this skill to locate source code repositories for Python packages by analyzing PyPI metadata, project URLs, and code hosting platforms like GitHub, GitLab, and Bitbucket. Provides deterministic results with confidence levels.
 allowed-tools: Bash WebSearch WebFetch
 ---
 

@@ -74,7 +74,7 @@ The JSON **must** be a valid object matching this schema exactly:
 }
 ```
 
-### Rules for `inline_comments`
+### Inline comments rules
 
 - ONLY comment on lines that appear in the diff (changed or added lines).
   Do NOT comment on unchanged lines.
@@ -89,16 +89,16 @@ The JSON **must** be a valid object matching this schema exactly:
 - Each comment should be self-contained and actionable.
 - If there are no inline issues to report, use an empty array `[]`.
 
-### Rules for `summary`
+### Summary rules
 
 - Keep it short (2-4 sentences). The inline comments carry the detail.
 - Mention the overall quality and any critical concerns.
 
-### Rules for `positive_aspects`
+### Positive aspects rules
 
 - List 1-3 things done well. If nothing stands out, use an empty array `[]`.
 
-### Rules for `fix_prompt`
+### Fix prompt rules
 
 - Omit this field entirely if there are no actionable fixes.
 
@@ -129,6 +129,12 @@ After the script completes successfully:
 - **CI**: Confirm the review was posted to the merge request
 - **Local**: The script displays results directly in the terminal
 - **Errors**: Report any failures from the script output
+
+## Gotchas
+
+- Line numbers in `inline_comments` must reference the NEW file version, not the old one; using old-side line numbers causes comments to land on the wrong line in GitLab.
+- The JSON output must be strict JSON (no trailing commas, no comments). Invalid JSON will cause the posting script to fail.
+- Running `git status` or reviewing uncommitted changes will produce false findings that are not part of the MR diff.
 
 ## Environment Variables
 

@@ -1,6 +1,6 @@
 ---
 name: python-packaging-env-finder
-description: Investigate environment variables that can be set when building Python wheels for a given project. Analyzes setup.py, CMake files, and other build configuration files to discover customizable build environment variables.
+description: Use this skill to investigate environment variables that can be set when building Python wheels for a given project. Analyzes setup.py, CMake files, and other build configuration files to discover customizable build environment variables.
 allowed-tools: Bash Read Grep Glob
 ---
 

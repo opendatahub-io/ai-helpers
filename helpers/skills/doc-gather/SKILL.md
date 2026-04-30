@@ -1,9 +1,9 @@
 ---
 name: doc-gather
 description: >
-  Gather context for a Jira ticket or PR. Resolves ticket metadata,
-  clones relevant repos, collects candidate files, runs filtering
-  pipeline, and produces workspace/context-package.json.
+  Use when you need to gather context for a Jira ticket or PR. Resolves
+  ticket metadata, clones relevant repos, collects candidate files, runs
+  filtering pipeline, and produces workspace/context-package.json.
 argument-hint: "<JIRA-KEY|PR-URL>"
 model: claude-sonnet-4-5
 effort: high
@@ -56,7 +56,7 @@ Extract the Jira key from the PR title or body (pattern: `[A-Z]+-\d+`), then res
 Read the product configuration bundled with this skill:
 
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/scripts/parse-product-config.py ${CLAUDE_SKILL_DIR}/configs/rhoai.yaml
+python3 ${CLAUDE_SKILL_DIR}/scripts/parse-product-config.py ${CLAUDE_SKILL_DIR}/references/rhoai.yaml
 ```
 
 From the config, determine:
@@ -70,7 +70,7 @@ From the config, determine:
 For each fixVersion from the ticket:
 
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/scripts/parse-product-config.py ${CLAUDE_SKILL_DIR}/configs/rhoai.yaml --resolve-version "<fixVersion>"
+python3 ${CLAUDE_SKILL_DIR}/scripts/parse-product-config.py ${CLAUDE_SKILL_DIR}/references/rhoai.yaml --resolve-version "<fixVersion>"
 ```
 
 This determines which branch to checkout for each repo.
@@ -80,7 +80,7 @@ This determines which branch to checkout for each repo.
 For each component from the ticket:
 
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/scripts/parse-product-config.py ${CLAUDE_SKILL_DIR}/configs/rhoai.yaml --resolve-component "<component-name>"
+python3 ${CLAUDE_SKILL_DIR}/scripts/parse-product-config.py ${CLAUDE_SKILL_DIR}/references/rhoai.yaml --resolve-component "<component-name>"
 ```
 
 This identifies which source repos are relevant.
@@ -119,7 +119,7 @@ The pipeline runs six stages:
 
 ## Step 7: Read file contents
 
-Source the git utilities and read each selected candidate's content from the cloned repo:
+Source the git utilities (which internally uses `scripts/load-env.sh` to load credentials from the environment) and read each selected candidate's content from the cloned repo:
 
 ```bash
 source ${CLAUDE_SKILL_DIR}/scripts/git-utils.sh
@@ -181,6 +181,12 @@ Write `workspace/context-package.json` with this structure:
     }
 }
 ```
+
+## Gotchas
+
+- `GITHUB_TOKEN` must be set in the environment; without it, private repo clones and GitHub API calls will fail silently or return incomplete data.
+- The 100K token budget in the filtering pipeline is a hard cap; if too many repos are relevant, lower-relevance files will be dropped without warning.
+- Linked ticket resolution is capped at 5; large epics with many linked issues will only get partial context.
 
 ## Stop conditions
 

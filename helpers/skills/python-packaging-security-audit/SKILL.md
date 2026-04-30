@@ -1,6 +1,6 @@
 ---
 name: python-packaging-security-audit
-description: Evaluate the security of a Python package repository with static code analysis and a scan of git history for suspicious commits, then triaging findings to produce an actionable security report with a risk rating.
+description: Use this skill to evaluate the security of a Python package repository with static code analysis and a scan of git history for suspicious commits, then triaging findings to produce an actionable security report with a risk rating.
 allowed-tools: Bash Read Grep Skill
 ---
 

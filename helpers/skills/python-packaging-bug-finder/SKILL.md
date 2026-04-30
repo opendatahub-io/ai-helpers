@@ -1,6 +1,6 @@
 ---
 name: python-packaging-bug-finder
-description: Find known packaging bugs, fixes, and workarounds for Python projects by searching GitHub issues and analyzing their resolution status
+description: Use when you need to find known packaging bugs, fixes, and workarounds for Python projects by searching GitHub issues and analyzing their resolution status
 allowed-tools: Skill WebFetch WebSearch
 ---
 
@@ -150,3 +150,9 @@ Provide a structured analysis:
 - **Milestone assignments** → Indicates planned fix version
 
 The bug finder provides critical context for making informed decisions about package building, version selection, and issue avoidance strategies.
+
+## Gotchas
+
+- The skill depends on `python-packaging-source-finder` to locate the repo first — if that returns low confidence or no URL, the skill stops without searching any issues.
+- Closed issues may still affect your target version if the fix landed in a later release, so don't skip them during analysis.
+- GitHub issue search via WebFetch can miss issues with non-obvious titles; always try multiple keyword categories rather than relying on a single search.

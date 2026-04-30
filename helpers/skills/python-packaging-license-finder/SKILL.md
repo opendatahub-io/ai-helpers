@@ -1,6 +1,6 @@
 ---
 name: python-packaging-license-finder
-description: Deterministically find license information for Python packages by checking PyPI metadata first, then falling back to Git repository LICENSE files using shallow cloning.
+description: Use this skill to deterministically find license information for Python packages by checking PyPI metadata first, then falling back to Git repository LICENSE files using shallow cloning.
 allowed-tools: Bash Skill
 ---
 
