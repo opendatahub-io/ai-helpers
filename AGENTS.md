@@ -103,6 +103,43 @@ This project follows strict ethical guidelines for AI tool development, particul
 
 For detailed ethical guidelines and best practices, see [ETHICS.md](ETHICS.md).
 
+## Contributor Quality Checklist
+
+These rules prevent the most common review findings. Follow them when generating or modifying code in this repository.
+
+### Markdown
+- Always specify a language identifier on fenced code blocks (` ```bash `, ` ```json `, ` ```yaml `, ` ```python `, etc.). Never use bare ` ``` ` fences.
+- Ensure skill names in SKILL.md match the directory name and any registry entry.
+- Ensure script paths referenced in instructions match actual file locations.
+
+### Shell Scripts
+- Always use `set -euo pipefail`.
+- Must pass `shellcheck` with no warnings.
+- Quote all variable expansions — never interpolate unsanitized variables into commands.
+- Use `mktemp -d` for temporary directories, never hardcoded `/tmp/` paths.
+- Do not suppress errors from `gh`, `curl`, or `git` — propagate failures explicitly.
+- Use `grep -E` instead of `grep -P` (PCRE is not available on macOS).
+- Do not use `git add -A` in scripts — stage specific files only.
+
+### Python Scripts
+- Must pass `ruff check` and `ruff format --check`.
+- Add timeouts to all HTTP requests (e.g., `requests.get(url, timeout=30)`).
+- Do not use bare `except Exception: pass` — log or re-raise errors.
+- Validate inputs (ticket keys, URLs, file paths) before use in shell commands or API calls.
+- Specify `encoding="utf-8"` when opening files.
+
+### Containerfiles / CI Workflows
+- Pin base images by digest, not mutable tags.
+- Verify integrity of downloaded binaries (checksum or GPG signature).
+- Set explicit `permissions: read-all` on GitHub Actions workflow jobs.
+- Pin GitHub Actions to full 40-character commit SHAs, not version tags.
+
+### Skills and Commands
+- Run `make update` after creating or modifying any skill, command, or agent.
+- `allowed_tools` in frontmatter must follow least-privilege — only list tools the skill actually uses.
+- Never reference real people by name (see ETHICS.md).
+- Use team/org identifiers in `metadata.author`, not personal names.
+
 ## Getting Started
 
 1. **Explore Existing Tools**: Browse [categories.yaml](categories.yaml) for categorized tools or visit our [website](https://opendatahub-io.github.io/ai-helpers/)
