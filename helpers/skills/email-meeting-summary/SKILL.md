@@ -164,32 +164,11 @@ Incorporate any requested edits and re-present until the user approves.
 
 ## Step 6: Compose a Gmail Draft
 
-Write the approved summary body to a temp file, then call `create_draft.py`:
+Invoke the `gmail-draft` skill, passing:
 
-```bash
-# Write the body to a dynamically named temp file
-BODY_FILE=$(mktemp /tmp/meeting_summary_body.XXXXXX)
-cat > "$BODY_FILE" << 'BODY_EOF'
-<approved summary text>
-BODY_EOF
-
-# Create the draft
-TO="<comma-separated attendee emails from Step 1>"
-SUBJECT="[Meeting Summary] $EVENT_TITLE — <selected topic name>"
-
-python3 "${CLAUDE_SKILL_DIR}/scripts/create_draft.py" \
-  --to "$TO" \
-  --subject "$SUBJECT" \
-  --body-file "$BODY_FILE"
-```
-
-On success, confirm to the user:
-
-> "Draft created. You can find it in the Drafts folder in Gmail at
-> https://mail.google.com/mail/#drafts. Review it before sending."
-
-If the script exits with an error, show the error message and suggest the user
-check `gws auth login` permissions (the Gmail scope must include draft creation).
+- **To**: comma-separated attendee emails from Step 1
+- **Subject**: `[Meeting Summary] <EVENT_TITLE> — <selected topic name>`
+- **Body**: the approved summary text from Step 5
 
 ---
 
@@ -202,4 +181,4 @@ check `gws auth login` permissions (the Gmail scope must include draft creation)
 | No calendar events found | Widen search with `--days N` or ask user for the exact date |
 | `find_transcript.py` returns `"none"` | Inform user; transcript may not be ready yet |
 | `read_doc.py` returns empty output | Inform user; doc may be empty or wrong file |
-| `create_draft.py` fails | Show error; check Gmail scope in `gws auth login` |
+| Draft creation fails | See error guidance in the `gmail-draft` skill |
