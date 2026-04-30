@@ -1,0 +1,7 @@
+{
+  "extends": "strict",
+  "rules": {
+    "frontmatter/no-extra-fields": "off",
+    "content/no-html-in-body": "off"
+  }
+}

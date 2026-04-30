@@ -10,6 +10,9 @@ reviews:
       - name: "AgentSkills.io Specification Compliance"
         mode: warning
         instructions: "Review all changes in helpers/skills/ directory against the agentskills.io specification (https://agentskills.io/specification). Validate directory structure, SKILL.md format, frontmatter fields, and content guidelines as defined in the specification."
+      - name: "Skill Quality Review"
+        mode: warning
+        instructions: "For changes in helpers/skills/ directory, evaluate skill quality beyond specification compliance: description must clearly state WHEN the skill triggers and WHAT it does; instructions should use imperative form and explain WHY not just WHAT; bundled scripts should be in scripts/ subdirectory; skill should follow progressive disclosure (metadata ~100 words, body <500 lines). Reference the agentskills.io specification for structural requirements."
       - name: "Ethical Compliance"
         mode: error
         instructions: "Review all changes in helpers/ directory to ensure compliance with ethical guidelines defined in ETHICS.md. Pay particular attention to avoiding references to real people by name, even as stylistic examples."
