@@ -363,6 +363,14 @@
         "allowed_tools": "Bash WebSearch WebFetch"
       },
       {
+        "name": "test-broken-skill",
+        "description": "",
+        "category": "general",
+        "file_path": "helpers/skills/test-broken-skill/SKILL.md",
+        "id": "test-broken-skill",
+        "allowed_tools": ""
+      },
+      {
         "name": "torchtalk-analyzer",
         "description": "Analyze PyTorch internals across Python, C++, and CUDA layers using the TorchTalk MCP server. Use when asked about how PyTorch operators work internally, where functions are implemented, what would break if code is modified, or finding tests for PyTorch operators.",
         "category": "pytorch",
