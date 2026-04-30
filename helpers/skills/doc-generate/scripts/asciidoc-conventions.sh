@@ -6,6 +6,23 @@
 #
 # Self-contained: resolves product config via parse-product-config.py.
 
+if [[ "${1:-}" == "--help" ]]; then
+    echo "Usage: source asciidoc-conventions.sh"
+    echo ""
+    echo "AsciiDoc modular framework conventions and helper functions."
+    echo "Source this file to use the following functions:"
+    echo "  adoc_module_name <type> <slug>       - Generate module filename"
+    echo "  adoc_module_id <type> <slug>         - Generate module ID (anchor)"
+    echo "  adoc_module_type <filename>          - Detect module type from filename"
+    echo "  adoc_concept_template <id> <title>   - Generate concept template"
+    echo "  adoc_procedure_template <id> <title> - Generate procedure template"
+    echo "  adoc_reference_template <id> <title> - Generate reference template"
+    echo "  adoc_assembly_template <id> <title> <modules...> - Generate assembly"
+    echo "  adoc_validate_structure <file>       - Check AsciiDoc structure"
+    # shellcheck disable=SC2317
+    return 0 2>/dev/null || exit 0
+fi
+
 _ADOC_SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 _ADOC_PROJECT_ROOT="$(git -C "$_ADOC_SCRIPTS_DIR" rev-parse --show-toplevel 2>/dev/null || pwd)"
 

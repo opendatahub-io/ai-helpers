@@ -1,8 +1,8 @@
 ---
 name: doc-gap
 description: >
-  Analyze context sufficiency for documentation generation. Reads
-  workspace/context-package.json and produces workspace/gap-report.json
+  Use this skill to analyze context sufficiency for documentation generation.
+  Reads workspace/context-package.json and produces workspace/gap-report.json
   with severity-rated gaps and a proceed/gather-more/stop recommendation.
 argument-hint: "[component-focus]"
 model: claude-sonnet-4-5
@@ -116,3 +116,9 @@ Schema requirements:
 
 Primary: `workspace/gap-report.json`
 Report to caller: recommendation, confidence score, number of gaps by severity.
+
+## Gotchas
+
+- The `workspace/context-package.json` file must already exist (produced by `doc-gather`) — this skill will not create it.
+- Component names must exactly match entries in the context package; partial or fuzzy matches are rejected.
+- Snippets are redacted for secrets and PII before LLM assessment, so redaction artifacts in the gap report are expected, not errors.

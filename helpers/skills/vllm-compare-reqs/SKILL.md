@@ -1,6 +1,6 @@
 ---
 name: vllm-compare-reqs
-description: Compare vllm requirements files between versions
+description: Use this skill to compare vllm requirements files between versions
 allowed-tools: Bash
 user-invocable: true
 ---
@@ -238,6 +238,6 @@ The script gracefully handles:
 ## See Also
 
 - [vllm GitHub Repository](https://github.com/vllm-project/vllm)
-- [AIPCC Package Onboarding Guide](../../../../../../builder/AGENTS.md)
+- [AIPCC Package Onboarding Guide](../../../AGENTS.md)
 - [Fromager Documentation](https://fromager.readthedocs.io/)
 

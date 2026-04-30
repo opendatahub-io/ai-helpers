@@ -1,6 +1,6 @@
 ---
 name: vllm-slack-summary
-description: Generate slack summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team
+description: Use this skill to generate slack summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team
 ---
 
 # vLLM slack Summary Skill

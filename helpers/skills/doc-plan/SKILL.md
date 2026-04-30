@@ -1,9 +1,9 @@
 ---
 name: doc-plan
 description: >
-  STRAT-level documentation planning. Traverses a strategic initiative's
-  child epics and stories to produce a systematic doc plan identifying
-  what documentation is needed, what type, and at what priority.
+  Use this skill to produce a STRAT-level documentation plan. Traverses a
+  strategic initiative's child epics and stories to identify what documentation
+  is needed, what type, and at what priority.
 argument-hint: "<STRAT-KEY|EPIC-KEY>"
 model: claude-opus-4-6
 effort: high
@@ -163,3 +163,9 @@ Secondary: `workspace/doc-plan.json`
 - **Halt**: MCP Jira tools not available
 - **Warn**: Some child tickets fail to resolve (skip and note)
 - **Warn**: Ticket hierarchy exceeds 100 tickets (truncate and note)
+
+## Gotchas
+
+- Traversal is capped at 3 levels deep and 100 tickets total — larger initiatives will be silently truncated, so check the output for truncation warnings.
+- Circular ticket links (e.g., mutual parent-child references) are detected but can cause confusing "cycle detected" notes if Jira data is messy.
+- MCP Jira tools must be available; without them the skill halts immediately with no partial output.

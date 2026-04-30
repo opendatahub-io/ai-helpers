@@ -1,6 +1,6 @@
 ---
 name: gist-upload
-description: Upload a summary or plan from the current conversation as a GitHub Gist using the `gh` CLI.
+description: Use this skill to upload a summary or plan from the current conversation as a GitHub Gist using the `gh` CLI.
 allowed-tools: Bash
 ---
 

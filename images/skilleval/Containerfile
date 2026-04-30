@@ -1,0 +1,16 @@
+FROM registry.access.redhat.com/ubi9/nodejs-22:1
+
+USER 0
+RUN dnf install -y git-core && dnf clean all
+
+ARG SKILLEVAL_COMMIT=3aed8a597c017ee8058f531d4190482dda1d5154
+RUN git clone https://github.com/natifridman/skilleval.git /opt/skilleval && \
+    cd /opt/skilleval && \
+    git checkout "${SKILLEVAL_COMMIT}" && \
+    npm ci --ignore-scripts && \
+    npm run build && \
+    rm -rf .git tests
+
+WORKDIR /workspace
+
+ENTRYPOINT ["node", "/opt/skilleval/bin/skilleval.js"]

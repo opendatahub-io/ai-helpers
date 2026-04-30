@@ -1,9 +1,9 @@
 ---
 name: doc-pipeline
 description: >
-  Full pipeline orchestrator. Sequences doc-gather, doc-gap,
-  doc-validate, doc-review, and doc-generate skills based on the
-  requested pipeline mode.
+  Use this skill to orchestrate the full documentation pipeline.
+  Sequences doc-gather, doc-gap, doc-validate, doc-review, and
+  doc-generate skills based on the requested pipeline mode.
 argument-hint: "<JIRA-KEY> <gather|gap|validate|review|generate>"
 model: claude-sonnet-4-5
 effort: high
@@ -50,37 +50,37 @@ For each skill in the pipeline mode's sequence:
 
 ### Skill invocations by mode
 
-#### `gather` mode
-```
+#### mode: gather
+```text
 /doc-gather <JIRA-KEY>
 ```
 Report: context package summary.
 
-#### `gap` mode
-```
+#### mode: gap
+```text
 /doc-gather <JIRA-KEY>
 /doc-gap
 ```
 Check: if gap report recommendation is `stop`, halt and report gaps to caller.
 Report: gap report summary.
 
-#### `validate` mode
-```
+#### mode: validate
+```text
 /doc-gather <JIRA-KEY>
 /doc-validate <docs-directory>
 ```
 The docs directory is determined from the context package (the docs repo checkout path).
 Report: validation findings summary.
 
-#### `review` mode
-```
+#### mode: review
+```text
 /doc-gather <JIRA-KEY>
 /doc-validate <docs-directory>
 /doc-review <docs-directory>
 ```
 Report: validation + review findings summary.
 
-#### `generate` mode
+#### mode: generate
 ```
 /doc-gather <JIRA-KEY>
 /doc-gap
@@ -90,7 +90,7 @@ Report: validation + review findings summary.
 - If `gather-more`: warn, ask caller whether to proceed.
 - If `proceed`: continue.
 
-```
+```text
 /doc-generate
 /doc-validate workspace/generated-docs/
 /doc-review workspace/generated-docs/
@@ -101,7 +101,7 @@ Report: generation report + validation + review summaries.
 
 After all skills complete, produce a summary:
 
-```
+```text
 Pipeline: <mode>
 Ticket: <JIRA-KEY>
 Status: completed|halted

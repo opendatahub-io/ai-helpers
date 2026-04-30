@@ -1,6 +1,6 @@
 ---
 name: unit-test-project-conformant
-description: Guides the agent to write unit tests that strictly conform to the project's existing testing structure, patterns, and style by learning from similar tests before writing anything new.
+description: Use this skill to write unit tests that strictly conform to the project's existing testing structure, patterns, and style by learning from similar tests before writing anything new.
 ---
 # Unit Test (Project-Conformant) Skill
 
@@ -164,5 +164,21 @@ Before finishing, confirm:
 - Coverage level matches similar tests
 
 ---
+
+## Gotchas
+
+- Always search for at least 2-3 similar tests before writing anything; skipping discovery leads to non-conformant structure.
+- Do not create a new test file unless the project already uses separate files for similar test scopes.
+- Match the project's mocking strategy exactly — introducing mocks where the project avoids them (or vice versa) will make the test inconsistent.
+
+## Examples
+
+```text
+/unit-test-project-conformant write a test for the parse_config() function in src/config.py
+```
+
+```text
+/unit-test-project-conformant add test coverage for the new validate_input method in models/user.py
+```
 
 Use the ask questions tool if you need to clarify requirements with the user.

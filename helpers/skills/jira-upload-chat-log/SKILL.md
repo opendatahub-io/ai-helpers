@@ -1,6 +1,6 @@
 ---
 name: jira-upload-chat-log
-description: Export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation.
+description: Use this skill to export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation.
 allowed-tools: Skill, AskUserQuestion
 user-invocable: true
 ---

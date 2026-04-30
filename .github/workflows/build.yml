@@ -33,6 +33,9 @@ jobs:
           - name: cursor
             containerfile: ./images/cursor/Containerfile
             suffix: "-cursor"
+          - name: skilleval
+            containerfile: ./images/skilleval/Containerfile
+            suffix: "-skilleval"
 
     steps:
     - name: Checkout code
