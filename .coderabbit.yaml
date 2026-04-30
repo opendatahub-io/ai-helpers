@@ -4,6 +4,11 @@
 
 inheritance: true
 
+knowledge_base:
+  opt_out: false
+  learnings:
+    scope: global
+
 reviews:
   pre_merge_checks:
     custom_checks:
