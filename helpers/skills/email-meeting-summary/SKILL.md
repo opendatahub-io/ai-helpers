@@ -1,10 +1,11 @@
 ---
 name: email-meeting-summary
 description: >-
-  Review a Google Meet transcript for a specific meeting topic, then compose a
-  Gmail draft summarizing decisions and action items for that topic. Prompts for
-  meeting selection if not specified, and for topic selection before drafting.
-  Stops gracefully if the transcript is not yet available.
+  Use when the user wants to summarize a Google Meet meeting and send the summary
+  by email. Reviews a Google Meet transcript for a specific meeting topic, then
+  composes a Gmail draft summarizing decisions and action items for that topic.
+  Prompts for meeting selection if not specified, and for topic selection before
+  drafting. Stops gracefully if the transcript is not yet available.
 argument-hint: "[meeting name] [YYYY-MM-DD]"
 allowed-tools: Bash, AskUserQuestion
 user-invocable: true
@@ -171,6 +172,12 @@ Invoke the `gmail-draft` skill, passing:
 - **Body**: the approved summary text from Step 5
 
 ---
+
+## Gotchas
+
+- **Transcript not yet available**: Gemini takes several minutes after the meeting ends to generate the transcript. If `find_transcript.py` returns `"none"`, wait a few minutes and try again.
+- **Auth scope**: `gws auth login --readonly` is sufficient for reading calendar, Drive, and Docs, but draft creation requires the `gmail.compose` scope included in the default (non-readonly) login. If draft creation fails with a 403, re-authenticate without `--readonly`.
+- **Search window**: `find_meeting.py` only searches the past 7 days by default. For older meetings, pass a larger `--days N` value or specify `--date YYYY-MM-DD`.
 
 ## Error Reference
 

@@ -180,7 +180,7 @@
       },
       {
         "name": "email-meeting-summary",
-        "description": "Review a Google Meet transcript for a specific meeting topic, then compose a Gmail draft summarizing decisions and action items for that topic. Prompts for meeting selection if not specified, and for topic selection before drafting. Stops gracefully if the transcript is not yet available.",
+        "description": "Use when the user wants to summarize a Google Meet meeting and send the summary by email. Reviews a Google Meet transcript for a specific meeting topic, then composes a Gmail draft summarizing decisions and action items for that topic. Prompts for meeting selection if not specified, and for topic selection before drafting. Stops gracefully if the transcript is not yet available.",
         "category": "general",
         "file_path": "helpers/skills/email-meeting-summary/SKILL.md",
         "id": "email-meeting-summary",
@@ -209,6 +209,14 @@
         "file_path": "helpers/skills/gitlab-pipeline-debugger/SKILL.md",
         "id": "gitlab-pipeline-debugger",
         "allowed_tools": "Bash(glab:*)"
+      },
+      {
+        "name": "gmail-draft",
+        "description": "Use this skill to compose a Gmail draft from text content in the conversation. Accepts a body, recipient list, and subject — either from the user or from context — and creates a draft in the user's Gmail Drafts folder via gws.",
+        "category": "general",
+        "file_path": "helpers/skills/gmail-draft/SKILL.md",
+        "id": "gmail-draft",
+        "allowed_tools": "Bash, AskUserQuestion"
       },
       {
         "name": "google-workspace",

@@ -9,6 +9,7 @@ Exit codes:
   1  Not found or error
 """
 
+import argparse
 import json
 import subprocess
 import sys
@@ -86,6 +87,9 @@ def search_drive(term: str) -> list[dict]:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.parse_args()
+
     try:
         raw_stdin = sys.stdin.read()
         event_data = json.loads(raw_stdin)
