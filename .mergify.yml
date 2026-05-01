@@ -1,22 +1,27 @@
+merge_protections:
+  - name: maintainer
+    if:
+      - "author=@opendatahub-io/ai-helpers"
+    success_conditions:
+      - "#approved-reviews-by>=1"
+      - check-success = Lint
+      - check-success = Test
+      - -draft
+      - -conflict
+
+  - name: default
+    if:
+      - "-author=@opendatahub-io/ai-helpers"
+    success_conditions:
+      - "#approved-reviews-by>=2"
+      - check-success = Lint
+      - check-success = Test
+      - -draft
+      - -conflict
+
 merge_protections_settings:
   auto_merge_conditions: true
 
 queue_rules:
-  - name: maintainer
-    queue_conditions:
-      - "author=@opendatahub-io/ai-helpers"
-      - "#approved-reviews-by>=1"
-      - check-success=Lint
-      - check-success=Test
-      - -draft
-      - -conflict
-    merge_method: squash
-
   - name: default
-    queue_conditions:
-      - "#approved-reviews-by>=2"
-      - check-success=Lint
-      - check-success=Test
-      - -draft
-      - -conflict
     merge_method: squash
