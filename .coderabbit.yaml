@@ -5,6 +5,39 @@
 inheritance: true
 
 reviews:
+  path_instructions:
+    - path: "helpers/skills/**/SKILL.md"
+      instructions: >-
+        These files are prompt instructions for AI coding agents, not executable
+        code. Focus review on: (1) correctness of documented shell/API commands,
+        (2) consistency between instructions and actual script paths/filenames,
+        (3) ethical compliance per ETHICS.md, (4) agentskills.io spec compliance,
+        (5) fenced code blocks have language identifiers.
+        Do NOT flag theoretical CWE vulnerabilities (injection, SSRF, path
+        traversal) on prompt text that describes what an AI agent should do —
+        these are instructions, not attack surfaces. Only flag CWEs on actual
+        executable scripts referenced by the skill.
+    - path: "helpers/commands/*.md"
+      instructions: >-
+        These are command prompt files for AI agents. Same review priorities
+        as SKILL.md: focus on correctness, consistency, and markdown quality.
+        Do NOT flag CWE vulnerabilities on prompt instructions.
+    - path: "helpers/skills/**/scripts/**"
+      instructions: >-
+        These are executable scripts. Apply full security review including
+        CWE analysis, input validation, error handling, and platform
+        compatibility (macOS + RHEL/Fedora). Shell scripts must use
+        set -euo pipefail.
+    - path: "docs/data.json"
+      instructions: >-
+        This is a generated file produced by make update. Verify it is in sync
+        with plugin metadata. Review allowed_tools entries for least-privilege
+        compliance.
+    - path: "images/**"
+      instructions: >-
+        Review Containerfiles for supply chain security: pinned base images,
+        verified downloads, multi-arch support. Review shell scripts for
+        proper error handling and input validation.
   pre_merge_checks:
     custom_checks:
       - name: "AgentSkills.io Specification Compliance"
