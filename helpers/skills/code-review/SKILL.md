@@ -52,6 +52,10 @@ zero inline comments. Prioritize critical and major issues over minor stylistic
 preferences. Avoid repeating the same type of feedback across multiple
 locations — one representative comment is sufficient.
 
+When referencing coding standards, security norms, best practices, or
+component-specific behavior, search for and cite the authoritative source
+(official documentation, RFCs, upstream references) to back up the claim.
+
 ## Step 2: Produce Review JSON
 
 Write your review output as a JSON file at `/tmp/ai-review-output.json`.
