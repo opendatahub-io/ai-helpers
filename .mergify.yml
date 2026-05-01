@@ -21,6 +21,7 @@ merge_protections:
 
 merge_protections_settings:
   auto_merge_conditions: true
+  reporting_method: check-runs
 
 queue_rules:
   - name: default
