@@ -1,22 +1,33 @@
 merge_protections_settings:
   auto_merge_conditions: true
 
+merge_protections:
+  - name: ci-and-review
+    if:
+      - base = main
+    success_conditions:
+      - "#approved-reviews-by >= 1"
+      - check-success = Lint
+      - check-success = Test
+      - -draft
+      - -conflict
+
 queue_rules:
   - name: maintainer
     queue_conditions:
-      - "author=@opendatahub-io/ai-helpers"
-      - "#approved-reviews-by>=1"
-      - check-success=Lint
-      - check-success=Test
+      - "author = @opendatahub-io/ai-helpers"
+      - "#approved-reviews-by >= 1"
+      - check-success = Lint
+      - check-success = Test
       - -draft
       - -conflict
     merge_method: squash
 
   - name: default
     queue_conditions:
-      - "#approved-reviews-by>=2"
-      - check-success=Lint
-      - check-success=Test
+      - "#approved-reviews-by >= 2"
+      - check-success = Lint
+      - check-success = Test
       - -draft
       - -conflict
     merge_method: squash
