@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  lint-plugins:
+  Lint:
     runs-on: ubuntu-latest
     permissions:
       contents: read
