@@ -30,13 +30,15 @@ Analyze the conversation to determine:
    - `Initiative`: use when capturing internal improvements
    - `Task`: unit of work to be accomplished, not end-user facing
 4. **Component**: One of the valid AIPCC components:
-   - `PyTorch`
-   - `AIPCC Productization`
    - `Accelerator Enablement`
-   - `Wheel Package Index`
+   - `AI Eng Agilist`
    - `AI Testing + Workflow Validation`
-   - `Model Validation`
+   - `AIPCC Ecosystems`
+   - `AIPCC Productization`
    - `Development Platform`
+   - `Model Validation`
+   - `PyTorch`
+   - `Wheel Package Index`
 
 5. **Parent Epic** (optional): If the user specifies an epic key (e.g. AIPCC-1234), include it as the parent
 
