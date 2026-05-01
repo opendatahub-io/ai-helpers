@@ -1,4 +1,5 @@
 merge_protections:
+  # Maintainer-opened PRs require only one approval before being auto-merged
   - name: maintainer
     if:
       - "author=@opendatahub-io/ai-helpers"
@@ -9,6 +10,7 @@ merge_protections:
       - -draft
       - -conflict
 
+  # Member-opened PRs require two approvals before being auto-merged
   - name: default
     if:
       - "-author=@opendatahub-io/ai-helpers"
@@ -19,9 +21,16 @@ merge_protections:
       - -draft
       - -conflict
 
+# When merge conditions defined in `merge_protections` are met, PRs are automatically merged
+# See https://docs.mergify.com/merge-protections/auto-merge/
 merge_protections_settings:
   auto_merge_conditions: true
   reporting_method: check-runs
+
+merge_queue:
+  # Enable in-place checks only; this means no draft PRs to validate merging
+  # https://docs.mergify.com/merge-queue/parallel-checks/#inplace-checks-no-batch-prs
+  max_parallel_checks: 1
 
 queue_rules:
   - name: default
