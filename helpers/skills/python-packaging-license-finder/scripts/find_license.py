@@ -11,6 +11,7 @@ Usage:
 
 import argparse
 import json
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -59,8 +60,20 @@ def main():
     parser = argparse.ArgumentParser(description="Find license information for Python packages")
     parser.add_argument("package", help="Package name")
     parser.add_argument("version", nargs="?", help="Package version (optional)")
+    parser.add_argument("--source-url", help="Source repository URL (skip PyPI, clone directly)")
 
     args = parser.parse_args()
+
+    if args.source_url:
+        url = args.source_url.strip()
+        if not re.match(r"^https?://", url) or re.search(r"[\x00-\x1f]", url):
+            print(f"ERROR: Invalid source URL: {url}")
+            print("Only https:// URLs are accepted for source repositories")
+            sys.exit(1)
+        print(f"Source URL provided directly: {url}")
+        print(f"SOURCE REPOSITORY: {url}")
+        print("Use git:shallow-clone skill to search for LICENSE files in the repository")
+        sys.exit(0)
 
     # Fetch PyPI data
     print(f"Fetching PyPI data for {args.package}" + (f" {args.version}" if args.version else ""))

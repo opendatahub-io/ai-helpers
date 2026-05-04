@@ -12,6 +12,21 @@ This skill helps you deterministically find license information for Python packa
 
 When a user asks to find the license for a Python package, follow this deterministic process:
 
+### Step 0: Source URL Priority
+
+If a source repository URL is provided by the caller, skip PyPI lookup entirely:
+
+1. Pass the URL directly to the `git:shallow-clone` skill
+2. Search for LICENSE files in the cloned repository (see Step 2.3-2.4 below)
+3. Report the license found
+
+You can also use the script with a source URL to trigger this flow:
+```bash
+./scripts/find_license.py <package_name> --source-url <url>
+```
+
+If no source URL is provided, proceed with Step 1.
+
 ### Step 1: Check PyPI Metadata
 First, attempt to find the license from PyPI using the package inspection script:
 
