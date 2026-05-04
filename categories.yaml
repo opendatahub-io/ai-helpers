@@ -38,3 +38,10 @@ Jira Management:
   - jira-workitem-search
   - jira-activity
   - jira-upload-chat-log
+
+CVE Remediation:
+  - jira-autofix-cve-resolve
+  - cve-scan
+  - cve-fix-apply
+  - cve-verify
+  - cve-vex-assess

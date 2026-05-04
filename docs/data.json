@@ -19,6 +19,9 @@
     },
     "jira management": {
       "name": "Jira Management"
+    },
+    "cve remediation": {
+      "name": "CVE Remediation"
     }
   },
   "tools": {
@@ -113,6 +116,38 @@
         "file_path": "helpers/skills/coderabbit-review/SKILL.md",
         "id": "coderabbit-review",
         "allowed_tools": "Bash(gh pr view:*) Bash(gh repo view:*) Bash(git remote:*) Bash(git branch:*) Bash(gh pr list:*) Bash(gh api:*) Bash(curl:*) Bash(sha256sum:*) Read Glob Grep Edit AskUserQuestion"
+      },
+      {
+        "name": "cve-fix-apply",
+        "description": "Use this skill to apply a CVE fix to a repository. Reads .cve-fix/examples.md for repo-specific guidance (branch naming, co-upgrades, files that change together). Supports Go version bumps, module updates, npm overrides, Python deps, and base image updates. Writes result to autofix-output/cve-fix-result.json.",
+        "category": "cve remediation",
+        "file_path": "helpers/skills/cve-fix-apply/SKILL.md",
+        "id": "cve-fix-apply",
+        "allowed_tools": "Read Write Glob Grep Bash Edit"
+      },
+      {
+        "name": "cve-scan",
+        "description": "Use this skill to scan a cloned repository for a specific CVE using version-matched toolchains. Supports Go (govulncheck with GOTOOLCHAIN), Node.js (npm audit), and Python (pip-audit). Writes scan result to autofix-output/cve-scan-result.json.",
+        "category": "cve remediation",
+        "file_path": "helpers/skills/cve-scan/SKILL.md",
+        "id": "cve-scan",
+        "allowed_tools": "Bash Read Glob Write"
+      },
+      {
+        "name": "cve-verify",
+        "description": "Use this skill to verify that a CVE fix actually resolved the vulnerability by scanning the compiled binary or updated manifests. Catches transitive dep overrides, replace directives, and lockfile conflicts. Writes result to autofix-output/cve-verify-result.json.",
+        "category": "cve remediation",
+        "file_path": "helpers/skills/cve-verify/SKILL.md",
+        "id": "cve-verify",
+        "allowed_tools": "Bash Read Write"
+      },
+      {
+        "name": "cve-vex-assess",
+        "description": "Use this skill to determine VEX (Vulnerability Exploitability eXchange) justification when a CVE is not present in scan results. Auto-detects three justification types. Cases requiring human judgment are flagged for manual review. Writes result to autofix-output/cve-vex-result.json.",
+        "category": "cve remediation",
+        "file_path": "helpers/skills/cve-vex-assess/SKILL.md",
+        "id": "cve-vex-assess",
+        "allowed_tools": "Bash Read Write"
       },
       {
         "name": "doc-gap",
@@ -241,6 +276,14 @@
         "file_path": "helpers/skills/jira-aipcc-create/SKILL.md",
         "id": "jira-aipcc-create",
         "allowed_tools": "Bash, AskUserQuestion"
+      },
+      {
+        "name": "jira-autofix-cve-resolve",
+        "description": "Use this skill to orchestrate CVE remediation for a Jira Vulnerability ticket. Resolves affected repositories via component-repository-mappings.json, then for each repo and branch: scans, fixes, verifies, and creates PRs. Handles upstream-to-downstream ordering, fork fallback, existing PR detection, VEX justifications, and multi-branch coverage. Writes final verdict to autofix-output/.autofix-verdict.json.",
+        "category": "cve remediation",
+        "file_path": "helpers/skills/jira-autofix-cve-resolve/SKILL.md",
+        "id": "jira-autofix-cve-resolve",
+        "allowed_tools": "Read Write Bash Skill"
       },
       {
         "name": "jira-status-summary",
