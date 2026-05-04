@@ -17,12 +17,15 @@ status.
 ## Inputs
 
 - **package_name**: Python package name
+- **repo_url**: upstream repository URL (if already known — skip the source-finder step and clone this directly)
 - **source_available**: whether buildable source exists (if already known)
 - **upstream_org**: name and primary country of the maintaining organisation (if already known)
 
 ## Step 1: Locate and clone the source repository
 
-Use the python-packaging-source-finder skill to find the upstream repo URL:
+If a `repo_url` is provided, skip the source-finder step and use the provided URL directly with the git-shallow-clone skill.
+
+Otherwise, use the python-packaging-source-finder skill to find the upstream repo URL:
 
 ```text
 Skill: python-packaging-source-finder
