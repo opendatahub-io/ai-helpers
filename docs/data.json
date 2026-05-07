@@ -342,6 +342,14 @@
         "allowed_tools": ""
       },
       {
+        "name": "jira-work-balance-report",
+        "description": "Analyze a Jira Plan CSV export to measure work distribution against org targets (40% Tech Debt, 40% New Features, 20% Learning). Use when user wants to understand work balance, portfolio distribution, or alignment with organizational goals.",
+        "category": "aipcc",
+        "file_path": "helpers/skills/jira-work-balance-report/SKILL.md",
+        "id": "jira-work-balance-report",
+        "allowed_tools": "Bash"
+      },
+      {
         "name": "oci-cve-checker",
         "description": "Use this skill to compare CVE vulnerabilities between two OCI container images and generate reports showing fixed and new CVEs.",
         "category": "general",
