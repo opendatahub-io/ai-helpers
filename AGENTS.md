@@ -107,6 +107,10 @@ For detailed ethical guidelines and best practices, see [ETHICS.md](ETHICS.md).
 
 These rules prevent the most common review findings. Follow them when generating or modifying code in this repository.
 
+### General
+- Do not create orphaned test files that will never be executed.
+- Do not add unnecessary external dependencies in simple scripts.
+
 ### Markdown
 - Always specify a language identifier on fenced code blocks (` ```bash `, ` ```json `, ` ```yaml `, ` ```python `, etc.). Never use bare ` ``` ` fences.
 - Ensure skill names in SKILL.md match the directory name and any registry entry.
@@ -133,12 +137,14 @@ These rules prevent the most common review findings. Follow them when generating
 - Verify integrity of downloaded binaries (checksum or GPG signature).
 - Set explicit `permissions: read-all` on GitHub Actions workflow jobs.
 - Pin GitHub Actions to full 40-character commit SHAs, not version tags.
+- Pin inline script dependencies to specific versions.
 
 ### Skills and Commands
 - Run `make update` after creating or modifying any skill, command, or agent.
 - `allowed_tools` in frontmatter must follow least-privilege — only list tools the skill actually uses.
 - Never reference real people by name (see ETHICS.md).
 - Use team/org identifiers in `metadata.author`, not personal names.
+- Prefer native CLI tools (`gh`, `glab`, `acli`) via Bash over MCP equivalents for forge and service operations. These CLIs are already available, add no tool schema overhead to the system prompt, and are cheaper on tokens. Provide explicit CLI commands in skill instructions instead of relying on MCP discovery.
 
 ## Getting Started
 
