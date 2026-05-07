@@ -37,6 +37,7 @@ Jira Management:
   - jira-workitem-attach
   - jira-workitem-search
   - jira-activity
+  - jira-daily-recap
   - jira-upload-chat-log
 
 CVE Remediation:
