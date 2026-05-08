@@ -1,0 +1,226 @@
+# Accelerator Variant EPIC Templates
+#
+# Defines the EPIC decomposition templates for each accelerator type.
+# Used by generate_epics.py to produce artifact files and Jira JSON.
+#
+# Placeholders resolved at generation time:
+#   {variant}            - Full variant name (e.g., "cuda12.9-ubi9")
+#   {release}            - Release version (e.g., "3.5 EA1")
+#   {torch_version}      - PyTorch version (e.g., "2.10")
+#   {vllm_version}       - vLLM version (e.g., "0.19.1")
+#   {accel_version}      - Accelerator display name with version (e.g., "CUDA 12.9")
+#   {accelerator}        - Accelerator identifier (e.g., "cuda", "rocm")
+#   {hardware_type}      - Hardware for QE/AE validation (e.g., "NVIDIA GPU")
+#   {sendnn_constraints} - Spyre-only post-release constraints
+
+# -------------------------------------------------------------------
+# Accelerator definitions
+# -------------------------------------------------------------------
+# Each entry maps an accelerator identifier to its default template
+# and optional selection rules for version-dependent templates.
+
+accelerators:
+  cuda:
+    default_template: standard_with_qe
+    template_rules:
+      - match_version_ge: 13
+        template: cuda_with_modelopt
+    variant_suffix: "-ubi9"
+    labels:
+      - aipcc-ae-cuda
+
+  rocm:
+    default_template: rocm
+    variant_suffix: "-ubi9"
+    labels:
+      - aipcc-ae-rocm
+
+  gaudi:
+    default_template: gaudi
+    variant_suffix: "-ubi9"
+    variant_name_override: gaudi
+    labels:
+      - aipcc-ae-gaudi
+
+  neuron:
+    default_template: standard_with_ae_testplan
+    variant_suffix: "-ubi9"
+    variant_name_override: neuron
+    labels:
+      - aipcc-ae-neuron
+
+  tpu:
+    default_template: standard_with_qe
+    variant_suffix: "-ubi9"
+    variant_name_override: tpu
+    labels:
+      - aipcc-ae-tpu
+
+  cpu:
+    default_template: cpu
+    variant_suffix: "-ubi9"
+    variant_name_override: cpu
+    labels:
+      - aipcc-ae-cpu
+
+  spyre:
+    default_template: spyre
+    variant_suffix: "-ubi9"
+    variant_name_override: spyre
+    labels:
+      - aipcc-ae-spyre
+
+# -------------------------------------------------------------------
+# EPIC templates
+# -------------------------------------------------------------------
+# Each template defines a list of EPICs to create as children of the
+# parent feature ticket. Summaries and descriptions use placeholders
+# that are resolved at generation time.
+
+templates:
+  standard_with_qe:
+    epics:
+      - summary: "Update {variant} base images for {release}"
+        description: "Publish the initial development base image for {release}."
+      - summary: "Update torch to {torch_version}"
+        description: >-
+          Update PyTorch to version {torch_version} for the {variant}
+          variant targeting {release}.
+      - summary: "Update vllm to {vllm_version}"
+        description: >-
+          Update vLLM to version {vllm_version} for the {variant}
+          variant targeting {release}.
+      - summary: "QE: Validate {accelerator} packages for {release}"
+        description: >-
+          Validate that {accelerator} variant wheels from the {release}
+          package index install and function correctly on the corresponding
+          base image running on {hardware_type} hardware. Pull the {release}
+          base image, install wheels from the index, and run probe tests
+          for packages that have them; otherwise run import tests.
+
+  cuda_with_modelopt:
+    epics:
+      - summary: "Update {variant} base images for {release}"
+        description: "Publish the initial development base image for {release}."
+      - summary: "Update torch to {torch_version}"
+        description: >-
+          Update PyTorch to version {torch_version} for the {variant}
+          variant targeting {release}.
+      - summary: "Update vllm to {vllm_version}"
+        description: >-
+          Update vLLM to version {vllm_version} for the {variant}
+          variant targeting {release}.
+      - summary: "Update Model-Opt packages (speculators, llmcompressor)"
+        description: >-
+          Update Model-Opt ecosystem packages for the {variant} variant
+          targeting {release}.
+      - summary: "QE: Validate CUDA packages for {release}"
+        description: >-
+          Validate CUDA variant wheels from the {release} package index
+          install and function correctly on the corresponding base image
+          running on {hardware_type} hardware.
+
+  rocm:
+    epics:
+      - summary: "Update {variant} stack for {release}"
+        description: >-
+          Update the ROCm accelerator stack in the {variant} variant
+          for {release}.
+      - summary: "Update torch to {torch_version}"
+        description: >-
+          Update PyTorch to version {torch_version} for the {variant}
+          variant targeting {release}.
+      - summary: "Update vllm to {vllm_version}"
+        description: >-
+          Update vLLM to version {vllm_version} for the {variant}
+          variant targeting {release}.
+      - summary: "AE Test Plan for {release} for {accel_version}"
+        description: >-
+          Accelerator Engineering test plan for {accel_version}
+          targeting {release}.
+
+  gaudi:
+    epics:
+      - summary: "Update gaudi-ubi9 stack to {accel_version}"
+        description: >-
+          Update the Gaudi SDK/driver stack in base images and builder.
+      - summary: "Update torch to {torch_version}"
+        description: >-
+          Update PyTorch to version {torch_version} for the gaudi-ubi9
+          variant targeting {release}.
+      - summary: "Update vllm to {vllm_version}"
+        description: >-
+          Update vLLM to version {vllm_version} for the gaudi-ubi9
+          variant targeting {release}.
+
+  standard_with_ae_testplan:
+    epics:
+      - summary: "Update {variant} stack for {release}"
+        description: >-
+          Update the {accelerator} accelerator stack for {release}.
+      - summary: "Update torch to {torch_version}"
+        description: >-
+          Update PyTorch to version {torch_version} for the {variant}
+          variant targeting {release}.
+      - summary: "Update vllm to {vllm_version}"
+        description: >-
+          Update vLLM to version {vllm_version} for the {variant}
+          variant targeting {release}.
+      - summary: "AE TestPlan: Validate {accelerator} for {release}"
+        description: >-
+          Accelerator Engineering test plan for {accelerator}
+          targeting {release}.
+
+  cpu:
+    epics:
+      - summary: "Update cpu-ubi9 stack for {release}"
+        description: "Update the CPU accelerator stack for {release}."
+      - summary: "Update torch to {torch_version}"
+        description: >-
+          Update PyTorch to version {torch_version} for the cpu-ubi9
+          variant targeting {release}.
+      - summary: "Deliver cpu-ubi9 wheels for vLLM {vllm_version}"
+        description: >-
+          Deliver CPU wheels for vLLM {vllm_version} targeting {release}.
+      - summary: "Build and publish CPU-only wheel packages on ppc64le and s390x"
+        description: >-
+          Multi-architecture CPU wheel builds for IBM Power and IBM Z.
+
+  spyre:
+    epics:
+      - summary: "Update wheels in the builder collection"
+        description: >-
+          Update the Spyre wheel collection in the builder for {release}.
+      - summary: "Update wheel collections"
+        description: >-
+          Update wheel collections to support new package builds.
+          Child stories: Update wheel collection in rhaiis/pipeline,
+          Update wheel collections in rhai/pipeline.
+      - summary: "RHAII Containerfile/environment variable updates"
+        description: >-
+          Update RHAII containerfile/env variable/entrypoint to support
+          new Spyre stack.
+      - summary: "Create and share RC images for test with IBM"
+        description: >-
+          Create and share RC images for test with IBM. Depends on
+          base image and wheel collections.
+      - summary: "Create customer-facing base images for IBM Spyre"
+        description: >-
+          Create final customer-facing base images for IBM Spyre.
+          Depends on RC images and testing.
+    optional_epics:
+      - condition: sendnn_constraints
+        summary: "Post-{release}: add Spyre constraints to global constraints in builder"
+        description: >-
+          After {release}, add the following constraints to builder:
+          {sendnn_constraints}.
+
+# -------------------------------------------------------------------
+# Jira defaults
+# -------------------------------------------------------------------
+
+jira:
+  project: AIPCC
+  type: Epic
+  component: "AIPCC Ecosystems"
+  security: "Red Hat Employee"

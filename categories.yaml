@@ -1,4 +1,5 @@
 AIPCC:
+  - aipcc-accel-variant-decomposer
   - aipcc-commit-suggest
   - commit-message-assistant
   - aipcc-adr-assistant
