@@ -56,6 +56,37 @@ When referencing coding standards, security norms, best practices, or
 component-specific behavior, search for and cite the authoritative source
 (official documentation, RFCs, upstream references) to back up the claim.
 
+## Step 1.5: Optional Security Review (prodsec-skills)
+
+This step is **best-effort**. If the `prodsec-skills` plugin is not installed,
+skip this entire section and proceed to Step 2.
+
+Check whether any `prodsec-skills:*` skills are listed in your available skills.
+If none are found, skip ahead to Step 2 immediately.
+
+When the plugin is available, invoke the following skills **on the same diff**
+reviewed in Step 1. Incorporate any findings into the `inline_comments` array
+in Step 2 (use severity `critical` or `major` for security issues).
+
+1. **`prodsec-skills:differential-review`** — always invoke this.
+   It provides a structured security-focused review of the diff.
+
+2. **`prodsec-skills:input-validation-injection`** — invoke only if the diff
+   touches code that handles external input (HTTP handlers, CLI argument
+   parsing, form processing, database queries, file reads from user paths).
+
+3. **`prodsec-skills:insecure-defaults`** — invoke only if the diff touches
+   configuration, environment variable handling, authentication setup, or
+   default values for security-sensitive settings.
+
+4. **`prodsec-skills:container-hardening`** — invoke only if the diff includes
+   changes to Containerfiles, Dockerfiles, or container-related Kubernetes
+   manifests.
+
+Do not invoke skills that are not relevant to the diff. If a skill produces
+no findings, that is fine, move on. Merge any security findings from these
+skills into the review JSON produced in Step 2.
+
 ## Step 2: Produce Review JSON
 
 Write your review output as a JSON file at `/tmp/ai-review-output.json`.

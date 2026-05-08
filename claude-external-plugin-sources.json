@@ -8,6 +8,14 @@
         "source": "url",
         "url": "https://github.com/opendatahub-io/fips-compliance-checker-claude-code-plugin.git"
       }
+    },
+    {
+      "name": "prodsec-skills",
+      "description": "Red Hat Product Security skills library for secure development, security testing, and auditing",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/RedHatProductSecurity/prodsec-skills.git"
+      }
     }
   ]
 }
