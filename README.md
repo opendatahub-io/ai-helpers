@@ -326,13 +326,13 @@ make lint
 This runs the following checks in order:
 
 1. **[claudelint](https://github.com/stbenjam/claudelint)** — validates the Claude plugin structure (x86_64 only, runs in a container)
-2. **[skilleval](https://github.com/natifridman/skilleval)** — lints skills against the agentskills.io spec (`--strict` mode)
+2. **[skill-linter](https://github.com/aicatalyst-team/skill-linter)** — lints skills against the agentskills.io spec (`--strict` mode)
 3. **[ruff](https://docs.astral.sh/ruff/) check** — Python syntax and style errors
 4. **ruff format --check** — Python formatting consistency
 5. **[shellcheck](https://www.shellcheck.net/)** — shell script analysis for all `*.sh` files
 6. **Staleness check** — runs `make update` and fails if it produces uncommitted changes
 
-You can auto-fix some skilleval issues with `make skilleval-fix`.
+You can auto-fix some skill-linter issues with `make skill-linter-fix`.
 
 ## Ethical Guidelines
 

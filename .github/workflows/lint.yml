@@ -41,20 +41,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install ruff PyYAML
 
-    - name: Build skilleval
-      id: build_skilleval
-      env:
-        SKILLEVAL_COMMIT: 3aed8a597c017ee8058f531d4190482dda1d5154
-      run: |
-        git clone https://github.com/natifridman/skilleval.git /tmp/skilleval
-        git -C /tmp/skilleval checkout "$SKILLEVAL_COMMIT"
-        cd /tmp/skilleval && npm ci && npm run build
+    - name: Install skill-linter
+      run: npm install -g skill-linter
 
     - name: Run lint
       run: make lint
-      env:
-        SKILLEVAL_BIN: /tmp/skilleval/bin/skilleval.js
 
-    - name: Run skilleval with GitHub annotations
-      if: always() && steps.build_skilleval.outcome == 'success'
-      run: node /tmp/skilleval/bin/skilleval.js check helpers/skills/*/ --strict --format github
+    - name: Run skill-linter with GitHub annotations
+      if: always()
+      run: npx skill-linter check helpers/skills/*/ --strict --format github
