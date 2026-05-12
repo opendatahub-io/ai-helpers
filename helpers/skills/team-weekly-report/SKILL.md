@@ -22,10 +22,9 @@ combining JIRA issue data and GitHub PR activity.
 
 ## Prerequisites
 
-- Python 3 and `uv` must be installed and available in PATH
+- `acli` must be installed and authenticated (`acli jira auth`)
 - `gh` CLI must be installed and authenticated (`gh auth login`)
-- `JIRA_API_TOKEN` environment variable must be set with a valid API token
-- `JIRA_EMAIL` environment variable must be set with your Atlassian account email
+- `jq` and `yq` must be installed and available in PATH
 - A team config YAML file (see Config Format below)
 
 ## Config Format
@@ -78,7 +77,7 @@ Run the JIRA fetch script to collect closed, open, stale, and blocked
 issues for every team member:
 
 ```bash
-"${CLAUDE_SKILL_DIR}/scripts/fetch_team_jira.py" --config <CONFIG_PATH> --days <N>
+"${CLAUDE_SKILL_DIR}/scripts/fetch_team_jira.sh" --config <CONFIG_PATH> --days <N>
 ```
 
 The script outputs JSON to stdout with a `members` array. Each member
@@ -93,7 +92,7 @@ Run the GitHub fetch script to collect open and merged PRs for every
 team member across the configured repositories:
 
 ```bash
-"${CLAUDE_SKILL_DIR}/scripts/fetch_team_github.py" --config <CONFIG_PATH> --days <N>
+"${CLAUDE_SKILL_DIR}/scripts/fetch_team_github.sh" --config <CONFIG_PATH> --days <N>
 ```
 
 The script outputs JSON to stdout with a `members` array. Each member
@@ -172,7 +171,7 @@ Note any team members with no activity.]
 ## Error Handling
 
 - **Missing config file**: Ask the user for the path
-- **Missing JIRA_API_TOKEN or JIRA_EMAIL**: Tell user to set env vars
+- **acli not authenticated**: Tell user to run `acli jira auth`
 - **gh not authenticated**: Tell user to run `gh auth login`
 - **Script errors**: Display stderr output and suggest checking credentials
 - **No data for a member**: Note it in the report rather than failing

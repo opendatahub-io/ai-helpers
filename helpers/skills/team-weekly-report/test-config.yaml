@@ -1,25 +1,28 @@
 team:
   name: "Example Team"
-  jira:
-    url: "https://mycompany.atlassian.net"
-    project: "PROJ"
-    component: "MyComponent"
-  github:
-    repositories:
-      - "org/repo1"
-      - "org/repo2"
   members:
-    - name: "John Doe"
+    - name: "Engineer One"
       jira_username: "712020:00000000-0000-0000-0000-000000000001"
-      github_username: "johndoe"
-      notes_file: "notes/john_doe.md"
+      github_username: "engineer1"
+      notes_file: "notes/engineer_one.md"
 
-    - name: "Mary Jane"
+    - name: "Engineer Two"
       jira_username: "712020:00000000-0000-0000-0000-000000000002"
-      github_username: "maryjane"
-      notes_file: "notes/mary_jane.md"
+      github_username: "engineer2"
+      notes_file: "notes/engineer_two.md"
+
+jira:
+  url: "https://mycompany.atlassian.net"
+  project_key: "PROJ"
+  component: "MyComponent"
+
+github:
+  repositories:
+    - "org/repo1"
+    - "org/repo2"
+
+report:
+  lookback_days: 7
 
 defaults:
-  jira_lookback_days: 7
-  github_lookback_days: 7
   stale_threshold_days: 7

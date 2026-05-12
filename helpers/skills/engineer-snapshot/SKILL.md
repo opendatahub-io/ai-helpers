@@ -22,10 +22,9 @@ PR activity, and open action items from 1:1 notes.
 
 ## Prerequisites
 
-- Python 3 and `uv` must be installed and available in PATH
+- `acli` must be installed and authenticated (`acli jira auth`)
 - `gh` CLI must be installed and authenticated (`gh auth login`)
-- `JIRA_API_TOKEN` environment variable must be set with a valid API token
-- `JIRA_EMAIL` environment variable must be set with your Atlassian account email
+- `jq` and `yq` must be installed and available in PATH
 - A team config YAML file (see Config Format below)
 
 ## Config Format
@@ -89,10 +88,9 @@ Read the config file to extract the engineer's details:
 Run the JIRA fetch script to get active and blocked issues:
 
 ```bash
-"${CLAUDE_SKILL_DIR}/scripts/fetch_engineer_jira.py" \
+"${CLAUDE_SKILL_DIR}/scripts/fetch_engineer_jira.sh" \
   --config <CONFIG_PATH> \
-  --engineer "<ENGINEER_NAME>" \
-  --days <N>
+  --engineer "<ENGINEER_NAME>"
 ```
 
 The script outputs JSON with `active_issues` and `blocked_issues`
@@ -212,7 +210,7 @@ If no open items found: "All action items are completed."]
 
 - **Engineer not found in config**: List available team members
 - **Missing config file**: Ask the user for the path
-- **Missing JIRA_API_TOKEN or JIRA_EMAIL**: Tell user to set env vars
+- **acli not authenticated**: Tell user to run `acli jira auth`
 - **gh not authenticated**: Tell user to run `gh auth login`
 - **Script errors**: Display stderr and suggest checking credentials
 - **No notes file**: Skip notes section, note in output
