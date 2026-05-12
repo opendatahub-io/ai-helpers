@@ -45,3 +45,7 @@ CVE Remediation:
   - cve-fix-apply
   - cve-verify
   - cve-vex-assess
+
+Team Management:
+  - team-weekly-report
+  - engineer-snapshot

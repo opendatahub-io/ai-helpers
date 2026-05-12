@@ -22,6 +22,9 @@
     },
     "cve remediation": {
       "name": "CVE Remediation"
+    },
+    "team management": {
+      "name": "Team Management"
     }
   },
   "tools": {
@@ -222,6 +225,14 @@
         "allowed_tools": "Bash, AskUserQuestion"
       },
       {
+        "name": "engineer-snapshot",
+        "description": "Generate an engineer activity snapshot showing active JIRA issues with days open, blocked work, upstream PRs awaiting review, recently merged PRs, and open action items from 1:1 notes. Requires a team config YAML file. Use when the user asks to review an engineer's status, check someone's workload, or prepare for a 1:1.",
+        "category": "team management",
+        "file_path": "helpers/skills/engineer-snapshot/SKILL.md",
+        "id": "engineer-snapshot",
+        "allowed_tools": "Bash, Read"
+      },
+      {
         "name": "gist-upload",
         "description": "Use this skill to upload a summary or plan from the current conversation as a GitHub Gist using the `gh` CLI.",
         "category": "general",
@@ -420,6 +431,14 @@
         "file_path": "helpers/skills/python-packaging-source-finder/SKILL.md",
         "id": "python-packaging-source-finder",
         "allowed_tools": "Bash WebSearch WebFetch"
+      },
+      {
+        "name": "team-weekly-report",
+        "description": "Generate a weekly team status report combining JIRA and GitHub data. Fetches closed, open, stale, and blocked issues plus PR activity for each team member. Requires a team config YAML file with JIRA project, GitHub repos, and team member mappings. Use when the user asks for a weekly report, team status, or team update.",
+        "category": "team management",
+        "file_path": "helpers/skills/team-weekly-report/SKILL.md",
+        "id": "team-weekly-report",
+        "allowed_tools": "Bash"
       },
       {
         "name": "torchtalk-analyzer",
