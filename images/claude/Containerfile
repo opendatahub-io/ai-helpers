@@ -87,6 +87,10 @@ RUN uv pip install --system --no-cache \
     tox \
     tox-uv
 
+# Install agentic-ci framework (in-container runner, OTEL, stream processing)
+RUN uv pip install --system --no-cache \
+    "agentic-ci @ git+https://github.com/opendatahub-io/agentic-ci.git@main"
+
 # Create claude user
 RUN useradd -m -u 1000 -s /bin/bash claude
 
