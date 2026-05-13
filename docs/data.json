@@ -433,6 +433,14 @@
         "allowed_tools": "Bash WebSearch WebFetch"
       },
       {
+        "name": "security-alert",
+        "description": "Use this skill to filter a pre-fetched set of Hacker News stories down to those that report supply-chain security threats relevant to software developers — including malicious packages on npm or PyPI, compromised developer tooling, and attacks targeting source code repositories or CI/CD infrastructure. Reads stories from stories.json in the workspace, performs semantic analysis (fetching HN threads as needed), and writes the stories worth alerting on to findings.json.",
+        "category": "aipcc",
+        "file_path": "helpers/skills/security-alert/SKILL.md",
+        "id": "security-alert",
+        "allowed_tools": "Bash(curl:https://hn.algolia.com/*) Read Write"
+      },
+      {
         "name": "team-weekly-report",
         "description": "Generate a weekly team status report combining JIRA and GitHub data. Fetches closed, open, stale, and blocked issues plus PR activity for each team member. Requires a team config YAML file with JIRA project, GitHub repos, and team member mappings. Use when the user asks for a weekly report, team status, or team update.",
         "category": "team management",
