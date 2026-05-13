@@ -15,27 +15,36 @@ from urllib.request import urlopen
 BASE_URL = "https://raw.githubusercontent.com/vllm-project/vllm"
 
 # Variant definitions: which requirements files and Dockerfiles to compare
+# Build requirements moved from e.g. rocm-build.txt to build/rocm.txt in v0.20+
 VARIANT_CONFIG = {
     "rocm": {
-        "requirements": ["common.txt", "rocm.txt", "rocm-build.txt"],
+        "requirements": ["common.txt", "rocm.txt", "build/rocm.txt"],
         "dockerfiles": ["docker/Dockerfile.rocm", "docker/Dockerfile.rocm_base"],
     },
     "cuda": {
-        "requirements": ["common.txt", "cuda.txt"],  # No cuda-build.txt
+        "requirements": ["common.txt", "cuda.txt", "build/cuda.txt"],
         "dockerfiles": ["docker/Dockerfile"],
     },
     "cpu": {
-        "requirements": ["common.txt", "cpu.txt", "cpu-build.txt"],
+        "requirements": ["common.txt", "cpu.txt", "build/cpu.txt"],
         "dockerfiles": ["docker/Dockerfile.cpu"],
     },
     "tpu": {
-        "requirements": ["common.txt", "tpu.txt"],  # No tpu-build.txt
+        "requirements": ["common.txt", "tpu.txt"],
         "dockerfiles": ["docker/Dockerfile.tpu"],
     },
     "xpu": {
-        "requirements": ["common.txt", "xpu.txt"],  # No xpu-build.txt
+        "requirements": ["common.txt", "xpu.txt"],
         "dockerfiles": ["docker/Dockerfile.xpu"],
     },
+}
+
+# Fallback paths for older vllm versions (pre-v0.20) where build requirements
+# used a flat naming scheme (e.g. rocm-build.txt instead of build/rocm.txt)
+BUILD_FILE_FALLBACKS = {
+    "build/rocm.txt": "rocm-build.txt",
+    "build/cuda.txt": "build.txt",
+    "build/cpu.txt": "cpu-build.txt",
 }
 
 VARIANTS = list(VARIANT_CONFIG.keys())
@@ -52,20 +61,31 @@ class Colors:
     RESET = "\033[0m"
 
 
-def fetch_file(version: str, filename: str) -> List[str]:
-    """Fetch a requirements file or Dockerfile from GitHub."""
-    # Determine the path based on whether it's a Dockerfile or requirements file
-    if filename.startswith("docker/"):
-        url = f"{BASE_URL}/{version}/{filename}"
-    else:
-        url = f"{BASE_URL}/{version}/requirements/{filename}"
+def fetch_file(version: str, filename: str) -> Tuple[List[str], str]:
+    """Fetch a requirements file or Dockerfile from GitHub.
 
-    try:
-        with urlopen(url, timeout=10) as response:
-            content = response.read().decode("utf-8")
-            return content.splitlines()
-    except (HTTPError, URLError):
-        return None
+    Returns (lines, actual_filename) where actual_filename may differ from
+    filename if a fallback path was used for older vllm versions.
+    Returns (None, filename) on failure.
+    """
+    candidates = [filename]
+    if filename in BUILD_FILE_FALLBACKS:
+        candidates.append(BUILD_FILE_FALLBACKS[filename])
+
+    for candidate in candidates:
+        if candidate.startswith("docker/"):
+            url = f"{BASE_URL}/{version}/{candidate}"
+        else:
+            url = f"{BASE_URL}/{version}/requirements/{candidate}"
+
+        try:
+            with urlopen(url, timeout=10) as response:
+                content = response.read().decode("utf-8")
+                return content.splitlines(), candidate
+        except (HTTPError, URLError):
+            continue
+
+    return None, filename
 
 
 def parse_dockerfile_args(lines: List[str]) -> Dict[str, str]:
@@ -277,10 +297,11 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s v0.13.0 v0.14.0 rocm                    # Compare rocm (runtime + build + Dockerfiles)
-  %(prog)s v0.13.0 v0.14.0 rocm --pretty           # Pretty output (default)
-  %(prog)s v0.13.0 v0.14.0 rocm-build.txt          # Compare specific file
-  %(prog)s v0.13.0 v0.14.0 docker/Dockerfile.rocm  # Compare specific Dockerfile
+  %(prog)s v0.19.0 v0.20.2 rocm                    # Compare rocm (runtime + build + Dockerfiles)
+  %(prog)s v0.19.0 v0.20.2 rocm --pretty           # Pretty output (default)
+  %(prog)s v0.19.0 v0.20.2 build/rocm.txt          # Compare specific build file (v0.20+)
+  %(prog)s v0.18.0 v0.19.0 rocm-build.txt          # Compare specific build file (pre-v0.20)
+  %(prog)s v0.19.0 v0.20.2 docker/Dockerfile.rocm  # Compare specific Dockerfile
         """,
     )
 
@@ -288,7 +309,7 @@ Examples:
     parser.add_argument("version2", help="Second version (e.g., v0.14.0)")
     parser.add_argument(
         "variant_or_file",
-        help="Variant (rocm, cuda, cpu, tpu, xpu) or specific file (e.g., rocm-build.txt)",
+        help="Variant (rocm, cuda, cpu, tpu, xpu) or specific file (e.g., build/rocm.txt)",
     )
     parser.add_argument(
         "--pretty",
@@ -304,11 +325,12 @@ Examples:
     pretty = not args.no_pretty
 
     # Determine which files to compare
-    variant_or_file = args.variant_or_file.lower()
+    raw_input = args.variant_or_file
+    variant_key = raw_input.lower()
 
-    if variant_or_file in VARIANTS:
+    if variant_key in VARIANTS:
         # Variant mode - use predefined configuration
-        config = VARIANT_CONFIG[variant_or_file]
+        config = VARIANT_CONFIG[variant_key]
         files_to_compare = config["requirements"].copy()
 
         # Add Dockerfiles if defined
@@ -319,15 +341,15 @@ Examples:
             dockerfile_note = ""
 
         header = (
-            f"=== Comparing {variant_or_file} variant"
+            f"=== Comparing {variant_key} variant"
             f" (runtime + build{dockerfile_note}):"
             f" {args.version1} -> {args.version2} ==="
         )
         print(f"\n{Colors.BOLD}{header}{Colors.RESET}\n")
     else:
-        # Specific file mode
-        files_to_compare = [variant_or_file]
-        header = f"=== Comparing {variant_or_file}: {args.version1} -> {args.version2} ==="
+        # Specific file mode - preserve original case for GitHub paths
+        files_to_compare = [raw_input]
+        header = f"=== Comparing {raw_input}: {args.version1} -> {args.version2} ==="
         print(f"\n{Colors.BOLD}{header}{Colors.RESET}\n")
 
     # Fetch and compare files
@@ -337,7 +359,7 @@ Examples:
 
     for filename in files_to_compare:
         print(f"Fetching {filename} for {args.version1}...")
-        old_lines = fetch_file(args.version1, filename)
+        old_lines, old_actual = fetch_file(args.version1, filename)
 
         if old_lines is None:
             print(
@@ -346,7 +368,7 @@ Examples:
             continue
 
         print(f"Fetching {filename} for {args.version2}...")
-        new_lines = fetch_file(args.version2, filename)
+        new_lines, new_actual = fetch_file(args.version2, filename)
 
         if new_lines is None:
             print(
@@ -355,14 +377,20 @@ Examples:
             continue
 
         any_success = True
-        urls_compared.append((filename, args.version1, args.version2))
+
+        # Build display label showing actual files fetched
+        if old_actual != new_actual:
+            display_name = f"{old_actual} -> {new_actual}"
+        else:
+            display_name = old_actual
+        urls_compared.append((filename, old_actual, new_actual, args.version1, args.version2))
 
         # Compare and store changes (use different function for Dockerfiles)
-        if filename.startswith("docker/"):
+        if filename.startswith("docker/") or old_actual.startswith("docker/"):
             changes = compare_dockerfiles(old_lines, new_lines)
         else:
             changes = compare_files(old_lines, new_lines, pretty)
-        all_changes[filename] = changes
+        all_changes[display_name] = changes
 
     if not any_success:
         print(f"\n{Colors.RED}Error: Could not fetch any requirements files{Colors.RESET}")
@@ -507,14 +535,14 @@ Examples:
 
     # Display URLs
     print(f"\n{Colors.BOLD}URLs compared:{Colors.RESET}")
-    for filename, v1, v2 in urls_compared:
-        print(f"  {filename}:")
-        if filename.startswith("docker/"):
-            print(f"    {BASE_URL}/{v1}/{filename}")
-            print(f"    {BASE_URL}/{v2}/{filename}")
-        else:
-            print(f"    {BASE_URL}/{v1}/requirements/{filename}")
-            print(f"    {BASE_URL}/{v2}/requirements/{filename}")
+    for _req_name, old_file, new_file, v1, v2 in urls_compared:
+        label = old_file if old_file == new_file else f"{old_file} / {new_file}"
+        print(f"  {label}:")
+        for actual, ver in [(old_file, v1), (new_file, v2)]:
+            if actual.startswith("docker/"):
+                print(f"    {BASE_URL}/{ver}/{actual}")
+            else:
+                print(f"    {BASE_URL}/{ver}/requirements/{actual}")
 
     return 0
 

@@ -13,7 +13,7 @@ Compare vllm requirements files **and Dockerfiles** between versions to identify
 
 **For accelerator builds** (ROCm, CUDA, TPU, XPU), Dockerfile comparison is critical because they specify exact commits/branches for dependencies built from source (PyTorch, Triton, Flash Attention, etc.) - information not available in requirements files.
 
-**Note:** Each variant compares only the files that actually exist in the vllm repository. For example, CUDA has `cuda.txt` but no `cuda-build.txt`, while ROCm has both `rocm.txt` and `rocm-build.txt`.
+**Note:** Starting from v0.20, vllm moved build requirements into a `build/` subdirectory (e.g., `build/rocm.txt` instead of `rocm-build.txt`). The script automatically handles both layouts, falling back to the old paths for older versions. This makes cross-version comparisons (e.g., v0.19 vs v0.20) work seamlessly.
 
 ## Skill Type
 
@@ -44,7 +44,7 @@ Use this skill when you need to:
 - **version2**: Second version to compare
 - **variant|file**: Either:
   - Variant name: `rocm`, `cuda`, `cpu`, `tpu`, `xpu` (auto-includes runtime + build requirements + Dockerfiles)
-  - Specific file: `rocm-build.txt`, `common.txt`, `docker/Dockerfile.rocm`, etc.
+  - Specific file: `build/rocm.txt`, `common.txt`, `docker/Dockerfile.rocm`, etc. (old-style paths like `rocm-build.txt` also accepted)
 - **--pretty**: Show clean categorized output (default)
 - **--no-pretty**: Show simple diff output
 
@@ -52,30 +52,33 @@ Use this skill when you need to:
 
 ```bash
 # Compare ROCm runtime + build requirements + Dockerfiles
-./scripts/compare_reqs.py v0.13.0 v0.14.0 rocm
+./scripts/compare_reqs.py v0.19.0 v0.20.2 rocm
 
 # Compare CUDA runtime + build requirements + Dockerfiles
-./scripts/compare_reqs.py v0.13.0 v0.14.0 cuda
+./scripts/compare_reqs.py v0.19.0 v0.20.2 cuda
 
 # Compare specific file only
-./scripts/compare_reqs.py v0.13.0 v0.14.0 common.txt
-./scripts/compare_reqs.py v0.13.0 v0.14.0 rocm-build.txt
-./scripts/compare_reqs.py v0.13.0 v0.14.0 docker/Dockerfile.rocm_base
+./scripts/compare_reqs.py v0.19.0 v0.20.2 common.txt
+./scripts/compare_reqs.py v0.19.0 v0.20.2 build/rocm.txt
+./scripts/compare_reqs.py v0.19.0 v0.20.2 docker/Dockerfile.rocm_base
 
-# All variants (based on what files actually exist in vllm repo)
-./scripts/compare_reqs.py v0.13.0 v0.14.0 rocm   # common.txt + rocm.txt + rocm-build.txt + Dockerfiles
-./scripts/compare_reqs.py v0.13.0 v0.14.0 cuda   # common.txt + cuda.txt + Dockerfile
-./scripts/compare_reqs.py v0.13.0 v0.14.0 cpu    # common.txt + cpu.txt + cpu-build.txt + Dockerfile.cpu
-./scripts/compare_reqs.py v0.13.0 v0.14.0 tpu    # common.txt + tpu.txt + Dockerfile.tpu
-./scripts/compare_reqs.py v0.13.0 v0.14.0 xpu    # common.txt + xpu.txt + Dockerfile.xpu (Intel GPU)
+# Cross-version comparison (old layout vs new layout - handled automatically)
+./scripts/compare_reqs.py v0.18.0 v0.20.2 rocm
+
+# All variants (auto-detects correct file paths per version)
+./scripts/compare_reqs.py v0.19.0 v0.20.2 rocm   # common.txt + rocm.txt + build/rocm.txt + Dockerfiles
+./scripts/compare_reqs.py v0.19.0 v0.20.2 cuda   # common.txt + cuda.txt + build/cuda.txt + Dockerfile
+./scripts/compare_reqs.py v0.19.0 v0.20.2 cpu    # common.txt + cpu.txt + build/cpu.txt + Dockerfile.cpu
+./scripts/compare_reqs.py v0.19.0 v0.20.2 tpu    # common.txt + tpu.txt + Dockerfile.tpu
+./scripts/compare_reqs.py v0.19.0 v0.20.2 xpu    # common.txt + xpu.txt + Dockerfile.xpu (Intel GPU)
 ```
 
 ## Output Format
 
 The script provides clean, categorized output with a **summary table** followed by detailed changes:
 
-```
-=== Comparing rocm variant (build + Dockerfiles): v0.13.0 -> v0.14.0rc1 ===
+```text
+=== Comparing rocm variant (runtime + build + Dockerfiles): v0.19.0 -> v0.20.2 ===
 
 📊 Change Summary Table:
 
@@ -83,8 +86,8 @@ File                 Package                             Old Version            
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 common.txt           protobuf                            -                         >= 6.30.0                 Added
 common.txt           grpcio                              -                         >=1.76.0                  Added
-rocm-build.txt       torch                               ==2.9.0                   ==2.9.1                   Changed
-rocm-build.txt       triton                              ==3.5.0                   ==3.5.1                   Changed
+build/rocm.txt       torch                               ==2.9.0                   ==2.9.1                   Changed
+build/rocm.txt       triton                              ==3.5.0                   ==3.5.1                   Changed
 docker/Dockerfil...  PYTORCH_BRANCH=1c57644d                                                                 Changed
 docker/Dockerfil...  MORI_BRANCH=2d02c6a9                -                                                   Added
 
@@ -104,7 +107,7 @@ docker/Dockerfil...  MORI_BRANCH=2d02c6a9                -                      
   scipy # Required for phi-4-multimodal-instruct
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📄 rocm-build.txt
+📄 build/rocm.txt
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📦 Changed:
@@ -231,9 +234,10 @@ When planning releases:
 
 The script gracefully handles:
 - Version not found (404 errors)
-- File not found in specific version
+- File not found in specific version (with automatic fallback to old paths)
 - Network errors
 - Invalid input
+- Cross-version layout changes (old flat `rocm-build.txt` vs new `build/rocm.txt`)
 
 ## See Also
 
