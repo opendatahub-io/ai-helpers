@@ -1,0 +1,31 @@
+violation_code: missing_sbom
+rule: attestation_task.sbom_task_present
+patterns:
+  - "SBOM not found for component"
+  - "missing SBOM"
+severity: failure
+
+symptoms:
+  - "Conforma report shows missing SBOM violation"
+  - "Component build succeeded but SBOM task was skipped or failed"
+
+root_cause: |
+  The build pipeline is missing the generate-sbom task,
+  or the task failed silently.
+
+fix_steps:
+  - "Check if generate-sbom task is present in the pipeline definition"
+  - "If present, check TaskRun logs for the SBOM task"
+  - "If missing, add the task to the pipeline YAML"
+  - "Re-trigger the build"
+
+exception_guidance: |
+  Only if the component genuinely does not produce a container image
+  (e.g., documentation-only repo). Create exception for rule
+  attestation_task.sbom_task_present.
+
+related:
+  - url: "https://conforma.dev/docs/ec-policies/release_policy.html#attestation_task"
+    label: "Conforma attestation task policy docs"
+
+resolved_cases: []

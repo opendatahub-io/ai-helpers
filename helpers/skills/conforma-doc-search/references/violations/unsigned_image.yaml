@@ -1,0 +1,34 @@
+violation_code: unsigned_image
+rule: signature_check.image_signed
+patterns:
+  - "image signature verification failed"
+  - "unsigned image"
+  - "signature not found"
+severity: failure
+
+symptoms:
+  - "Conforma report shows unsigned image violation"
+  - "Image was built but not signed by the signing pipeline task"
+
+root_cause: |
+  The image signing task is missing from the pipeline, or it
+  failed to execute. This can also happen if the signing key
+  or secret is misconfigured.
+
+fix_steps:
+  - "Check if the signing task (e.g., sign-image) is present in the pipeline definition"
+  - "If present, check TaskRun logs for the signing task for errors"
+  - "Verify that the signing secret/key is correctly configured in the namespace"
+  - "If the task is missing, add it to the pipeline YAML after the build step"
+  - "Re-trigger the build"
+
+exception_guidance: |
+  Exceptions for unsigned images should be rare and require strong
+  justification. Only consider for internal-only images that will
+  never leave the cluster.
+
+related:
+  - url: "https://conforma.dev/docs/ec-policies/release_policy.html#signature_check"
+    label: "Conforma signature check policy docs"
+
+resolved_cases: []
