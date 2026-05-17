@@ -34,5 +34,9 @@ fi
 
 git -C "${REPO}" remote -v | grep '(fetch)' | while read -r name url _; do
   owner_repo=$(echo "${url}" | sed -E 's|.*[:/]([^/]+/[^/]+?)(\.git)?$|\1|')
+  if [[ ! "${owner_repo}" =~ ^[^/]+/[^/]+$ ]]; then
+    echo "Warning: malformed URL for remote ${name}: ${url}" >&2
+    continue
+  fi
   printf '%s\t%s\n' "${name}" "${owner_repo}"
 done

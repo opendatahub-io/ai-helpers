@@ -59,6 +59,11 @@ echo "Branch pushed to origin/${BRANCH}"
 FORK_OWNER=$(git -C "${REPO}" remote get-url origin \
   | sed -E 's|.*[:/]([^/]+)/[^/]+(.git)?$|\1|')
 
+if [[ -z "${FORK_OWNER}" ]]; then
+  echo "Error: failed to extract fork owner from origin URL" >&2
+  exit 1
+fi
+
 # Create PR
 if PR_URL=$(gh pr create \
   --repo "${TARGET_REPO}" \

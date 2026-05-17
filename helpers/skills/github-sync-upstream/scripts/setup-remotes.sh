@@ -53,12 +53,20 @@ find_or_create_remote() {
     fi
   done < <(git -C "${repo_path}" remote -v | grep '(fetch)')
 
+  if [[ ! "${target_owner_repo}" =~ ^[^/]+/[^/]+$ ]]; then
+    echo "Error: invalid owner/repo format: ${target_owner_repo}" >&2
+    return 1
+  fi
+
   if [[ -z "${found_name}" ]]; then
     found_name="${default_name}"
-    git -C "${repo_path}" remote add "${found_name}" \
-      "https://github.com/${target_owner_repo}.git" 2>/dev/null || \
+    if git -C "${repo_path}" remote get-url "${found_name}" >/dev/null 2>&1; then
       git -C "${repo_path}" remote set-url "${found_name}" \
-      "https://github.com/${target_owner_repo}.git"
+        "https://github.com/${target_owner_repo}.git"
+    else
+      git -C "${repo_path}" remote add "${found_name}" \
+        "https://github.com/${target_owner_repo}.git"
+    fi
   fi
 
   echo "${found_name}"

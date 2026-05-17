@@ -67,11 +67,11 @@ CONFLICT_FILES=$(git -C "${REPO_ROOT}" grep -rlE '^(<{4,}|={4,}|>{4,})' \
   || true)
 if [ -n "${CONFLICT_FILES}" ]; then
   echo "Conflict markers found after merge:"
-  echo "${CONFLICT_FILES}"
-  for f in ${CONFLICT_FILES}; do
+  while IFS= read -r f; do
+    [[ -z "${f}" ]] && continue
     echo "--- ${f} ---"
     git -C "${REPO_ROOT}" grep -nE '^(<{4,}|={4,}|>{4,})' "${f}"
-  done
+  done <<< "${CONFLICT_FILES}"
 fi
 ```
 

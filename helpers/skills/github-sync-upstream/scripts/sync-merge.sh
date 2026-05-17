@@ -150,7 +150,7 @@ if [[ "${MERGE_FAILED}" == "true" ]]; then
   fi
 
   git -C "${REPO}" add -u
-  GIT_EDITOR=true git -C "${REPO}" commit --no-edit
+  git -C "${REPO}" commit --no-edit
 fi
 
 # Restore protected files (even after clean merge)
