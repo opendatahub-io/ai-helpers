@@ -249,6 +249,14 @@
         "allowed_tools": "Bash"
       },
       {
+        "name": "github-sync-upstream",
+        "description": "Sync code from an upstream GitHub repository into a target fork (e.g., opendatahub-io midstream). Detects remotes from the current repo, or clones fresh if run from outside. Fetches upstream, merges into a sync branch, restores protected files, resolves conflicts, and opens a PR to the target GitHub repo. Use when asked to sync upstream, merge upstream changes, or bring a GitHub fork up to date with its upstream source.",
+        "category": "llm-d",
+        "file_path": "helpers/skills/github-sync-upstream/SKILL.md",
+        "id": "github-sync-upstream",
+        "allowed_tools": "Bash Read AskUserQuestion"
+      },
+      {
         "name": "gitlab-pipeline-debugger",
         "description": "Debug and monitor GitLab CI/CD pipelines for merge requests. Check pipeline status, view job logs, and troubleshoot CI failures. Use this when the user needs to investigate GitLab CI pipeline issues, check job statuses, or view specific job logs.",
         "category": "general",
