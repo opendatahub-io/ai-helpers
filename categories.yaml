@@ -56,3 +56,8 @@ Git Workflows:
 
 Compliance:
   - non-redhat-rpms
+
+ODH Modules:
+  - module-compliance
+  - module-scaffold
+  - module-migrate
