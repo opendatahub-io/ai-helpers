@@ -8,6 +8,7 @@
     }
   },
   "enabledPlugins": {
-    "odh-ai-helpers@odh-ai-helpers": true
+    "odh-ai-helpers@odh-ai-helpers": true,
+    "odh-ai-helpers@autofix-skills": true
   }
 }
