@@ -55,3 +55,6 @@ venv/
 
 # Ignore agentready reports
 .agentready/
+
+# External plugin repos fetched by scripts/fetch_external_plugins.py
+external-plugins/
