@@ -31,7 +31,7 @@ invocations, exit-code handling, and the summary template.
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || REPO_ROOT=""
 ```
 
-If `REPO_ROOT` is non-empty, run `detect-remotes.sh --repo "${REPO_ROOT}"`
+If `REPO_ROOT` is non-empty, run `scripts/detect-remotes.sh --repo "${REPO_ROOT}"`
 and ask via `AskUserQuestion` whether this is the correct repo.
 If yes → Step 2A. If no or not in a repo → Step 2B.
 
@@ -39,14 +39,14 @@ If yes → Step 2A. If no or not in a repo → Step 2B.
 
 Pre-fill upstream/target from detect-remotes output. Ask via
 `AskUserQuestion` to confirm: upstream repo, target repo, branches
-(default `main`). Run `setup-remotes.sh`, parse `UPSTREAM_REMOTE` and
+(default `main`). Run `scripts/setup-remotes.sh`, parse `UPSTREAM_REMOTE` and
 `TARGET_REMOTE`. Save `ORIGINAL_BRANCH` from current HEAD.
 
 ## Step 2B: Clone From Scratch
 
 Ask for upstream repo, target repo, and branches. If the user has a
 local clone, use its path and continue as Step 2A. If not, ask if they
-have a GitHub fork — run `clone-fork.sh` then `setup-remotes.sh`. If
+have a GitHub fork — run `scripts/clone-fork.sh` then `scripts/setup-remotes.sh`. If
 no fork exists, ask them to create one and re-run. **Stop.**
 
 Save `ORIGINAL_BRANCH` from current HEAD.
@@ -65,13 +65,13 @@ the user to set origin to their personal fork and stop.
 
 ## Step 5: Merge
 
-Run `sync-merge.sh`. Handle exit codes 0 (success), 1 (conflicts), and
+Run `scripts/sync-merge.sh`. Handle exit codes 0 (success), 1 (conflicts), and
 3 (duplicate branch) as described in `references/workflow.md`.
 
 ## Step 6: Push and Open PR
 
 Show PR summary and ask via `AskUserQuestion`: open a PR or just push?
-If confirmed, run `open-pr.sh`.
+If confirmed, run `scripts/open-pr.sh`.
 
 ## Step 7: Cleanup and Summary
 

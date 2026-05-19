@@ -17,7 +17,9 @@ REPO=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --repo) REPO="$2"; shift 2;;
+    --repo)
+      [[ $# -ge 2 ]] || { echo "Error: --repo requires a value" >&2; exit 1; }
+      REPO="$2"; shift 2;;
     *) echo "Unknown arg: $1" >&2; exit 1;;
   esac
 done
@@ -32,7 +34,7 @@ if ! git -C "${REPO}" rev-parse --show-toplevel >/dev/null 2>&1; then
   exit 1
 fi
 
-git -C "${REPO}" remote -v | grep '(fetch)' | while read -r name url _; do
+git -C "${REPO}" remote -v | awk '$3=="(fetch)"' | while read -r name url _; do
   owner_repo=$(echo "${url}" | sed -E 's|.*[:/]([^/]+/[^/]+?)(\.git)?$|\1|')
   if [[ ! "${owner_repo}" =~ ^[^/]+/[^/]+$ ]]; then
     echo "Warning: malformed URL for remote ${name}: ${url}" >&2

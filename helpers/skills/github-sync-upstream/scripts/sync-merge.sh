@@ -55,17 +55,24 @@ if [[ -z "${REPO}" || -z "${UPSTREAM_REMOTE}" || -z "${TARGET_REMOTE}" || -z "${
   exit 2
 fi
 
-# Match a file path against a protected pattern using the basename,
-# so "Dockerfile*konflux" matches "services/foo/Dockerfile.konflux".
+# Match a file path against a protected pattern. Patterns without '/'
+# match basename only; patterns with '/' match the relative path.
 matches_protected() {
   local file="$1"
   local basename
   basename=$(basename "${file}")
   for pattern in ${PROTECTED_PATTERNS}; do
-    # shellcheck disable=SC2254
-    case "${basename}" in
-      ${pattern}) return 0;;
-    esac
+    if [[ "${pattern}" == */* ]]; then
+      # shellcheck disable=SC2254
+      case "${file}" in
+        ${pattern}) return 0;;
+      esac
+    else
+      # shellcheck disable=SC2254
+      case "${basename}" in
+        ${pattern}) return 0;;
+      esac
+    fi
   done
   return 1
 }

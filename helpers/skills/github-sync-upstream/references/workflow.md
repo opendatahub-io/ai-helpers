@@ -99,6 +99,8 @@ Sync completed successfully
 - **Fork owner detection**: Always extract from `origin` remote URL, not
   `gh repo view --json owner` (resolves to parent on forks).
 - **SSH vs HTTPS URLs**: The sed pattern in scripts handles both formats.
-- **Protected file globs**: Matched against the basename, so
-  `Dockerfile*konflux` matches `services/foo/Dockerfile.konflux`.
+- **Protected file globs**: Patterns without `/` match the basename, so
+  `Dockerfile*konflux` matches `services/foo/Dockerfile.konflux`. Patterns
+  with `/` match the relative path, so `.tekton/*.yaml` matches
+  `.tekton/pipeline.yaml`.
 - **Conflict markers after clean merge**: `sync-merge.sh` always scans.
