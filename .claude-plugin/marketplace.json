@@ -13,6 +13,14 @@
       }
     },
     {
+      "name": "autofix-skills",
+      "description": "Automated Jira bug fixing, CVE remediation, and ticket triage",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/opendatahub-io/autofix-skills.git"
+      }
+    },
+    {
       "name": "odh-ai-helpers",
       "source": "./helpers",
       "description": "AI automation tools, plugins, and assistants for enhanced productivity",
