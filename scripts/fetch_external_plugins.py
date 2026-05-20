@@ -1,22 +1,32 @@
 #!/usr/bin/env python3
 """
-Fetch external plugin repositories and rewrite marketplace.json to use local paths.
+Fetch external plugin repositories and merge their content into the default plugin.
 
-Used during container builds so that external plugin skills are available
-in non-interactive mode (claude -p), where Claude Code does not fetch URL sources.
+Claude Code only auto-loads the marketplace's default plugin (the one whose name
+matches the marketplace name, i.e. ``odh-ai-helpers`` from ``./helpers``). Other
+plugins listed in marketplace.json require explicit installation into the plugin
+cache, which does not happen in non-interactive mode (``claude -p``).
+
+This script works around that by cloning external plugin repos and copying their
+skills, agents, and commands directly into the default plugin directory so they
+are available without cache installation.
 """
 
 import json
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
+
+CONTENT_DIRS = ("skills", "agents", "commands", "gems")
 
 
 def main():
     repo_root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).parent.parent
 
     sources_path = repo_root / "claude-external-plugin-sources.json"
-    marketplace_path = repo_root / ".claude-plugin" / "marketplace.json"
+    default_plugin_dir = repo_root / "helpers"
 
     with open(sources_path, encoding="utf-8") as f:
         external_config = json.load(f)
@@ -26,38 +36,41 @@ def main():
         print("No external plugins to fetch.")
         return
 
-    plugins_dir = repo_root / "external-plugins"
-    plugins_dir.mkdir(exist_ok=True)
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_dir = Path(tmp)
 
-    fetched = {}
-    for plugin in plugins:
-        name = plugin["name"]
-        url = plugin["source"]["url"]
-        dest = plugins_dir / name
+        for plugin in plugins:
+            name = plugin["name"]
+            url = plugin["source"]["url"]
+            clone_dest = tmp_dir / name
 
-        if dest.exists():
-            print(f"Skipping {name}: {dest} already exists")
-        else:
             print(f"Cloning {name} from {url}...")
             subprocess.run(
-                ["git", "clone", "--depth", "1", url, str(dest)],
+                ["git", "clone", "--depth", "1", url, str(clone_dest)],
                 check=True,
             )
 
-        fetched[name] = f"./external-plugins/{name}"
+            copied = 0
+            for content_dir in CONTENT_DIRS:
+                src = clone_dest / content_dir
+                if not src.is_dir():
+                    continue
+                dst = default_plugin_dir / content_dir
+                dst.mkdir(exist_ok=True)
+                for item in src.iterdir():
+                    target = dst / item.name
+                    if target.exists():
+                        print(f"  WARNING: skipping {content_dir}/{item.name} (already exists)")
+                        continue
+                    if item.is_dir():
+                        shutil.copytree(item, target)
+                    else:
+                        shutil.copy2(item, target)
+                    copied += 1
 
-    with open(marketplace_path, encoding="utf-8") as f:
-        marketplace = json.load(f)
+            print(f"  Merged {copied} item(s) from {name} into {default_plugin_dir}")
 
-    for entry in marketplace.get("plugins", []):
-        if entry.get("name") in fetched:
-            entry["source"] = fetched[entry["name"]]
-
-    with open(marketplace_path, "w", encoding="utf-8") as f:
-        json.dump(marketplace, f, indent=2)
-        f.write("\n")
-
-    print(f"Patched {marketplace_path} — replaced {len(fetched)} URL source(s) with local paths.")
+    print("Done.")
 
 
 if __name__ == "__main__":
