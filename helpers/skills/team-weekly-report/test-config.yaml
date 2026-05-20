@@ -1,0 +1,28 @@
+team:
+  name: "Example Team"
+  members:
+    - name: "Engineer One"
+      jira_username: "712020:00000000-0000-0000-0000-000000000001"
+      github_username: "engineer1"
+      notes_file: "notes/engineer_one.md"
+
+    - name: "Engineer Two"
+      jira_username: "712020:00000000-0000-0000-0000-000000000002"
+      github_username: "engineer2"
+      notes_file: "notes/engineer_two.md"
+
+jira:
+  url: "https://mycompany.atlassian.net"
+  project_key: "PROJ"
+  component: "MyComponent"
+
+github:
+  repositories:
+    - "org/repo1"
+    - "org/repo2"
+
+report:
+  lookback_days: 7
+
+defaults:
+  stale_threshold_days: 7
