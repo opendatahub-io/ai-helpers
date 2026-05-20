@@ -19,7 +19,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-CONTENT_DIRS = ("skills", "agents", "commands", "gems")
+CONTENT_DIRS = ("skills", "agents", "commands", "gems", "scripts")
 
 
 def main():
