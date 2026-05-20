@@ -7,8 +7,8 @@
 # Usage:
 #   bash setup-remotes.sh \
 #     --repo /path/to/repo \
-#     --upstream-repo llm-d/llm-d-workload-variant-autoscaler \
-#     --target-repo opendatahub-io/workload-variant-autoscaler \
+#     --upstream-repo upstream-org/my-project \
+#     --target-repo target-org/my-project \
 #     --upstream-branch main \
 #     --target-branch main
 #

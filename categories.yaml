@@ -50,3 +50,6 @@ CVE Remediation:
 Team Management:
   - team-weekly-report
   - engineer-snapshot
+
+Git Workflows:
+  - github-sync-upstream

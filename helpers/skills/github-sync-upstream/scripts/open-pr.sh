@@ -5,9 +5,9 @@
 #   bash open-pr.sh \
 #     --repo /path/to/repo \
 #     --branch sync/upstream-abc1234 \
-#     --target-repo opendatahub-io/workload-variant-autoscaler \
+#     --target-repo target-org/my-project \
 #     --target-branch main \
-#     --upstream-repo llm-d/llm-d-workload-variant-autoscaler \
+#     --upstream-repo upstream-org/my-project \
 #     --upstream-branch main \
 #     --full-sha abc1234... \
 #     --short-sha abc1234

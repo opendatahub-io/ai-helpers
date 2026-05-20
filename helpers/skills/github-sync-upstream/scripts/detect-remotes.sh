@@ -8,8 +8,8 @@
 #   bash detect-remotes.sh --repo /path/to/repo
 #
 # Output (one line per remote, tab-separated):
-#   origin	zdtsw-forking/workload-variant-autoscaler
-#   upstream	llm-d/llm-d-workload-variant-autoscaler
+#   origin	user/my-project
+#   upstream	upstream-org/my-project
 
 set -euo pipefail
 

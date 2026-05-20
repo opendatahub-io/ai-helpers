@@ -9,7 +9,7 @@
 #     --upstream-branch main \
 #     --target-remote opendatahub \
 #     --target-branch main \
-#     --upstream-repo llm-d/llm-d-workload-variant-autoscaler \
+#     --upstream-repo upstream-org/my-project \
 #     [--commit <sha>] \
 #     [--protected-patterns "OWNERS* .tekton/*.yaml Dockerfile*konflux"]
 #

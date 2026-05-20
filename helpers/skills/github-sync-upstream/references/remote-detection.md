@@ -71,7 +71,7 @@ When the user is not inside the target repo but has a GitHub fork:
 
 ```bash
 # Clone the user's fork into a temp dir
-# FORK_REPO is the user's fork (e.g., "myuser/workload-variant-autoscaler")
+# FORK_REPO is the user's fork (e.g., "user/workload-variant-autoscaler")
 REPO_ROOT=$(mktemp -d)
 git clone "https://github.com/${FORK_REPO}.git" "${REPO_ROOT}"
 ```

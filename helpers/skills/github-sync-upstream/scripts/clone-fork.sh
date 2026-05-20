@@ -3,9 +3,9 @@
 #
 # Usage:
 #   bash clone-fork.sh \
-#     --fork-repo zdtsw-forking/workload-variant-autoscaler \
-#     --upstream-repo llm-d/llm-d-workload-variant-autoscaler \
-#     --target-repo opendatahub-io/workload-variant-autoscaler
+#     --fork-repo user/my-project \
+#     --upstream-repo upstream-org/my-project \
+#     --target-repo target-org/my-project
 #
 # Output:
 #   REPO_ROOT	/tmp/tmp.XXXXXX

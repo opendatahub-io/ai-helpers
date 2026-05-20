@@ -14,7 +14,7 @@ compatibility: Requires git. gh CLI (authenticated) needed only for PR creation.
 metadata:
   author: zdtsw
   version: "1.0"
-  tags: github, sync, upstream, fork, merge, llm-d
+  tags: github, sync, upstream, fork, merge
 ---
 
 # Sync Upstream
@@ -54,9 +54,9 @@ Save `ORIGINAL_BRANCH` from current HEAD.
 ## Step 3: Protected Files
 
 Protected files keep the target version, discarding upstream changes.
-If the repo name contains `llm-d`, auto-set
-`OWNERS* .tekton/*.yaml Dockerfile*konflux` and confirm. Otherwise ask
-for glob patterns (or none).
+Ask via `AskUserQuestion` for glob patterns to protect (or none).
+Suggest common examples: `OWNERS*`, `.tekton/*.yaml`,
+`Dockerfile*konflux`.
 
 ## Step 4: Pre-flight Check
 
