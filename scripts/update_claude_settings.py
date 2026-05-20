@@ -229,7 +229,7 @@ def load_external_plugins(config_path: Path) -> List[Dict]:
     return external_plugins
 
 
-def generate_claude_settings(categories_config: Dict) -> Dict:
+def generate_claude_settings(categories_config: Dict, external_plugins: List[Dict]) -> Dict:
     """Generate Claude Code settings configuration."""
 
     # Base configuration
@@ -242,6 +242,12 @@ def generate_claude_settings(categories_config: Dict) -> Dict:
 
     # Enable the single plugin containing all helpers
     settings["enabledPlugins"]["odh-ai-helpers@odh-ai-helpers"] = True
+
+    # Enable external plugins
+    for plugin in external_plugins:
+        name = plugin.get("name")
+        if isinstance(name, str):
+            settings["enabledPlugins"][f"odh-ai-helpers@{name}"] = True
 
     return settings
 
@@ -382,7 +388,7 @@ def main():
         print(f"Found external plugins: {', '.join(ext_names)}")
 
     print("Generating Claude settings...")
-    settings = generate_claude_settings(categories_config)
+    settings = generate_claude_settings(categories_config, external_plugins)
 
     print(f"Writing {settings_path}...")
     write_settings_file(settings_path, settings)
