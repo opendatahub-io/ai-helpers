@@ -4,6 +4,7 @@ AIPCC:
   - aipcc-adr-assistant
   - jira-aipcc-create
   - jira-status-summary
+  - security-alert
 
 PyTorch:
   - torchtalk-analyzer
