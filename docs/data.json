@@ -82,7 +82,7 @@
     "skills": [
       {
         "name": "acli-setup-check",
-        "description": "Verify acli installation and authentication. Checks if acli is installed, properly configured, and can access Jira. Use when troubleshooting acli issues or setting up acli for the first time.",
+        "description": "Verify acli installation and authentication. Checks if acli is installed, authenticated to Jira, and can query projects. Use when troubleshooting acli issues or setting up acli for the first time.",
         "category": "jira management",
         "file_path": "helpers/skills/acli-setup-check/SKILL.md",
         "id": "acli-setup-check",
@@ -218,7 +218,7 @@
       },
       {
         "name": "email-meeting-summary",
-        "description": "Use when the user wants to summarize a Google Meet meeting and send the summary by email. Reviews a Google Meet transcript for a specific meeting topic, then composes a Gmail draft summarizing decisions and action items for that topic. Prompts for meeting selection if not specified, and for topic selection before drafting. Stops gracefully if the transcript is not yet available.",
+        "description": "Use when the user wants to summarize a Google Meet meeting and send the summary by email. Reviews a Google Meet transcript for a specific meeting topic, then composes a Gmail draft summarizing decisions and action items for that topic. Prompts for meeting selection if not specified, and for topic selection before drafting. Stops with a message if the transcript is not yet available.",
         "category": "general",
         "file_path": "helpers/skills/email-meeting-summary/SKILL.md",
         "id": "email-meeting-summary",
@@ -434,7 +434,7 @@
       },
       {
         "name": "security-alert",
-        "description": "Use this skill to filter a pre-fetched set of Hacker News stories down to those that report supply-chain security threats relevant to software developers — including malicious packages on npm or PyPI, compromised developer tooling, and attacks targeting source code repositories or CI/CD infrastructure. Reads stories from stories.json in the workspace, performs semantic analysis (fetching HN threads as needed), and writes the stories worth alerting on to findings.json.",
+        "description": "Use this skill to filter a pre-fetched set of Hacker News stories down to those that report supply-chain security threats relevant to software developers — including malicious packages on npm or PyPI, compromised developer tooling, and attacks targeting source code repositories or CI/CD infrastructure. Reads stories from stories.json in the workspace, performs semantic analysis (fetching HN threads when the title alone is ambiguous), and writes the stories worth alerting on to findings.json.",
         "category": "aipcc",
         "file_path": "helpers/skills/security-alert/SKILL.md",
         "id": "security-alert",

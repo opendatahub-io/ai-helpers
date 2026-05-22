@@ -45,7 +45,7 @@ Verify: `gws --help`
 
 Find your Project ID at https://console.cloud.google.com/home/dashboard or in the project selector dropdown.
 
-**IMPORTANT:** Do NOT use a shared project (e.g. `agentspace-301617`). Create your OWN project -- you need your own for OAuth credentials.
+**IMPORTANT:** Create your own dedicated project for OAuth credentials. Do not reuse a shared project (e.g. `agentspace-301617`) because you need your own project to manage OAuth consent and credentials.
 
 ## Step 3: Configure OAuth Consent Screen
 

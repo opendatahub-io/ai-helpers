@@ -40,7 +40,7 @@ git clone --depth 50 -- "<repository_url>" "$CLONE_DIR/repo"
 Use `$CLONE_DIR/repo` as the repo path for Steps 2 and 3.
 
 If source-finder returns low confidence or no URL, stop and return a report with
-risk rating `needs_review` and a note that the source repository could not be
+risk rating `needs_review` stating that the source repository could not be
 located.
 
 Clean up the clone when all phases are complete:
@@ -124,7 +124,7 @@ Review all findings from Steps 2 and 3 in context. Read the relevant source file
 
 ## Output Format
 
-Produce the following markdown report. When there are no findings, collapse to just the header, risk rating (`no_issues`), summary, and a note that no issues were found.
+Produce the following markdown report. When there are no findings, collapse to just the header, risk rating (`no_issues`), summary, and a statement that no issues were found.
 
 ```markdown
 # Security Assessment: {package-name}
@@ -169,8 +169,8 @@ Produce the following markdown report. When there are no findings, collapse to j
 
 | Scenario | Behavior |
 |----------|----------|
-| Source-finder returns low confidence or no URL | Stop; report `needs_review` with note that source repo could not be located |
-| git clone fails | Stop; report `needs_review` with note that repo could not be cloned |
+| Source-finder returns low confidence or no URL | Stop; report `needs_review` stating source repo could not be located |
+| git clone fails | Stop; report `needs_review` stating repo could not be cloned |
 | Fewer than 50 commits | Scan all available commits |
 | Hexora returns empty results | Report "no findings" for hexora section |
 | No sensitive files modified in history | Report "no sensitive files found" in git history section |

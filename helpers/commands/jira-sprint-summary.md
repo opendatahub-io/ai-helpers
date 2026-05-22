@@ -40,7 +40,7 @@ Generate comprehensive sprint summaries by analyzing JIRA sprint data, including
 - **Missing JIRA Configuration**: If JIRA MCP server is not configured or not working, provide clear setup instructions and troubleshooting steps
 - **Missing Sprint Name**: If no sprint name provided, prompt for required parameter with examples
 - **Invalid Sprint**: If sprint doesn't exist, suggest similar sprint names or provide guidance on finding correct sprint identifiers
-- **Permission Issues**: Handle authentication and authorization errors gracefully with actionable feedback
+- **Permission Issues**: Log authentication and authorization errors, report the failure to the user, and provide actionable feedback
 
 ### Output Format
 Generate a structured markdown report including:

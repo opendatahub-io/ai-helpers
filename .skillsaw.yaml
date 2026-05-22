@@ -41,4 +41,4 @@ rules:
     enabled: true
     severity: info
 
-strict: false
+strict: true

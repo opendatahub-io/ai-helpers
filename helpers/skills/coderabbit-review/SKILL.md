@@ -78,7 +78,7 @@ Show a summary table first:
 | # | File | Line | Category | Validity | Recommended Action | Summary |
 |---|------|------|----------|----------|--------------------|---------|
 | 1 | src/foo.ts | 42 | bug | valid | fix | "Variable x may be undefined" |
-| 2 | src/bar.ts | 10 | nitpick | debatable | reply | "Consider using const here" |
+| 2 | src/bar.ts | 10 | nitpick | debatable | reply | "Use const here" |
 
 Then show the full evaluation for each comment (bugs and security first, then performance, then others):
 
@@ -99,6 +99,7 @@ Then show the full evaluation for each comment (bugs and security first, then pe
 
 **Proposed action:** `fix` | `reply` | `dismiss`
 
+<!-- skillsaw-disable content-placeholder-text -->
 [If `fix`: show the exact code diff to apply]
 
 [If `reply` or `dismiss`: show the draft reply text]

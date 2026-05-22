@@ -45,7 +45,7 @@ For each ticket, resolve via MCP and extract:
 - Fix versions
 - Labels
 
-Cycle detection: maintain a visited set of issue keys during traversal. Before descending into any child ticket, check whether its key is already in the visited set. If so, skip that branch and record a note that a cycle was detected.
+Cycle detection: maintain a visited set of issue keys during traversal. Before descending into any child ticket, check whether its key is already in the visited set. If so, skip that branch and record that a cycle was detected.
 
 Limits:
 - Depth cap: 3 levels maximum

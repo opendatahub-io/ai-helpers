@@ -232,7 +232,7 @@ When planning releases:
 
 ## Error Handling
 
-The script gracefully handles:
+The script detects and reports errors for:
 - Version not found (404 errors)
 - File not found in specific version (with automatic fallback to old paths)
 - Network errors

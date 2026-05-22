@@ -28,7 +28,8 @@ This mode combines **task progress** with **deliberate practice**. The agent doe
 2. **Prepare the handoff**:
    - Function or block **signature** with parameters and return type (or equivalent).
    - Short **comment** on what this piece must do.
-   - A **`TODO(learning)`** or obvious placeholder where their code goes.
+   <!-- skillsaw-disable content-placeholder-text -->
+   - A **`TODO(learning)`** marker or obvious placeholder where their code goes.
 3. **Pause**: do **not** fill in the placeholder. Instead, output a **Practice prompt** (see template below).
 4. **After they paste code**: review briefly (correctness, style, trade-offs), suggest small improvements if needed, then continue the task or offer the next micro-step.
 

@@ -6,7 +6,7 @@ description: >-
   developers — including malicious packages on npm or PyPI, compromised
   developer tooling, and attacks targeting source code repositories or CI/CD
   infrastructure. Reads stories from stories.json in the workspace, performs
-  semantic analysis (fetching HN threads as needed), and writes the stories
+  semantic analysis (fetching HN threads when the title alone is ambiguous), and writes the stories
   worth alerting on to findings.json.
 author: AIPCC
 allowed-tools: Bash(curl:https://hn.algolia.com/*) Read Write

@@ -56,6 +56,7 @@ For each packaging-related issue found:
    - **Version inclusion**: If fixed, in which version was the fix included?
 
 3. **Look for resolution indicators**:
+<!-- skillsaw-disable content-placeholder-text -->
    - **Fixed with PR**: Comments mentioning "fixed in PR #XXX" or "merged in #XXX"
    - **Fixed with commit**: Comments with commit SHAs or "fixed in commit XXX"
    - **Version mentions**: "fixed in v1.X.X" or "available in next release"
@@ -143,6 +144,7 @@ Provide a structured analysis:
 5. **Note milestone assignments** - indicates planned fix version
 
 ### Common Resolution Patterns
+<!-- skillsaw-disable content-placeholder-text -->
 - **"Fixed in PR #XXX"** → Check if PR is merged and in which version
 - **"Workaround: use version X.Y"** → Temporary solution available
 - **"Duplicate of #XXX"** → Check the referenced issue for resolution
