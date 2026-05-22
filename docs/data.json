@@ -583,7 +583,7 @@
         "description": "Analyze RPM build.log failures",
         "category": "general",
         "file_path": "helpers/commands/rpm-examine.md",
-        "argument_hint": "[copr-chroot-url] OR [build-log-url] [srpm-url] OR [build.log] [specfile|dist-git] [sources]",
+        "argument_hint": "\"[copr-chroot-url] OR [build-log-url] [srpm-url] OR [build.log] [specfile|dist-git] [sources]\"",
         "synopsis": "/rpm:examine <copr-chroot-url>"
       },
       {
