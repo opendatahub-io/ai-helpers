@@ -31,6 +31,9 @@
     },
     "compliance": {
       "name": "Compliance"
+    },
+    "odh release": {
+      "name": "ODH Release"
     }
   },
   "tools": {
@@ -381,6 +384,14 @@
         "file_path": "helpers/skills/oci-cve-checker/SKILL.md",
         "id": "oci-cve-checker",
         "allowed_tools": "Bash Read"
+      },
+      {
+        "name": "odh-component-release",
+        "description": "Drive the per-component ODH code-freeze release for an llm-d component: create the release branch on the opendatahub-io repo, trigger the Konflux release onboarder workflow for each Konflux sub-component, then verify the onboarder PR and the resulting Quay image. Use when asked to cut an ODH release for a component, run ODH release steps for one component, or prepare a component for ODH code freeze.",
+        "category": "odh release",
+        "file_path": "helpers/skills/odh-component-release/SKILL.md",
+        "id": "odh-component-release",
+        "allowed_tools": "Bash Read AskUserQuestion"
       },
       {
         "name": "pr-jira-linker",

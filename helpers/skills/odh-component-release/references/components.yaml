@@ -1,0 +1,50 @@
+# ODH per-component release registry.
+#
+# Sourced from llm-d-inference-engineering-docs/content/release-engineering
+# (release-process.md and onboarding-component.md). One entry per component
+# that a component-team engineer drives during ODH code freeze. The per-release
+# version (e.g. v0.5.1) is passed at skill invocation time, not stored here.
+#
+# Adding a new component:
+#   1. Add a key under `components:` matching the short name the user will type.
+#   2. Set `odh_repo` to the opendatahub-io repository where the release branch
+#      will be created.
+#   3. List every Konflux component built from that repo under
+#      `konflux_components` — each one needs the dropdown `name` accepted by
+#      the onboarder workflow and the `quay_image` short name that will be
+#      published under quay.io/opendatahub/.
+#   4. If the component's repo uses a default branch other than `main`,
+#      override `odh_default_branch`.
+
+release:
+  konflux_central_repo: opendatahub-io/odh-konflux-central
+  onboarder_workflow: odh-konflux-release-onboarder.yml
+  konflux_release_app_url: https://konflux-ui.apps.stone-prd-rh01.pg1f.p1.openshiftapps.com/ns/open-data-hub-tenant/applications/opendatahub-release
+  quay_org: opendatahub
+  release_branch_prefix: release-
+
+components:
+  inference-scheduler:
+    odh_repo: opendatahub-io/llm-d-inference-scheduler
+    odh_default_branch: main
+    konflux_components:
+      - name: llm-d-inference-scheduler
+        quay_image: llm-d-inference-scheduler
+      - name: llm-d-routing-sidecar
+        quay_image: llm-d-routing-sidecar
+
+  batch-gateway:
+    odh_repo: opendatahub-io/batch-gateway
+    odh_default_branch: main
+    konflux_components:
+      - name: batch-gateway-apiserver
+        quay_image: batch-gateway-apiserver
+      - name: batch-gateway-processor
+        quay_image: batch-gateway-processor
+
+  workload-variant-autoscaler:
+    odh_repo: opendatahub-io/workload-variant-autoscaler
+    odh_default_branch: main
+    konflux_components:
+      - name: odh-workload-variant-autoscaler-controller
+        quay_image: workload-variant-autoscaler
