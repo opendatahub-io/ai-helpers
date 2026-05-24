@@ -50,3 +50,6 @@ CVE Remediation:
 Team Management:
   - team-weekly-report
   - engineer-snapshot
+
+Compliance:
+  - non-redhat-rpms
