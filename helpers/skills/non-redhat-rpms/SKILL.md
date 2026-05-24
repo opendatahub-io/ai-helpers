@@ -93,9 +93,13 @@ stable tag and the highest EA tag as the recommended options, for example:
 >
 > Which tag would you like to scan?
 
-If the user does not have a preference, default to the highest version —
-preferring a stable tag over an early access tag at the same version.
-Then run the script with the chosen tag as a positional argument.
+If the user does not have a preference, default to the most recent tag
+-- typically the highest-version early access tag (e.g. `rhoai-3.5-ea.2`
+over `rhoai-3.4`), since compliance scans are usually run against the
+newest, not-yet-released builds. The script's `discover_tags` already
+selects the highest version, preferring stable over EA only within the
+same version. Then run the script with the chosen tag as a positional
+argument.
 
 ### Multi-image scans
 
@@ -116,6 +120,17 @@ wait
 
 The same approach applies to size pre-checks — one shell call, one
 approval.
+
+For the actual scan, use the script's built-in parallelism with `-q`
+(quiet mode suppresses podman progress bars) and `PARALLEL=N`:
+
+```bash
+PARALLEL=4 ./scripts/find_non_redhat_rpms.sh -q -y -f images.input rhoai-3.5-ea.2
+```
+
+Each image is processed in its own subshell with isolated output files,
+so results are clean and not interleaved. Always use `-q` with
+`PARALLEL` to avoid garbled terminal output from concurrent podman pulls.
 
 ### Results presentation
 
@@ -193,6 +208,12 @@ Append to an existing CSV (suppress header with `-H`):
 
 ```bash
 ./scripts/find_non_redhat_rpms.sh -H quay.io/rhoai/odh-vllm-gaudi-rhel9 >> results.csv
+```
+
+Batch scan from input file with 4 parallel workers (quiet mode):
+
+```bash
+PARALLEL=4 ./scripts/find_non_redhat_rpms.sh -q -y -f images.input rhoai-3.5-ea.2 > results.csv
 ```
 
 Run `-h` to see all options, environment variable overrides, and defaults.
