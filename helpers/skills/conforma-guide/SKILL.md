@@ -1,6 +1,8 @@
 ---
 name: conforma-guide
 description: Educational tool for learning Conforma (Enterprise Contract) concepts, policies, violation types, and troubleshooting workflows. Use when the user asks questions about Conforma, EC policies, what violations mean, or how the conforma skill set works.
+metadata:
+  author: ODH
 ---
 
 # Conforma Guide

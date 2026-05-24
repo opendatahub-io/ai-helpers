@@ -33,5 +33,5 @@ When a violation cannot or should not be fixed, an exception policy can be added
 ## Further Reading
 
 - [Conforma User Guide](https://conforma.dev/docs/user-guide/)
-- [Reproducing a Conforma Report](https://enterprisecontract.dev/docs/user-guide/reproducing-a-konflux-conforma-report.html)
+- [Reproducing a Conforma Report](https://conforma.dev/docs/user-guide/reproducing-a-konflux-conforma-report.html)
 - [Policy Rule Reference](https://conforma.dev/docs/ec-policies/release_policy.html)

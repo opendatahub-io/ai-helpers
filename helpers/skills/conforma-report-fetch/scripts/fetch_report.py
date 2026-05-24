@@ -10,20 +10,26 @@ import argparse
 import json
 import sys
 from datetime import datetime, timezone
+from pathlib import Path
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Fetch Conforma report from Tekton Results API"
-    )
+    parser = argparse.ArgumentParser(description="Fetch Conforma report from Tekton Results API")
     parser.add_argument("--namespace", required=True, help="Kubernetes namespace")
     parser.add_argument("--pipeline-run", help="Specific PipelineRun name")
     parser.add_argument("--component", help="Filter to a specific component")
     parser.add_argument("--handover", help="Path to existing handover JSON to update")
-    parser.add_argument(
-        "--output", help="Path to write updated handover (default: stdout)"
-    )
+    parser.add_argument("--output", help="Path to write updated handover (default: stdout)")
     return parser.parse_args()
+
+
+def _validate_path(path_str: str) -> Path:
+    """Validate a file path against traversal attacks."""
+    raw = Path(path_str)
+    if ".." in raw.parts:
+        print(f"Error: path traversal detected: {path_str}", file=sys.stderr)
+        sys.exit(1)
+    return raw.resolve()
 
 
 def main() -> int:
@@ -31,8 +37,19 @@ def main() -> int:
 
     handover: dict = {}
     if args.handover:
-        with open(args.handover, encoding="utf-8") as f:
-            handover = json.load(f)
+        resolved = _validate_path(args.handover)
+        try:
+            with open(resolved, encoding="utf-8") as f:
+                handover = json.load(f)
+        except FileNotFoundError:
+            print(f"Error: handover file not found: {args.handover}", file=sys.stderr)
+            return 1
+        except PermissionError:
+            print(f"Error: permission denied: {args.handover}", file=sys.stderr)
+            return 1
+        except json.JSONDecodeError as exc:
+            print(f"Error: invalid JSON in {args.handover}: {exc}", file=sys.stderr)
+            return 1
 
     handover.setdefault("metadata", {})
     handover["metadata"]["namespace"] = args.namespace
@@ -50,8 +67,17 @@ def main() -> int:
 
     output = json.dumps(handover, indent=2)
     if args.output:
-        with open(args.output, "w", encoding="utf-8") as f:
-            f.write(output)
+        resolved_out = _validate_path(args.output)
+        try:
+            resolved_out.parent.mkdir(parents=True, exist_ok=True)
+            with open(resolved_out, "w", encoding="utf-8") as f:
+                f.write(output)
+        except PermissionError:
+            print(f"Error: permission denied writing: {args.output}", file=sys.stderr)
+            return 1
+        except OSError as exc:
+            print(f"Error: cannot write {args.output}: {exc}", file=sys.stderr)
+            return 1
     else:
         print(output)
 

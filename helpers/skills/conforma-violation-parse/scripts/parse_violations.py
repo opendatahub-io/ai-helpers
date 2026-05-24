@@ -11,19 +11,49 @@ import argparse
 import json
 import sys
 from datetime import datetime, timezone
+from pathlib import Path
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Parse Conforma report into structured violations JSON"
     )
-    parser.add_argument(
-        "--handover", required=True, help="Path to handover JSON with report_fetch"
-    )
-    parser.add_argument(
-        "--output", help="Path to write updated handover (default: stdout)"
-    )
+    parser.add_argument("--handover", required=True, help="Path to handover JSON with report_fetch")
+    parser.add_argument("--output", help="Path to write updated handover (default: stdout)")
     return parser.parse_args()
+
+
+def _safe_open_handover(path_str: str) -> dict:
+    """Open and parse handover JSON with path validation."""
+    raw = Path(path_str)
+    if ".." in raw.parts:
+        print(f"Error: path traversal detected: {path_str}", file=sys.stderr)
+        sys.exit(1)
+    resolved = raw.resolve()
+    try:
+        with open(resolved, encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print(f"Error: handover file not found: {path_str}", file=sys.stderr)
+        sys.exit(1)
+    except PermissionError:
+        print(f"Error: permission denied: {path_str}", file=sys.stderr)
+        sys.exit(1)
+    except json.JSONDecodeError as exc:
+        print(f"Error: invalid JSON in {path_str}: {exc}", file=sys.stderr)
+        sys.exit(1)
+
+
+def _safe_write_output(path_str: str, data: str) -> None:
+    """Write output with path validation."""
+    raw = Path(path_str)
+    if ".." in raw.parts:
+        print(f"Error: path traversal detected: {path_str}", file=sys.stderr)
+        sys.exit(1)
+    resolved = raw.resolve()
+    resolved.parent.mkdir(parents=True, exist_ok=True)
+    with open(resolved, "w", encoding="utf-8") as f:
+        f.write(data)
 
 
 def validate_prerequisites(handover: dict) -> str | None:
@@ -39,8 +69,7 @@ def validate_prerequisites(handover: dict) -> str | None:
 def main() -> int:
     args = parse_args()
 
-    with open(args.handover, encoding="utf-8") as f:
-        handover = json.load(f)
+    handover = _safe_open_handover(args.handover)
 
     error = validate_prerequisites(handover)
     if error:
@@ -65,8 +94,7 @@ def main() -> int:
 
     output = json.dumps(handover, indent=2)
     if args.output:
-        with open(args.output, "w", encoding="utf-8") as f:
-            f.write(output)
+        _safe_write_output(args.output, output)
     else:
         print(output)
 

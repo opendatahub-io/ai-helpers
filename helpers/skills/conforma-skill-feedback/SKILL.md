@@ -2,6 +2,8 @@
 name: conforma-skill-feedback
 description: Report quality issues with any conforma-* skill (hallucinations, wrong analysis, incorrect fix suggestions) as structured Jira tickets. Use when the user wants to report that a conforma skill produced incorrect or unhelpful output.
 allowed-tools: Bash(acli:*)
+metadata:
+  author: ODH
 ---
 
 # Conforma Skill Feedback
@@ -33,6 +35,19 @@ When the engineer reports a problem with a conforma skill:
    - Summary: `[conforma-skill-feedback] {skill_name}: {brief description}`
    - Description: structured report with incorrect vs expected output
    - Attach the full handover JSON if available
+
+   ```bash
+   acli jira create-issue \
+     --project RHOAIENG \
+     --type Bug \
+     --summary "[conforma-skill-feedback] conforma-violation-analyze: hallucinated root cause" \
+     --description "Skill: conforma-violation-analyze
+   Incorrect output: Suggested missing SBOM task, but task is present
+   Expected output: Should have identified expired signing key
+   Severity: high — engineer applied wrong fix
+   Evidence: see attached handover.json" \
+     --attach handover.json
+   ```
 
 ## Feedback Loop
 
