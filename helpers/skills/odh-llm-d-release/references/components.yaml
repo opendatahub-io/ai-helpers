@@ -1,0 +1,135 @@
+# Registry for the ODH llm-d release orchestrator.
+#
+# Drives /odh-llm-d-release on ODH code-freeze Friday.
+#
+# Three derived values from the release manager's single --version input.
+# Five forms of --version are accepted:
+#   GA:            v3.5,  v3.5.0
+#   Early Access:  v3.5-ea1,  v3.5-ea.1,  v3.5.0-ea.1
+# Whatever case (`ea` vs `EA`) and separator (`-ea1` vs `-ea.1`) you pass is
+# preserved verbatim in branch and tag names.
+#
+# Example (--version v3.5-ea2):
+#   * release branch on each ODH component repo:     release-v3.5-ea2
+#   * Konflux onboarder `version` input + Quay tag:  v3.5-ea2
+#   * GitHub release tag on each ODH component repo: odh-v3.5-ea2
+#
+# Example (--version v3.6.0):
+#   * release branch on each ODH component repo:     release-v3.6.0
+#   * Konflux onboarder `version` input + Quay tag:  v3.6.0
+#   * GitHub release tag on each ODH component repo: odh-v3.6.0
+#
+# Per-component fields:
+#   odh_repo:           opendatahub-io repo where the release branch is created
+#   odh_base_ref:       what to fork the release branch from. Either a branch
+#                       name (e.g. `main`) or a 7–40 char commit SHA. Edit
+#                       this locally (no need to commit) before running the
+#                       skill if you need to release from a specific commit
+#                       rather than the tip of the default branch.
+#   workflow_component: value passed to `odh-konflux-onboarder.yml`'s
+#                       `component` dropdown input (one workflow call per
+#                       component; the workflow may produce multiple images)
+#   kserve_entry_name:  `name:` value in opendatahub-io/kserve's
+#                       config/component_metadata.yaml (this is the entry the
+#                       KServe sub-agent updates with the upstream version)
+#   tracker_name:       short name used in the #Release# tracker comment
+#                       (e.g. `wva` instead of `llm-d-workload-variant-autoscaler`)
+#   konflux_files:      one entry per .tekton/*-push.yaml file the onboarder
+#                       PR is expected to add. Used for content validation
+#                       before approving + merging the PR.
+#
+# To simplify in a future release, the registry could use kserve_entry_name as
+# the component key (e.g. `llm-d-router` instead of `inference-scheduler`).
+# Kept as-is for now to avoid churn.
+
+release:
+  konflux_central_repo: opendatahub-io/odh-konflux-central
+  onboarder_workflow: odh-konflux-onboarder.yml
+  konflux_release_app_url: https://konflux-ui.apps.stone-prd-rh01.pg1f.p1.openshiftapps.com/ns/open-data-hub-tenant/applications/opendatahub-release
+  quay_org: opendatahub
+  release_branch_prefix: release-
+  github_release_tag_prefix: odh-
+
+  # KServe metadata PR target file. The upstream repo (opendatahub-io/kserve)
+  # and the target branch (master) are hardcoded in the script.
+  kserve_metadata_file: config/component_metadata.yaml
+
+  # KServe entries that get an upstream version update but are not driven by a
+  # per-component sub-agent. Today: just vLLM. The orchestrator prompts the
+  # release manager for the upstream version of each entry here and passes
+  # them to the KServe sub-agent alongside the per-component versions.
+  kserve_extra_entries:
+    - vLLM
+
+  # KServe `releases[]` entry names to leave as-is during the metadata bump.
+  kserve_keep_entries:
+    - KServe
+
+  # Tracker repo (opendatahub-io/opendatahub-community) is hardcoded in the
+  # tracker-issue-finder/-comments scripts. Only the title-match pattern is
+  # configurable here.
+  tracker_title_pattern: "Release Tracker"
+
+components:
+  inference-scheduler:
+    odh_repo: opendatahub-io/llm-d-inference-scheduler
+    odh_base_ref: main
+    workflow_component: llm-d-inference-scheduler
+    kserve_entry_name: llm-d-router
+    tracker_name: llm-d-router
+    konflux_files:
+      - tekton_file: .tekton/llm-d-inference-scheduler-push.yaml
+        quay_image: llm-d-inference-scheduler
+        dockerfile: Dockerfile.epp.konflux
+        path_context: .
+      - tekton_file: .tekton/odh-llm-d-routing-sidecar-push.yaml
+        quay_image: llm-d-routing-sidecar
+        dockerfile: Dockerfile.sidecar.konflux
+        path_context: .
+
+  batch-gateway:
+    odh_repo: opendatahub-io/batch-gateway
+    odh_base_ref: main
+    workflow_component: batch-gateway
+    kserve_entry_name: batch-gateway
+    tracker_name: batch-gateway
+    # Build runs from the repo root (path_context: .) with the Dockerfile
+    # path qualified by docker/ — equivalent to `docker build . -f docker/X`.
+    # Needed because the Dockerfiles COPY source from outside docker/.
+    konflux_files:
+      - tekton_file: .tekton/odh-llm-d-batch-gateway-apiserver-push.yaml
+        quay_image: odh-llm-d-batch-gateway-apiserver
+        dockerfile: docker/Dockerfile.apiserver.konflux
+        path_context: .
+      - tekton_file: .tekton/odh-llm-d-batch-gateway-processor-push.yaml
+        quay_image: odh-llm-d-batch-gateway-processor
+        dockerfile: docker/Dockerfile.processor.konflux
+        path_context: .
+      - tekton_file: .tekton/odh-llm-d-batch-gateway-gc-push.yaml
+        quay_image: odh-llm-d-batch-gateway-gc
+        dockerfile: docker/Dockerfile.gc.konflux
+        path_context: .
+
+  workload-variant-autoscaler:
+    odh_repo: opendatahub-io/workload-variant-autoscaler
+    odh_base_ref: main
+    workflow_component: workload-variant-autoscaler
+    kserve_entry_name: llm-d-workload-variant-autoscaler
+    tracker_name: wva
+    konflux_files:
+      - tekton_file: .tekton/odh-workload-variant-autoscaler-controller-push.yaml
+        quay_image: workload-variant-autoscaler
+        dockerfile: Dockerfile.konflux
+        path_context: .
+
+  llm-d-kv-cache:
+    odh_repo: opendatahub-io/llm-d-kv-cache
+    odh_base_ref: main
+    workflow_component: llm-d-kv-cache
+    kserve_entry_name: llm-d-kv-cache
+    tracker_name: llm-d-kv-cache
+    konflux_files:
+      - tekton_file: .tekton/odh-llm-d-kv-cache-push.yaml
+        quay_image: llm-d-kv-cache
+        dockerfile: Dockerfile.konflux
+        path_context: services/uds_tokenizer

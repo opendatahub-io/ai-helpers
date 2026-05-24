@@ -1,37 +1,26 @@
 #!/usr/bin/env bash
 # Verify that a tagged image exists in quay.io/<org>/<image>:<tag>.
-# Optionally polls with a bounded timeout (builds are async).
-#
-# Usage:
-#   verify-quay-image.sh --org <org> --image <image> --tag <tag> \
-#                        [--wait-seconds <N>] [--poll-interval <S>]
-#
-# Output (stdout, one key=value per line):
-#   status=found|missing
-#   ref=quay.io/<org>/<image>:<tag>
-#   browse_url=https://quay.io/repository/<org>/<image>?tab=tags
-#   digest=<sha256:...>   (when found)
-#
-# Exit codes: 0 always (status field carries the verdict).
+# Polls Quay's public REST API with a bounded timeout. No auth needed for
+# public repos (e.g. quay.io/opendatahub).
 
 set -euo pipefail
 
 if [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
     cat <<'EOF'
-verify-quay-image.sh — check whether a tag exists at quay.io/<org>/<image>:<tag>.
+release-image-checker.sh — check whether a tag exists at quay.io/<org>/<image>:<tag>.
 
 Required:
   --org <name>           Quay org (e.g. opendatahub)
   --image <name>         Image short name
-  --tag <name>           Tag to look for (e.g. v0.5.0)
+  --tag <name>           Tag (e.g. v3.5-ea2)
 
 Optional:
-  --wait-seconds <N>     Poll for up to N seconds (default 0 = single probe)
-  --poll-interval <S>    Seconds between probes (default 15)
+  --timeout <N>          Poll up to N seconds (default 900 = 15 min)
+  --poll-interval <S>    Seconds between probes (default 60 = 1 min)
   -h, --help             Show this help
 
 Output (stdout, key=value lines): status (found|missing), ref, browse_url, digest.
-Always exits 0; the status field carries the verdict.
+Always exits 0; status carries the verdict.
 EOF
     exit 0
 fi
@@ -39,15 +28,15 @@ fi
 ORG=""
 IMAGE=""
 TAG=""
-WAIT_SECONDS=0
-POLL_INTERVAL=15
+TIMEOUT=900
+POLL_INTERVAL=60
 
 while [ $# -gt 0 ]; do
     case "$1" in
         --org)            ORG="$2";            shift 2 ;;
         --image)          IMAGE="$2";          shift 2 ;;
         --tag)            TAG="$2";            shift 2 ;;
-        --wait-seconds)   WAIT_SECONDS="$2";   shift 2 ;;
+        --timeout)        TIMEOUT="$2";        shift 2 ;;
         --poll-interval)  POLL_INTERVAL="$2";  shift 2 ;;
         *) echo "unknown arg: $1" >&2; exit 2 ;;
     esac
@@ -63,13 +52,17 @@ done
 REF="quay.io/${ORG}/${IMAGE}:${TAG}"
 BROWSE_URL="https://quay.io/repository/${ORG}/${IMAGE}?tab=tags"
 
+API_URL="https://quay.io/api/v1/repository/${ORG}/${IMAGE}/tag/?specificTag=${TAG}"
+
 probe() {
-    # Returns 0 + prints digest on stdout if tag exists, non-zero otherwise.
-    skopeo inspect --no-tags "docker://${REF}" 2>/dev/null \
-        | jq -r '.Digest // empty'
+    # Quay returns {"tags":[{...,"manifest_digest":"sha256:..."}]} when the tag
+    # exists, or an empty "tags" array when it doesn't. 404 means the repo
+    # itself is missing.
+    curl -fsS --max-time 10 "${API_URL}" 2>/dev/null \
+        | jq -r '.tags[0].manifest_digest // empty'
 }
 
-deadline=$(( $(date +%s) + WAIT_SECONDS ))
+deadline=$(( $(date +%s) + TIMEOUT ))
 while :; do
     digest=$(probe || true)
     if [ -n "${digest:-}" ]; then

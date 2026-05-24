@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-# Preflight: confirm required CLIs are installed and gh is authenticated.
-# Prints a human-readable report and exits non-zero if anything is missing.
+# Tool-availability check for the odh-llm-d-release orchestrator and sub-agents.
+# Confirms gh/yq/jq/curl/git are present and gh is authenticated.
 #
-# Usage: preflight.sh [--help]
+# Usage: tools-checker.sh [--help]
 
 set -euo pipefail
 
 if [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
     cat <<'EOF'
-preflight.sh — verify tooling for odh-component-release.
+tools-checker.sh — verify tooling for odh-llm-d-release.
 
-Checks: gh (and gh auth status), yq, jq, skopeo.
+Checks: gh (and gh auth status), yq, jq, curl, git.
 Exits 0 when everything is present, non-zero otherwise.
 
 No arguments. No side effects.
@@ -32,10 +32,11 @@ check_cmd() {
 }
 
 echo "Tool availability:"
-check_cmd gh     "dnf install gh   or brew install gh,   then: gh auth login"
-check_cmd yq     "dnf install yq   or brew install yq"
-check_cmd jq     "dnf install jq   or brew install jq"
-check_cmd skopeo "dnf install skopeo or brew install skopeo"
+check_cmd gh   "dnf install gh   or brew install gh,   then: gh auth login"
+check_cmd yq   "dnf install yq   or brew install yq"
+check_cmd jq   "dnf install jq   or brew install jq"
+check_cmd curl "dnf install curl or brew install curl"
+check_cmd git  "dnf install git  or brew install git"
 
 echo
 echo "GitHub auth:"
@@ -53,9 +54,9 @@ fi
 
 if [ "${missing}" -gt 0 ]; then
     echo
-    echo "Preflight: ${missing} issue(s). Install missing tools, then retry." >&2
+    echo "tools-checker: ${missing} issue(s). Install missing tools, then retry." >&2
     exit 1
 fi
 
 echo
-echo "Preflight: ok"
+echo "tools-checker: ok"
