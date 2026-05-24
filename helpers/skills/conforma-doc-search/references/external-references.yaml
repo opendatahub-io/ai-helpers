@@ -1,0 +1,32 @@
+# External reference URLs for Conforma documentation.
+# These are pointers to upstream docs — fetch at runtime, do not copy content.
+#
+# Usage: any skill or agent needing Conforma reference material should read
+# this file and fetch the relevant URL(s) for the task at hand.
+
+references:
+  - url: "https://konflux.pages.redhat.com/docs/users/releasing/policy-exceptions.html"
+    title: "Konflux Policy Exceptions"
+    description: >
+      How to create and manage policy exceptions (waivers) in Konflux.
+      Covers the exception lifecycle, required fields, approval process,
+      and how exceptions interact with the release pipeline.
+    topics:
+      - exceptions
+      - waivers
+      - release-policy
+      - konflux
+
+  - url: "https://conforma.dev/docs/policy/packages/release_volatile_config.html"
+    title: "Volatile Configuration Warnings Package"
+    description: >
+      Conforma policy package that generates warnings for volatile
+      configuration rules with lifecycle events. Covers effectiveOn/effectiveUntil
+      time-based constraints, expiration warnings, and rule activation.
+      Relevant when creating exceptions with time-bounded validity.
+    topics:
+      - volatile-config
+      - effectiveUntil
+      - effectiveOn
+      - expiration
+      - exceptions

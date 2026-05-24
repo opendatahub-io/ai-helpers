@@ -38,6 +38,7 @@ Updates the handover `investigation.doc_search` section with:
 
 - `references/conforma-policy-reference.md` -- curated upstream conforma.dev docs (static)
 - `references/violations/*.yaml` -- per-violation YAML files (self-improving via `conforma-doc-update`)
+- `references/external-references.yaml` -- upstream URLs to fetch at runtime (shared across skills/agents)
 
 ## Error Handling
 

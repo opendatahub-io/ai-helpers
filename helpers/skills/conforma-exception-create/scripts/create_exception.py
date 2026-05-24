@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Create a GitLab MR for a Conforma exception/waiver policy.
 
+Supports two modes:
+  - Pipeline mode: reads all context from a handover JSON document
+  - Standalone mode: accepts individual CLI arguments provided by the user
+
 Uses glab CLI to create the MR in the policy/exception repository.
 """
 
@@ -16,65 +20,202 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Create GitLab MR for Conforma exception policy"
     )
+
     parser.add_argument(
         "--handover",
-        required=True,
-        help="Path to handover JSON with investigation.violation_analyze",
+        help="Path to handover JSON (pipeline mode). "
+        "If omitted, standalone arguments are required.",
     )
     parser.add_argument(
         "--output", help="Path to write updated handover (default: stdout)"
     )
+
+    standalone = parser.add_argument_group(
+        "standalone arguments",
+        "Required when --handover is not provided.",
+    )
+    standalone.add_argument(
+        "--container-image",
+        help="Full container image reference being exempted "
+        "(e.g. quay.io/org/image@sha256:abc...)",
+    )
+    standalone.add_argument(
+        "--component",
+        help="Component name (e.g. my-component)",
+    )
+    standalone.add_argument(
+        "--rule",
+        help="Policy rule to create an exception for "
+        "(e.g. attestation_task.sbom_task_present)",
+    )
+    standalone.add_argument(
+        "--effective-until",
+        help="Expiry date for the exception in YYYY-MM-DD format",
+    )
+    standalone.add_argument(
+        "--jira-url",
+        help="URL of the JIRA ticket justifying this exception",
+    )
+    standalone.add_argument(
+        "--justification",
+        help="Reason why the exception is needed",
+    )
+    standalone.add_argument(
+        "--policy-repo",
+        help="GitLab project path for the exception policy repo "
+        "(e.g. org/conforma-exceptions)",
+    )
+
     return parser.parse_args()
 
 
-def validate_prerequisites(handover: dict) -> str | None:
-    """Return an error message if prerequisites are not met, else None."""
+def validate_handover_mode(handover: dict) -> list[str]:
+    """Validate prerequisites when running in pipeline/handover mode."""
+    errors: list[str] = []
     investigation = handover.get("investigation", {})
     va = investigation.get("violation_analyze", {})
     if va.get("status") != "completed":
-        return (
-            "investigation.violation_analyze must be completed "
+        errors.append(
+            "investigation.violation_analyze must have status 'completed' "
             "before creating an exception"
         )
-    return None
+
+    violation = investigation.get("violation", {})
+    if not violation.get("rule"):
+        errors.append(
+            "investigation.violation.rule is missing — "
+            "cannot determine which policy rule to exempt"
+        )
+
+    return errors
+
+
+STANDALONE_REQUIRED = {
+    "--container-image": "container_image",
+    "--rule": "rule",
+    "--effective-until": "effective_until",
+    "--jira-url": "jira_url",
+    "--justification": "justification",
+}
+
+
+def validate_standalone_mode(args: argparse.Namespace) -> list[str]:
+    """Validate that all required standalone arguments are present and valid."""
+    errors: list[str] = []
+
+    for flag, attr in STANDALONE_REQUIRED.items():
+        if not getattr(args, attr, None):
+            errors.append(f"{flag} is required in standalone mode")
+
+    if errors:
+        return errors
+
+    effective_until = getattr(args, "effective_until", None)
+    if effective_until:
+        try:
+            expiry = datetime.strptime(effective_until, "%Y-%m-%d").replace(
+                tzinfo=timezone.utc
+            )
+        except ValueError:
+            errors.append(
+                f"--effective-until must be YYYY-MM-DD format, got: {effective_until}"
+            )
+            return errors
+
+        if expiry.date() <= datetime.now(timezone.utc).date():
+            errors.append(
+                f"--effective-until must be a future date, got: {effective_until}"
+            )
+
+    return errors
+
+
+def build_handover_from_args(args: argparse.Namespace) -> dict:
+    """Build a minimal handover-compatible structure from standalone args."""
+    return {
+        "metadata": {
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "mode": "standalone",
+        },
+        "investigation": {
+            "violation": {
+                "component": args.component or "unknown",
+                "container_image": args.container_image,
+                "rule": args.rule,
+            },
+            "violation_analyze": {
+                "status": "completed",
+            },
+            "standalone_inputs": {
+                "effective_until": args.effective_until,
+                "jira_url": args.jira_url,
+                "justification": args.justification,
+                "policy_repo": args.policy_repo,
+            },
+        },
+    }
+
+
+def write_result(handover: dict, output_path: str | None) -> None:
+    result = json.dumps(handover, indent=2)
+    if output_path:
+        with open(output_path, "w", encoding="utf-8") as f:
+            f.write(result)
+    else:
+        print(result)
 
 
 def main() -> int:
     args = parse_args()
 
-    with open(args.handover, encoding="utf-8") as f:
-        handover = json.load(f)
+    is_pipeline_mode = args.handover is not None
 
-    error = validate_prerequisites(handover)
+    if is_pipeline_mode:
+        with open(args.handover, encoding="utf-8") as f:
+            handover = json.load(f)
+        errors = validate_handover_mode(handover)
+    else:
+        errors = validate_standalone_mode(args)
+        if not errors:
+            handover = build_handover_from_args(args)
+
+    if errors:
+        error_msg = "; ".join(errors)
+        if is_pipeline_mode:
+            investigation = handover.setdefault("investigation", {})
+            investigation["exception_create"] = {
+                "status": "failed",
+                "completed_at": datetime.now(timezone.utc).isoformat(),
+                "mr_url": None,
+                "exception_policy": None,
+                "justification": None,
+                "error": error_msg,
+            }
+            write_result(handover, args.output)
+        else:
+            print(f"Error: {error_msg}", file=sys.stderr)
+        return 1
+
     investigation = handover.setdefault("investigation", {})
 
-    if error:
-        investigation["exception_create"] = {
-            "status": "failed",
-            "completed_at": datetime.now(timezone.utc).isoformat(),
-            "mr_url": None,
-            "exception_policy": None,
-            "justification": None,
-            "error": error,
-        }
-    else:
-        # TODO: implement glab MR creation
-        investigation["exception_create"] = {
-            "status": "pending",
-            "completed_at": None,
-            "mr_url": None,
-            "exception_policy": None,
-            "justification": None,
-            "error": "Not yet implemented",
-        }
+    # TODO: implement glab MR creation
+    # - generate exception policy YAML
+    # - create branch, commit, push
+    # - glab mr create
+    investigation["exception_create"] = {
+        "status": "pending",
+        "completed_at": None,
+        "mr_url": None,
+        "exception_policy": investigation.get("violation", {}).get("rule"),
+        "justification": (
+            investigation.get("standalone_inputs", {}).get("justification")
+            if not is_pipeline_mode
+            else None
+        ),
+        "error": "Not yet implemented",
+    }
 
-    output = json.dumps(handover, indent=2)
-    if args.output:
-        with open(args.output, "w", encoding="utf-8") as f:
-            f.write(output)
-    else:
-        print(output)
-
+    write_result(handover, args.output)
     return 0
 
 
