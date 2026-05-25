@@ -23,6 +23,13 @@ EOF
     exit 0
 fi
 
+require_value() {
+    if [ "$#" -lt 2 ] || [[ "$2" == --* ]]; then
+        echo "missing value for $1" >&2
+        exit 2
+    fi
+}
+
 REPO=""
 TAG=""
 TARGET_BRANCH=""
@@ -30,10 +37,10 @@ TITLE=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        --repo)            REPO="$2";           shift 2 ;;
-        --tag)             TAG="$2";            shift 2 ;;
-        --target-branch)   TARGET_BRANCH="$2";  shift 2 ;;
-        --title)           TITLE="$2";          shift 2 ;;
+        --repo)          require_value "$@"; REPO="$2";          shift 2 ;;
+        --tag)           require_value "$@"; TAG="$2";           shift 2 ;;
+        --target-branch) require_value "$@"; TARGET_BRANCH="$2"; shift 2 ;;
+        --title)         require_value "$@"; TITLE="$2";         shift 2 ;;
         *) echo "unknown arg: $1" >&2; exit 2 ;;
     esac
 done

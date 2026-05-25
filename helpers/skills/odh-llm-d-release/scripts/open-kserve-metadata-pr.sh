@@ -45,6 +45,13 @@ EOF
     exit 0
 fi
 
+require_value() {
+    if [ "$#" -lt 2 ] || [[ "$2" == --* ]]; then
+        echo "missing value for $1" >&2
+        exit 2
+    fi
+}
+
 METADATA_FILE=""
 VERSION=""
 UPDATES=""
@@ -52,10 +59,10 @@ KEEP=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        --metadata-file)    METADATA_FILE="$2";    shift 2 ;;
-        --version)          VERSION="$2";          shift 2 ;;
-        --updates)          UPDATES="$2";          shift 2 ;;
-        --keep)             KEEP="$2";             shift 2 ;;
+        --metadata-file) require_value "$@"; METADATA_FILE="$2"; shift 2 ;;
+        --version)       require_value "$@"; VERSION="$2";       shift 2 ;;
+        --updates)       require_value "$@"; UPDATES="$2";       shift 2 ;;
+        --keep)          require_value "$@"; KEEP="$2";          shift 2 ;;
         *) echo "unknown arg: $1" >&2; exit 2 ;;
     esac
 done
@@ -101,15 +108,28 @@ fi
 
 # Ensure fork exists. `gh repo fork` is idempotent — if the fork already
 # exists, it just prints a notice. --clone=false avoids a duplicate clone.
-gh repo fork "${UPSTREAM_REPO}" --remote=false --clone=false >/dev/null 2>&1 || true
+# Capture the output so we can surface a real error if creation fails.
+fork_output=$(gh repo fork "${UPSTREAM_REPO}" --remote=false --clone=false 2>&1) || \
+    fork_output="${fork_output}  [exit non-zero, may already exist — continuing to visibility check]"
 
 # Wait briefly for GitHub to make the fork visible.
+fork_visible=false
 for _ in 1 2 3 4 5; do
     if gh repo view "${fork_repo}" >/dev/null 2>&1; then
+        fork_visible=true
         break
     fi
     sleep 2
 done
+
+if [ "${fork_visible}" = false ]; then
+    echo "fork ${fork_repo} not visible after 10s; gh fork output was:" >&2
+    echo "${fork_output}" >&2
+    echo "status=failed"
+    echo "reason=fork-not-visible"
+    echo "fork_repo=${fork_repo}"
+    exit 0
+fi
 
 # If the fork already has the branch but the open-PR short-circuit above did
 # not match, the branch is orphaned (PR was previously closed or merged).
@@ -130,7 +150,7 @@ re-run:
   gh pr list --repo ${UPSTREAM_REPO} --head ${gh_user}:${branch_name} --state closed
 
 EOF
-    echo "status=needs-human"
+    echo "status=failed"
     echo "reason=stale-branch-on-fork"
     echo "fork_repo=${fork_repo}"
     echo "branch=${branch_name}"
@@ -148,22 +168,26 @@ if [ ! -f "${METADATA_FILE}" ]; then
     exit 1
 fi
 
-# Apply each update.
+# Apply each update. Pass name/version to yq via environment variables and
+# strenv() so a stray `"` or yq metacharacter in the input can't change the
+# filter (defense against malformed --updates JSON).
 count=$(printf '%s' "${UPDATES}" | jq 'length')
 for i in $(seq 0 $((count - 1))); do
     entry=$(printf '%s' "${UPDATES}" | jq ".[${i}]")
     name=$(printf '%s' "${entry}" | jq -r '.name')
     version=$(printf '%s' "${entry}" | jq -r '.version')
 
-    if yq -e "(.releases[] | select(.name == \"${name}\"))" "${METADATA_FILE}" >/dev/null 2>&1; then
-        yq -i "(.releases[] | select(.name == \"${name}\") | .version) = \"${version}\"" \
+    export YQ_NAME="${name}" YQ_VERSION="${version}"
+    if yq -e '(.releases[] | select(.name == strenv(YQ_NAME)))' "${METADATA_FILE}" >/dev/null 2>&1; then
+        yq -i '(.releases[] | select(.name == strenv(YQ_NAME)) | .version) = strenv(YQ_VERSION)' \
             "${METADATA_FILE}"
     else
         # New entry — best-effort repoUrl, leaves user to refine in the PR.
-        yq -i ".releases += [{\"name\": \"${name}\", \"version\": \"${version}\", \"repoUrl\": \"https://github.com/llm-d\"}]" \
+        yq -i '.releases += [{"name": strenv(YQ_NAME), "version": strenv(YQ_VERSION), "repoUrl": "https://github.com/llm-d"}]' \
             "${METADATA_FILE}"
     fi
 done
+unset YQ_NAME YQ_VERSION
 
 if git diff --quiet -- "${METADATA_FILE}"; then
     echo "status=failed"

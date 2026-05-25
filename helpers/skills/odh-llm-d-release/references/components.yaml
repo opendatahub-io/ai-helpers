@@ -45,6 +45,9 @@
 release:
   konflux_central_repo: opendatahub-io/odh-konflux-central
   onboarder_workflow: odh-konflux-onboarder.yml
+  # GitHub App login that opens the Release tekton-pipeline PR. Used by
+  # onboarder-pr-finder.sh to reject any PR not authored by this app.
+  onboarder_pr_author: odh-devops-app[bot]
   konflux_release_app_url: https://konflux-ui.apps.stone-prd-rh01.pg1f.p1.openshiftapps.com/ns/open-data-hub-tenant/applications/opendatahub-release
   quay_org: opendatahub
   release_branch_prefix: release-

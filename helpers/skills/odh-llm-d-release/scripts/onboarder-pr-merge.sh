@@ -10,25 +10,37 @@ if [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
 onboarder-pr-merge.sh — approve and squash-merge the onboarder PR.
 
 Required:
-  --repo <owner/repo>     The PR's repo
-  --pr-number <n>         The PR number
+  --repo <owner/repo>      The PR's repo
+  --pr-number <n>          The PR number
 
 Optional:
-  -h, --help              Show this help
+  --expected-head-sha <sha> If set, merge only if the PR's head SHA still
+                            matches (prevents TOCTOU between validation and
+                            merge). Passed to gh as --match-head-commit.
+  -h, --help               Show this help
 
-Output (stdout, key=value lines): status (merged|already-merged|failed),
+Output (stdout, key=value lines): status (merged|already-merged|failed|head-moved),
                                   merge_sha (when merged).
 EOF
     exit 0
 fi
 
+require_value() {
+    if [ "$#" -lt 2 ] || [[ "$2" == --* ]]; then
+        echo "missing value for $1" >&2
+        exit 2
+    fi
+}
+
 REPO=""
 PR_NUMBER=""
+EXPECTED_HEAD_SHA=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        --repo)        REPO="$2";       shift 2 ;;
-        --pr-number)   PR_NUMBER="$2";  shift 2 ;;
+        --repo)              require_value "$@"; REPO="$2";              shift 2 ;;
+        --pr-number)         require_value "$@"; PR_NUMBER="$2";         shift 2 ;;
+        --expected-head-sha) require_value "$@"; EXPECTED_HEAD_SHA="$2"; shift 2 ;;
         *) echo "unknown arg: $1" >&2; exit 2 ;;
     esac
 done
@@ -47,13 +59,31 @@ if [ "${state}" = "MERGED" ]; then
     exit 0
 fi
 
+# If caller pinned an expected head SHA, fail fast when the PR head moved
+# between validation and now. This is the TOCTOU defense (CWE-367) — even
+# though our threat model considers unauthorized writes to the source branch
+# unlikely, the pin costs nothing and turns silent races into clear failures.
+if [ -n "${EXPECTED_HEAD_SHA}" ]; then
+    current_head=$(gh pr view "${PR_NUMBER}" --repo "${REPO}" --json headRefOid --jq '.headRefOid')
+    if [ "${current_head}" != "${EXPECTED_HEAD_SHA}" ]; then
+        printf 'status=head-moved\nexpected_head=%s\ncurrent_head=%s\n' \
+            "${EXPECTED_HEAD_SHA}" "${current_head}"
+        exit 0
+    fi
+fi
+
 # Try to approve. If the user is the PR author, GitHub will reject self-review;
 # treat that as non-fatal (the merge may still succeed if branch protection
 # allows it, or fail in the next step with a clear error).
 gh pr review "${PR_NUMBER}" --repo "${REPO}" --approve >/dev/null 2>&1 || \
     echo "warning: pr review --approve failed (often: self-review or token scope); continuing" >&2
 
-if ! gh pr merge "${PR_NUMBER}" --repo "${REPO}" --squash --delete-branch=false --auto=false; then
+merge_args=(--squash --delete-branch=false --auto=false)
+if [ -n "${EXPECTED_HEAD_SHA}" ]; then
+    merge_args+=(--match-head-commit "${EXPECTED_HEAD_SHA}")
+fi
+
+if ! gh pr merge "${PR_NUMBER}" --repo "${REPO}" "${merge_args[@]}"; then
     echo "status=failed"
     exit 0
 fi

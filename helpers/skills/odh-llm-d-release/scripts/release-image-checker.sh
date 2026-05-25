@@ -25,6 +25,21 @@ EOF
     exit 0
 fi
 
+require_value() {
+    if [ "$#" -lt 2 ] || [[ "$2" == --* ]]; then
+        echo "missing value for $1" >&2
+        exit 2
+    fi
+}
+
+require_positive_int() {
+    local name="$1" value="$2"
+    if ! [[ "${value}" =~ ^[0-9]+$ ]] || [ "${value}" -lt 0 ]; then
+        echo "${name} must be a non-negative integer, got: ${value}" >&2
+        exit 2
+    fi
+}
+
 ORG=""
 IMAGE=""
 TAG=""
@@ -33,11 +48,11 @@ POLL_INTERVAL=60
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        --org)            ORG="$2";            shift 2 ;;
-        --image)          IMAGE="$2";          shift 2 ;;
-        --tag)            TAG="$2";            shift 2 ;;
-        --timeout)        TIMEOUT="$2";        shift 2 ;;
-        --poll-interval)  POLL_INTERVAL="$2";  shift 2 ;;
+        --org)           require_value "$@"; ORG="$2";           shift 2 ;;
+        --image)         require_value "$@"; IMAGE="$2";         shift 2 ;;
+        --tag)           require_value "$@"; TAG="$2";           shift 2 ;;
+        --timeout)       require_value "$@"; TIMEOUT="$2";       shift 2 ;;
+        --poll-interval) require_value "$@"; POLL_INTERVAL="$2"; shift 2 ;;
         *) echo "unknown arg: $1" >&2; exit 2 ;;
     esac
 done
@@ -48,6 +63,9 @@ for required in ORG IMAGE TAG; do
         exit 2
     fi
 done
+
+require_positive_int "--timeout" "${TIMEOUT}"
+require_positive_int "--poll-interval" "${POLL_INTERVAL}"
 
 REF="quay.io/${ORG}/${IMAGE}:${TAG}"
 BROWSE_URL="https://quay.io/repository/${ORG}/${IMAGE}?tab=tags"

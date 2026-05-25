@@ -33,7 +33,7 @@ comment — for every llm-d component in one shot.
 | Konflux onboarder `version` input + Quay image tag | `v3.5-ea2` |
 | GitHub release tag on each component repo | `odh-v3.5-ea2` |
 
-### Value flow (for `--version v3.5-ea2`)
+## Value flow (for `--version v3.5-ea2`)
 
 This diagram shows where the version goes, what name it takes at each stop,
 and which script flag receives it. Three derived values are colored below:
@@ -125,8 +125,11 @@ bash "${SKILL_DIR}/scripts/tracker-issue-finder.sh" \
     --version "${VERSION}"
 ```
 
-Parse the `matches` JSON. Behavior:
+Parse the output. Behavior:
 
+- **`tracker-issue-finder.sh` exited non-zero** (GitHub API/search failure):
+  tell the user the search failed (show stderr), and ask whether to retry,
+  to provide an issue number directly, or to skip the final comment step.
 - `count == 0` — tell the user no tracker issue matches `${VERSION}`, ask
   whether to skip the final comment step or to provide an issue number.
 - `count == 1` — show the single match (title + URL) and confirm.
@@ -204,7 +207,8 @@ the full `kserve_entry_name`.
 comment when any of its `quay_images` reports `missing` — the release
 branch was created, the onboarder PR was merged, and a draft GH release
 exists, so the line carries genuine value. Append the literal text
-` (image pending — verify)` at the end of the line in that case, so the
+`(image pending — verify)` (with a single space before the backtick) at
+the end of the line in that case, so the
 release manager (and the tracker readers) can tell at a glance which
 components need a manual Quay check.
 

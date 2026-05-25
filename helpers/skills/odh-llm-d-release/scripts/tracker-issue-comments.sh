@@ -23,13 +23,20 @@ EOF
     exit 0
 fi
 
+require_value() {
+    if [ "$#" -lt 2 ] || [[ "$2" == --* ]]; then
+        echo "missing value for $1" >&2
+        exit 2
+    fi
+}
+
 ISSUE_NUMBER=""
 BODY_FILE=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        --issue-number)  ISSUE_NUMBER="$2";  shift 2 ;;
-        --body-file)     BODY_FILE="$2";     shift 2 ;;
+        --issue-number) require_value "$@"; ISSUE_NUMBER="$2"; shift 2 ;;
+        --body-file)    require_value "$@"; BODY_FILE="$2";    shift 2 ;;
         *) echo "unknown arg: $1" >&2; exit 2 ;;
     esac
 done
@@ -40,6 +47,11 @@ for required in ISSUE_NUMBER BODY_FILE; do
         exit 2
     fi
 done
+
+if ! [[ "${ISSUE_NUMBER}" =~ ^[1-9][0-9]*$ ]]; then
+    echo "--issue-number must be a positive integer, got: ${ISSUE_NUMBER}" >&2
+    exit 2
+fi
 
 if [ ! -f "${BODY_FILE}" ]; then
     echo "body file not found: ${BODY_FILE}" >&2

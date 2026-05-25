@@ -34,6 +34,13 @@ EOF
     exit 0
 fi
 
+require_value() {
+    if [ "$#" -lt 2 ] || [[ "$2" == --* ]]; then
+        echo "missing value for $1" >&2
+        exit 2
+    fi
+}
+
 COMPONENT_REPO=""
 PR_NUMBER=""
 RELEASE_BRANCH=""
@@ -43,12 +50,12 @@ EXPECTED_JSON=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        --component-repo)  COMPONENT_REPO="$2";  shift 2 ;;
-        --pr-number)       PR_NUMBER="$2";       shift 2 ;;
-        --release-branch)  RELEASE_BRANCH="$2";  shift 2 ;;
-        --version)         VERSION="$2";         shift 2 ;;
-        --quay-org)        QUAY_ORG="$2";        shift 2 ;;
-        --expected-json)   EXPECTED_JSON="$2";   shift 2 ;;
+        --component-repo) require_value "$@"; COMPONENT_REPO="$2"; shift 2 ;;
+        --pr-number)      require_value "$@"; PR_NUMBER="$2";      shift 2 ;;
+        --release-branch) require_value "$@"; RELEASE_BRANCH="$2"; shift 2 ;;
+        --version)        require_value "$@"; VERSION="$2";        shift 2 ;;
+        --quay-org)       require_value "$@"; QUAY_ORG="$2";       shift 2 ;;
+        --expected-json)  require_value "$@"; EXPECTED_JSON="$2";  shift 2 ;;
         *) echo "unknown arg: $1" >&2; exit 2 ;;
     esac
 done
@@ -63,7 +70,7 @@ done
 WORKDIR=$(mktemp -d)
 trap 'rm -rf "${WORKDIR}"' EXIT
 
-# Pull the PR's head ref so we can read the actual files (vs reading the diff).
+# Pull the PR's head ref + the list of files it touches.
 gh pr view "${PR_NUMBER}" --repo "${COMPONENT_REPO}" \
     --json headRepository,headRefOid,files \
     > "${WORKDIR}/pr.json"
@@ -73,6 +80,12 @@ head_repo=$(jq -r '.headRepository.nameWithOwner // empty' "${WORKDIR}/pr.json")
 if [ -z "${head_repo}" ]; then
     head_repo="${COMPONENT_REPO}"
 fi
+
+# Build the set of paths actually changed in this PR. We require each
+# expected tekton file to appear in this set — protects against the case
+# where the file is on the head commit (so the existence check at head_sha
+# passes) but the PR didn't actually touch it.
+pr_files=$(jq -r '[.files[].path] | tostring' "${WORKDIR}/pr.json")
 
 problems="[]"
 
@@ -101,6 +114,12 @@ for i in $(seq 0 $((count - 1))); do
     dockerfile=$(printf '%s' "${entry}" | jq -r '.dockerfile')
     path_context=$(printf '%s' "${entry}" | jq -r '.path_context')
 
+    # Must be in the PR's files set, not merely present at head SHA.
+    if ! printf '%s' "${pr_files}" | jq -e --arg p "${tekton_file}" 'index($p)' >/dev/null 2>&1; then
+        add_problem "${tekton_file}" "in-pr-diff" "present in PR diff" "missing"
+        continue
+    fi
+
     local_file="${WORKDIR}/$(basename "${tekton_file}")"
     if ! fetch_file "${tekton_file}" "${local_file}"; then
         add_problem "${tekton_file}" "existence" "present in PR" "missing"
@@ -108,8 +127,11 @@ for i in $(seq 0 $((count - 1))); do
     fi
 
     # on-cel-expression should reference the release branch as target_branch.
+    # Escape ERE metacharacters in RELEASE_BRANCH (mainly `.`) so the regex
+    # matches the branch name literally.
     cel=$(yq -r '.metadata.annotations."pipelinesascode.tekton.dev/on-cel-expression" // ""' "${local_file}")
-    if ! printf '%s' "${cel}" | grep -qE "target_branch[[:space:]]*==[[:space:]]*\"${RELEASE_BRANCH}\""; then
+    release_branch_re=$(printf '%s' "${RELEASE_BRANCH}" | sed 's/[][\\.*^$|?+(){}]/\\&/g')
+    if ! printf '%s' "${cel}" | grep -qE "target_branch[[:space:]]*==[[:space:]]*\"${release_branch_re}\""; then
         add_problem "${tekton_file}" "on-cel-expression.target_branch" \
             "target_branch == \"${RELEASE_BRANCH}\"" \
             "${cel}"

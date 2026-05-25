@@ -24,6 +24,13 @@ EOF
     exit 0
 fi
 
+require_value() {
+    if [ "$#" -lt 2 ] || [[ "$2" == --* ]]; then
+        echo "missing value for $1" >&2
+        exit 2
+    fi
+}
+
 COMPONENT=""
 PR_TARGET_BRANCH=""
 VERSION=""
@@ -32,11 +39,11 @@ WORKFLOW="odh-konflux-onboarder.yml"
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        --component)         COMPONENT="$2";         shift 2 ;;
-        --pr-target-branch)  PR_TARGET_BRANCH="$2";  shift 2 ;;
-        --version)           VERSION="$2";           shift 2 ;;
-        --konflux-central)   KONFLUX_CENTRAL="$2";   shift 2 ;;
-        --workflow)          WORKFLOW="$2";          shift 2 ;;
+        --component)        require_value "$@"; COMPONENT="$2";        shift 2 ;;
+        --pr-target-branch) require_value "$@"; PR_TARGET_BRANCH="$2"; shift 2 ;;
+        --version)          require_value "$@"; VERSION="$2";          shift 2 ;;
+        --konflux-central)  require_value "$@"; KONFLUX_CENTRAL="$2";  shift 2 ;;
+        --workflow)         require_value "$@"; WORKFLOW="$2";         shift 2 ;;
         *) echo "unknown arg: $1" >&2; exit 2 ;;
     esac
 done
@@ -47,6 +54,12 @@ for required in COMPONENT PR_TARGET_BRANCH VERSION; do
         exit 2
     fi
 done
+
+# Record a boundary timestamp BEFORE dispatching so we can correlate the
+# resulting run to this invocation (not to a parallel sub-agent's dispatch
+# of the same workflow). GitHub's gh search filter syntax uses ">=YYYY-..."
+# on createdAt.
+boundary_ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
 # Workflow inputs per odh-konflux-onboarder.yml:
 #   component, pr_target_branch, build_type=Release, version, build_branch
@@ -59,7 +72,11 @@ gh workflow run "${WORKFLOW}" \
     -f "build_type=Release" \
     -f "version=${VERSION}"
 
-# Runs queue asynchronously; try briefly to surface the run we just kicked.
+# Runs queue asynchronously. We restrict to runs created after `boundary_ts`
+# and pick the OLDEST among those — that's almost certainly our dispatch.
+# (We can't filter on dispatch inputs via the API, so simultaneous parallel
+# dispatches of the same workflow are inherently ambiguous; the timestamp
+# boundary at least guarantees we don't return some stale older run.)
 run_id=""
 run_url=""
 for _ in 1 2 3 4 5; do
@@ -67,13 +84,16 @@ for _ in 1 2 3 4 5; do
     run_json=$(gh run list \
         --repo "${KONFLUX_CENTRAL}" \
         --workflow "${WORKFLOW}" \
-        --limit 1 \
-        --json databaseId,url 2>/dev/null || echo "[]")
-    run_id=$(printf '%s' "${run_json}" | jq -r '.[0].databaseId // empty')
-    run_url=$(printf '%s' "${run_json}" | jq -r '.[0].url // empty')
+        --created ">=${boundary_ts}" \
+        --limit 10 \
+        --json databaseId,url,createdAt 2>/dev/null || echo "[]")
+    # Pick the earliest run created after the boundary (most likely ours).
+    run_id=$(printf '%s' "${run_json}" | jq -r 'sort_by(.createdAt) | .[0].databaseId // empty')
+    run_url=$(printf '%s' "${run_json}" | jq -r 'sort_by(.createdAt) | .[0].url // empty')
     if [ -n "${run_id}" ]; then
         break
     fi
 done
 
-printf 'status=triggered\nrun_id=%s\nrun_url=%s\n' "${run_id}" "${run_url}"
+printf 'status=triggered\nrun_id=%s\nrun_url=%s\nboundary_ts=%s\n' \
+    "${run_id}" "${run_url}" "${boundary_ts}"

@@ -33,6 +33,7 @@ KONFLUX_FILES_JSON=$(yq -o=json ".components[\"${COMPONENT_KEY}\"].konflux_files
 QUAY_ORG=$(yq -r '.release.quay_org' "${CONFIG}")
 KONFLUX_CENTRAL=$(yq -r '.release.konflux_central_repo' "${CONFIG}")
 ONBOARDER_WORKFLOW=$(yq -r '.release.onboarder_workflow' "${CONFIG}")
+ONBOARDER_PR_AUTHOR=$(yq -r '.release.onboarder_pr_author' "${CONFIG}")
 
 RELEASE_BRANCH="$(yq -r '.release.release_branch_prefix' "${CONFIG}")${VERSION}"
 IMAGE_TAG="${VERSION}"
@@ -67,12 +68,15 @@ PR on `${ODH_REPO}` once it finishes.
 ## Step 3 — Find the onboarder PR
 
 Poll for the PR to appear. The script defaults to 15 min / 1 min — matching
-the Quay image polling in step 6 — so we don't need to pass timeout flags:
+the Quay image polling in step 6 — so we don't need to pass timeout flags.
+`--expected-author` locks selection to the ODH DevOps App, so a PR opened
+by any other actor against the release branch is ignored:
 
 ```bash
 bash "${SKILL_DIR}/scripts/onboarder-pr-finder.sh" \
     --component-repo "${ODH_REPO}" \
-    --release-branch "${RELEASE_BRANCH}"
+    --release-branch "${RELEASE_BRANCH}" \
+    --expected-author "${ONBOARDER_PR_AUTHOR}"
 ```
 
 If `status=missing` after the wait, report the failure and stop — do not
@@ -96,14 +100,24 @@ manager will diagnose and decide whether to merge manually.
 
 ## Step 5 — Approve + squash-merge the PR
 
+Pin the merge to the head SHA we just validated. If new commits land on the
+PR's source branch between step 4 and now, the merge fails with
+`status=head-moved` instead of merging unvalidated code.
+
 ```bash
 bash "${SKILL_DIR}/scripts/onboarder-pr-merge.sh" \
     --repo "${ODH_REPO}" \
-    --pr-number "${PR_NUMBER}"
+    --pr-number "${PR_NUMBER}" \
+    --expected-head-sha "${PR_HEAD_SHA}"
 ```
+
+(`PR_HEAD_SHA` was captured from `onboarder-pr-finder.sh`'s `head_sha=` output
+in step 3.)
 
 If `status=failed`, report and stop. (Common cause: branch protection
 requires a code-owner review that this sub-agent's gh token cannot satisfy.)
+If `status=head-moved`, report and stop — the PR was changed under us; do
+not retry blindly, the release manager needs to re-validate.
 
 ## Step 6 — Verify each Quay image tag
 

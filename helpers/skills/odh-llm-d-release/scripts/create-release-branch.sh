@@ -24,17 +24,24 @@ EOF
     exit 0
 fi
 
+require_value() {
+    if [ "$#" -lt 2 ] || [[ "$2" == --* ]]; then
+        echo "missing value for $1" >&2
+        exit 2
+    fi
+}
+
 REPO=""
 BRANCH=""
 BASE=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        --repo)        REPO="$2";   shift 2 ;;
-        --branch)      BRANCH="$2"; shift 2 ;;
-        --base)        BASE="$2";   shift 2 ;;
+        --repo)        require_value "$@"; REPO="$2";   shift 2 ;;
+        --branch)      require_value "$@"; BRANCH="$2"; shift 2 ;;
+        --base)        require_value "$@"; BASE="$2";   shift 2 ;;
         # Accepted for backward compatibility; treat as --base.
-        --base-branch) BASE="$2";   shift 2 ;;
+        --base-branch) require_value "$@"; BASE="$2";   shift 2 ;;
         *) echo "unknown arg: $1" >&2; exit 2 ;;
     esac
 done
@@ -44,10 +51,15 @@ if [ -z "${REPO}" ] || [ -z "${BRANCH}" ] || [ -z "${BASE}" ]; then
     exit 2
 fi
 
-if gh api "repos/${REPO}/branches/${BRANCH}" --jq '.name' >/dev/null 2>&1; then
-    existing_sha=$(gh api "repos/${REPO}/branches/${BRANCH}" --jq '.commit.sha')
+report_exists() {
+    local sha
+    sha=$(gh api "repos/${REPO}/branches/${BRANCH}" --jq '.commit.sha')
     printf 'status=exists\nbranch=%s\nsha=%s\nurl=https://github.com/%s/tree/%s\n' \
-        "${BRANCH}" "${existing_sha:0:7}" "${REPO}" "${BRANCH}"
+        "${BRANCH}" "${sha:0:7}" "${REPO}" "${BRANCH}"
+}
+
+if gh api "repos/${REPO}/branches/${BRANCH}" --jq '.name' >/dev/null 2>&1; then
+    report_exists
     exit 0
 fi
 
@@ -60,10 +72,19 @@ else
     base_sha=$(gh api "repos/${REPO}/git/ref/heads/${BASE}" --jq '.object.sha')
 fi
 
-gh api "repos/${REPO}/git/refs" \
-    -f "ref=refs/heads/${BRANCH}" \
-    -f "sha=${base_sha}" \
-    >/dev/null
+# TOCTOU-safe create: if create fails because the ref already exists (a
+# concurrent run beat us to it), report status=exists rather than failing.
+if ! gh api "repos/${REPO}/git/refs" \
+        -f "ref=refs/heads/${BRANCH}" \
+        -f "sha=${base_sha}" \
+        >/dev/null 2>&1; then
+    if gh api "repos/${REPO}/branches/${BRANCH}" --jq '.name' >/dev/null 2>&1; then
+        report_exists
+        exit 0
+    fi
+    echo "status=failed" >&2
+    exit 1
+fi
 
 created_sha=$(gh api "repos/${REPO}/branches/${BRANCH}" --jq '.commit.sha')
 printf 'status=created\nbranch=%s\nsha=%s\nurl=https://github.com/%s/tree/%s\n' \
