@@ -74,15 +74,16 @@ fi
 
 # TOCTOU-safe create: if create fails because the ref already exists (a
 # concurrent run beat us to it), report status=exists rather than failing.
-if ! gh api "repos/${REPO}/git/refs" \
+create_err=""
+if ! create_err=$(gh api "repos/${REPO}/git/refs" \
         -f "ref=refs/heads/${BRANCH}" \
-        -f "sha=${base_sha}" \
-        >/dev/null 2>&1; then
+        -f "sha=${base_sha}" 2>&1); then
     if gh api "repos/${REPO}/branches/${BRANCH}" --jq '.name' >/dev/null 2>&1; then
         report_exists
         exit 0
     fi
     echo "status=failed" >&2
+    echo "error=${create_err}" >&2
     exit 1
 fi
 

@@ -86,7 +86,7 @@ for _ in 1 2 3 4 5; do
         --workflow "${WORKFLOW}" \
         --created ">=${boundary_ts}" \
         --limit 10 \
-        --json databaseId,url,createdAt 2>/dev/null || echo "[]")
+        --json databaseId,url,createdAt)
     # Pick the earliest run created after the boundary (most likely ours).
     run_id=$(printf '%s' "${run_json}" | jq -r 'sort_by(.createdAt) | .[0].databaseId // empty')
     run_url=$(printf '%s' "${run_json}" | jq -r 'sort_by(.createdAt) | .[0].url // empty')
@@ -95,5 +95,10 @@ for _ in 1 2 3 4 5; do
     fi
 done
 
-printf 'status=triggered\nrun_id=%s\nrun_url=%s\nboundary_ts=%s\n' \
-    "${run_id}" "${run_url}" "${boundary_ts}"
+if [ -n "${run_id}" ]; then
+    printf 'status=triggered\nrun_id=%s\nrun_url=%s\nboundary_ts=%s\n' \
+        "${run_id}" "${run_url}" "${boundary_ts}"
+else
+    printf 'status=failed\nrun_id=\nrun_url=\nboundary_ts=%s\n' "${boundary_ts}" >&2
+    exit 1
+fi
