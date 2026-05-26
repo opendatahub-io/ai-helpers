@@ -1,12 +1,15 @@
 ---
 name: python-packaging-security-audit
-description: Use this skill to evaluate the security of a Python package repository with static code analysis and a scan of git history for suspicious commits, then triaging findings to produce an actionable security report with a risk rating.
+description: Use this skill to evaluate the security of a Python package repository by orchestrating static analysis, binary scanning, and git history inspection sub-skills in parallel, then combining their results into a unified security report with a risk rating.
 allowed-tools: Bash Read Grep Skill
 ---
 
 # Python Packaging Security Audit
 
-Designed for pre-onboarding evaluation of Python packages. Combines automated static analysis (hexora) with git history inspection to surface supply-chain risks before a package enters the build pipeline.
+Orchestrates a comprehensive pre-onboarding security evaluation of Python
+packages by dispatching three specialized sub-skills as parallel background
+agents. Each agent writes its report section to an individual file; the
+orchestrator reads all files and assembles the unified report.
 
 ## Inputs
 
@@ -37,15 +40,72 @@ CLONE_DIR=$(mktemp -d -t security-audit-XXXXXX)
 git clone --depth 50 -- "<repository_url>" "$CLONE_DIR/repo"
 ```
 
-Use `$CLONE_DIR/repo` as the repo path for Steps 2 and 3.
+Use `$CLONE_DIR/repo` as the repo path for Step 2.
 
 If source-finder returns low confidence or no URL, stop and return a report with
 risk rating `needs_review` stating that the source repository could not be
 located.
 
-Clean up the clone when all phases are complete:
+## Step 2: Dispatch Parallel Audits
+
+Create a working directory for the report files:
 
 ```bash
+AUDIT_DIR=$(mktemp -d -t security-audit-results-XXXXXX)
+```
+
+Dispatch three background agents **in parallel**. Each agent invokes one sub-skill
+and writes its findings to an individual file. The orchestrator does not need the
+intermediate reasoning context — only the final report sections matter.
+
+**Agent 1 — Static Analysis:**
+
+```text
+Dispatch a background Agent that invokes the python-packaging-static-audit skill
+with repo_path=<repo-path> and output_file=$AUDIT_DIR/static-audit.md, then exits.
+```
+
+**Agent 2 — Binary Scan:**
+
+```text
+Dispatch a background Agent that invokes the python-packaging-binary-audit skill
+with repo_path=<repo-path> and output_file=$AUDIT_DIR/binary-audit.md, then exits.
+```
+
+**Agent 3 — Git History:**
+
+```text
+Dispatch a background Agent that invokes the python-packaging-git-audit skill
+with repo_path=<repo-path> and output_file=$AUDIT_DIR/git-audit.md, then exits.
+```
+
+Wait for all three agents to complete before proceeding.
+
+## Step 3: Combine Results
+
+Read each output file. The first line of each file contains `RISK_RATING:<value>`.
+Extract the risk rating and the markdown report section from each file.
+
+If a file is missing or empty, treat that phase as `risk_rating = needs_review`
+and state in the report section that the sub-skill did not produce output.
+
+Assign the **overall risk rating** as the worst (most severe) rating across all
+phases:
+
+- **no_issues** — All sub-skills returned no_issues
+- **low_risk** — Worst sub-skill rating is low_risk
+- **needs_review** — At least one sub-skill returned needs_review
+- **critical** — At least one sub-skill returned critical
+
+Precedence: **critical > needs_review > low_risk > no_issues**
+
+## Step 4: Cleanup
+
+Clean up temporary directories:
+
+```bash
+rm -rf -- "${AUDIT_DIR}"
+
 if [ -n "${CLONE_DIR}" ] && [[ "${CLONE_DIR}" == "${TMPDIR:-/tmp}"/* ]]; then
   rm -rf -- "${CLONE_DIR}"
 else
@@ -53,78 +113,10 @@ else
 fi
 ```
 
-## Step 2: Hexora Static Analysis
-
-Run the wrapper script which handles hexora installation and applies the tuned
-rule exclusions:
-
-```bash
-./scripts/run-hexora.sh <repo-path>
-```
-
-Capture the JSON output. Each finding contains: rule code, file path, line number,
-confidence level, and description. The wrapper filters out rules that are too noisy
-for typical Python packages and sets a minimum confidence of `medium`. See the
-script comments for the full exclusion list and rationale.
-
-## Step 3: Git History Scan
-
-If the repository path is not a git repository, skip this phase and note it in the report.
-
-1. Determine the number of commits available and scan up to the last 50:
-
-   ```bash
-   git -C <repo-path> log -50 --format='%H'
-   ```
-
-2. From those commits, identify ones that modify supply-chain-sensitive files:
-   - `setup.py`, `setup.cfg`, `pyproject.toml`, `MANIFEST.in`
-   - `.github/workflows/*.yml`, `.gitlab-ci.yml`
-   - Any `.pth` files
-   - `__init__.py` files at package root
-
-   ```bash
-   git -C <repo-path> log -50 --diff-filter=ACMR --name-only --format='COMMIT:%H|%aI|%ae' -- \
-     setup.py setup.cfg pyproject.toml MANIFEST.in \
-     '.github/workflows/*.yml' .gitlab-ci.yml \
-     '*.pth' '*/__init__.py'
-   ```
-
-3. For each flagged commit, extract the diff and search for suspicious patterns:
-   - **Code execution**: `eval(`, `exec(`, `compile(`
-   - **Process spawning**: `subprocess`, `os.system`, `os.popen`
-   - **Encoding/serialization**: `base64`, `marshal`, `pickle`
-   - **Network access**: `socket`, `urllib`, `requests.get`, `httpx`
-   - **Native code**: `ctypes`, `cffi`
-   - **Embedded URLs**: `http://`, `https://`
-
-   ```bash
-   git -C "<repo-path>" show --format= -m --first-parent "<commit>" -- "<file>" | \
-     grep -nE 'eval\(|exec\(|compile\(|subprocess|os\.system|os\.popen|base64|marshal|pickle|socket|urllib|requests\.get|httpx|ctypes|cffi|https?://'
-   ```
-
-4. Collect per finding: commit hash, author, date, file modified, and matching patterns.
-
-## Step 4: AI Triage
-
-Review all findings from Steps 2 and 3 in context. Read the relevant source files to understand the purpose of flagged code.
-
-1. **Classify each hexora finding** as one of:
-   - **Likely legitimate** — pattern is expected for the package's purpose (e.g., `subprocess` in a CLI tool)
-   - **Suspicious** — pattern is unusual and warrants manual review (e.g., `base64` decode in `setup.py`)
-   - **Critical** — pattern strongly indicates malicious intent (e.g., network exfiltration in install hooks)
-
-2. **Review git history findings** — flag commits that introduced suspicious patterns into sensitive files. Consider whether the change is a normal dependency update or something unusual.
-
-3. **Assign overall risk rating** based on the worst finding category:
-   - **no_issues** — No findings from hexora or git history scan
-   - **low_risk** — All findings classified as "likely legitimate"
-   - **needs_review** — One or more findings classified as "suspicious"
-   - **critical** — One or more findings classified as "critical"
-
 ## Output Format
 
-Produce the following markdown report. When there are no findings, collapse to just the header, risk rating (`no_issues`), summary, and a statement that no issues were found.
+Produce the following markdown report. When there are no findings, collapse to just
+the header, risk rating (`no_issues`), summary, and a statement that no issues were found.
 
 ```markdown
 # Security Assessment: {package-name}
@@ -132,46 +124,28 @@ Produce the following markdown report. When there are no findings, collapse to j
 **Risk Rating:** {no_issues | low_risk | needs_review | critical}
 **Summary:** {1-2 sentence summary}
 
-## Hexora Static Analysis
+{Hexora Static Analysis section from static-audit.md}
 
-**Findings:** {N total} ({X critical, Y suspicious, Z likely legitimate})
+{Binary Scan section from binary-audit.md}
 
-### Critical Findings
-
-| File | Line | Rule | Confidence | Description | Triage |
-|------|------|------|------------|-------------|--------|
-| setup.py | 42 | HX2000 | Very High | Base64 decode in install hook | Suspicious — no legitimate reason for encoded payloads in setup.py |
-
-### Suspicious Findings
-
-(same table format)
-
-### Likely Legitimate
-
-(same table format, brief — included for completeness but de-emphasized)
-
-## Git History Analysis (Last 50 Commits)
-
-**Commits touching sensitive files:** {N}
-
-| Commit | Date | Author | File | Patterns Found |
-|--------|------|--------|------|----------------|
-| abc1234 | 2026-03-15 | user@example.com | setup.py | subprocess, os.system |
-
-**AI Assessment:** {Brief narrative on whether the git history changes look normal or concerning, with reasoning}
+{Git History Analysis section from git-audit.md}
 
 ## Recommendations
 
-- {Bulleted list of specific actions}
+- {Bulleted list of specific actions based on findings across all phases}
 ```
 
 ## Error Handling
+
+**Never abort the audit because a single tool is missing.** Each sub-skill
+handles missing tools (hexora, malcontent) by returning a degraded report
+section with `risk_rating = needs_review` instead of failing. The orchestrator
+must always dispatch all three agents and combine whatever results are available.
 
 | Scenario | Behavior |
 |----------|----------|
 | Source-finder returns low confidence or no URL | Stop; report `needs_review` stating source repo could not be located |
 | git clone fails | Stop; report `needs_review` stating repo could not be cloned |
-| Fewer than 50 commits | Scan all available commits |
-| Hexora returns empty results | Report "no findings" for hexora section |
-| No sensitive files modified in history | Report "no sensitive files found" in git history section |
-| Path is not a git repository | Skip git history scan, note in report |
+| A sub-skill output file is missing or empty | Include a note in that section; treat that phase as `needs_review` |
+| A sub-skill reports tool unavailable | Include its degraded output in the report; treat that phase as `needs_review` |
+| All sub-skills return no_issues | Report overall `no_issues` |

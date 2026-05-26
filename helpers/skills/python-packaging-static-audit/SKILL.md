@@ -14,6 +14,9 @@ triaged findings and a risk assessment.
 ## Inputs
 
 - **repo_path** (required): Local filesystem path to an already-cloned repository
+- **output_file** (optional): Write the report section to this file path instead of
+  returning it inline. The first line of the file must be `RISK_RATING:<value>` so
+  the orchestrator can parse it without reading the full report.
 
 ## Step 1: Run Hexora
 
@@ -22,12 +25,22 @@ rule exclusions:
 
 ```bash
 ./scripts/run-hexora.sh <repo-path>
+hexora_exit=$?
 ```
 
-Capture the JSON output. Each finding contains: rule code, file path, line number,
-confidence level, and description. The wrapper filters out rules that are too noisy
-for typical Python packages and sets a minimum confidence of `medium`. See the
-script comments for the full exclusion list and rationale.
+Check the exit code before proceeding:
+
+- **Exit 0**: hexora ran successfully. Capture the JSON output. Each finding
+  contains: rule code, file path, line number, confidence level, and description.
+- **Exit 2**: hexora is not installed and cannot be auto-installed via `uvx`.
+  **Do not fail.** Skip to the Output section and produce the report with
+  `risk_rating = needs_review` stating hexora was unavailable.
+- **Exit 1**: hexora encountered a runtime error. Skip to the Output section
+  and produce the report with `risk_rating = needs_review` noting the error.
+
+The wrapper filters out rules that are too noisy for typical Python packages and
+sets a minimum confidence of `medium`. See the script comments for the full
+exclusion list and rationale.
 
 ## Step 2: Triage
 
@@ -83,12 +96,16 @@ Produce the following markdown section:
 (same table format, brief — included for completeness but de-emphasized)
 ```
 
-Also return a **risk_rating** value for this phase:
+The **risk_rating** for this phase is one of:
 
 - **no_issues** — No hexora findings
 - **low_risk** — All findings classified as "likely legitimate" or PASS
 - **needs_review** — One or more findings classified as "suspicious" or REVIEW
 - **critical** — One or more findings classified as "critical" or BLOCK
+
+If `output_file` is provided, write the file with the first line as
+`RISK_RATING:<value>` followed by a blank line and then the markdown section
+above. If `output_file` is not provided, return the report section inline.
 
 ## Error Handling
 

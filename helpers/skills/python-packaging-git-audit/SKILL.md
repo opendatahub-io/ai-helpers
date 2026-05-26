@@ -14,6 +14,9 @@ Analysis" report section with triaged findings and a risk assessment.
 ## Inputs
 
 - **repo_path** (required): Local filesystem path to a git repository
+- **output_file** (optional): Write the report section to this file path instead of
+  returning it inline. The first line of the file must be `RISK_RATING:<value>` so
+  the orchestrator can parse it without reading the full report.
 
 ## Step 1: Enumerate Commits
 
@@ -92,12 +95,16 @@ Produce the following markdown section:
 **AI Assessment:** {Brief narrative on whether the git history changes look normal or concerning, with reasoning}
 ```
 
-Also return a **risk_rating** value for this phase:
+The **risk_rating** for this phase is one of:
 
 - **no_issues** — No sensitive files modified in recent history
 - **low_risk** — All findings classified as "likely legitimate"
 - **needs_review** — One or more findings classified as "suspicious"
 - **critical** — One or more findings classified as "critical"
+
+If `output_file` is provided, write the file with the first line as
+`RISK_RATING:<value>` followed by a blank line and then the markdown section
+above. If `output_file` is not provided, return the report section inline.
 
 ## Error Handling
 

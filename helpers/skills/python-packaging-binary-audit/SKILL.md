@@ -14,6 +14,9 @@ YARA-based analysis on any detected binaries. Produces a self-contained
 ## Inputs
 
 - **repo_path** (required): Local filesystem path to an already-cloned repository
+- **output_file** (optional): Write the report section to this file path instead of
+  returning it inline. The first line of the file must be `RISK_RATING:<value>` so
+  the orchestrator can parse it without reading the full report.
 
 ## Step 1: Detect Binaries
 
@@ -41,13 +44,22 @@ Run malcontent analysis on the staged binaries:
 
 ```bash
 ./scripts/run_malcontent.py "$STAGING_DIR"
+malcontent_exit=$?
 ```
 
-This outputs JSON to stdout with malcontent's findings. The script expects the
-native `mal` binary on PATH (or via `MALCONTENT_BIN` env var). If `mal` is not
-available, it exits with code 2 — note this in the report as "malcontent
-unavailable" and proceed with the binary scan findings only. Exit code 1
-indicates a runtime error (timeout, invalid JSON, or execution failure).
+Check the exit code before proceeding:
+
+- **Exit 0**: malcontent ran successfully. Capture the JSON output with findings.
+- **Exit 2**: malcontent (`mal`) is not installed. **Do not fail.** Proceed to
+  triage using only the binary scan metadata (extension, magic header, size).
+  Note "malcontent unavailable" in the report output.
+- **Exit 1**: malcontent encountered a runtime error (timeout, invalid JSON, or
+  execution failure). **Do not fail.** Proceed to triage using only the binary
+  scan metadata. Note the error in the report output.
+
+When malcontent is unavailable or fails, the binary scan findings alone still
+provide value — file paths, types, and sizes are sufficient for the deterministic
+triage rules that do not depend on malcontent risk levels.
 
 ## Step 3: Triage
 
@@ -118,12 +130,16 @@ Produce the following markdown section:
 (same table format, brief — included for completeness but de-emphasized)
 ```
 
-Also return a **risk_rating** value for this phase:
+The **risk_rating** for this phase is one of:
 
 - **no_issues** — No binary files detected
 - **low_risk** — All findings classified as "likely legitimate" or PASS
 - **needs_review** — One or more findings classified as "suspicious" or REVIEW
 - **critical** — One or more findings classified as "critical" or BLOCK
+
+If `output_file` is provided, write the file with the first line as
+`RISK_RATING:<value>` followed by a blank line and then the markdown section
+above. If `output_file` is not provided, return the report section inline.
 
 ## Error Handling
 
