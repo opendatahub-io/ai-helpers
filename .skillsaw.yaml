@@ -1,0 +1,44 @@
+# skillsaw configuration
+# https://github.com/stbenjam/skillsaw
+
+version: "0.10.1"
+
+custom-rules:
+  - .skillsaw-custom.py
+
+rules:
+  command-sections:
+    enabled: true
+    severity: warning
+
+  command-name-format:
+    enabled: true
+    severity: warning
+
+  plugins-doc-up-to-date:
+    enabled: true
+    severity: error
+
+  tools-yaml-validation:
+    enabled: true
+    severity: error
+
+  context-budget:
+    enabled: true
+    severity: warning
+    limits:
+      command:
+        warn: 3000
+        error: 6000
+      agent:
+        warn: 5000
+        error: 10000
+      skill:
+        warn: 4000
+        error: 8000
+
+  content-critical-position:
+    enabled: true
+    severity: info
+
+strict: true

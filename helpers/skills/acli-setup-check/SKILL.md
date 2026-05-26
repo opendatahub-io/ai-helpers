@@ -1,6 +1,6 @@
 ---
 name: acli-setup-check
-description: Verify acli installation and authentication. Checks if acli is installed, properly configured, and can access Jira. Use when troubleshooting acli issues or setting up acli for the first time.
+description: Verify acli installation and authentication. Checks if acli is installed, authenticated to Jira, and can query projects. Use when troubleshooting acli issues or setting up acli for the first time.
 allowed-tools: Bash
 user-invocable: true
 ---
@@ -42,7 +42,7 @@ Test if acli is authenticated by checking the authentication status:
 acli jira auth status 2>&1
 ```
 
-This command checks if acli is properly authenticated without
+This command checks if acli is authenticated and can reach the Jira server without
 requiring access to specific projects.
 
 Analyze the output:

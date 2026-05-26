@@ -72,6 +72,7 @@ Generates 3 AIPCC-formatted commit message suggestions:
 - **Suggestion #3 (Minimal)** – Brief description with required elements
 
 Each suggestion includes:
+<!-- skillsaw-disable content-placeholder-text -->
 - AIPCC format title (`AIPCC-XXX: description`)
 - Blank line between title and body
 - Body text explaining the changes in complete sentences
@@ -121,6 +122,7 @@ Signed-off-by: Your Name <your.email@example.com>
 ```
 
 ### Required Elements
+<!-- skillsaw-disable content-placeholder-text -->
 - **Title**: Must start with "AIPCC-XXX:" followed by a short description
 - **Body**: Must explain what the commit does in at least one complete sentence
 - **Sign-off**: All commits must include `Signed-off-by` line (use `git commit -s`)

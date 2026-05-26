@@ -5,7 +5,7 @@ description: >-
   by email. Reviews a Google Meet transcript for a specific meeting topic, then
   composes a Gmail draft summarizing decisions and action items for that topic.
   Prompts for meeting selection if not specified, and for topic selection before
-  drafting. Stops gracefully if the transcript is not yet available.
+  drafting. Stops with a message if the transcript is not yet available.
 argument-hint: "[meeting name] [YYYY-MM-DD]"
 allowed-tools: Bash, AskUserQuestion
 user-invocable: true
@@ -84,7 +84,7 @@ The script returns JSON with a `source` field:
 |---|---|---|
 | `"attachment"` | Found in event attachments | `fileId` field |
 | `"drive"` | Found via Drive search | pick from `files` array |
-| `"none"` | Not found anywhere | stop gracefully |
+| `"none"` | Not found anywhere | inform user and stop |
 
 **If `source` is `"none"`**: tell the user the transcript is not yet available
 (Gemini may take several minutes after the meeting ends) and stop.

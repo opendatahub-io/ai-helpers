@@ -75,7 +75,7 @@ make lint      # Run all linters and validation checks
 Run `make update` first and **commit any generated changes** before running `make lint`. The `lint` target re-runs `make update` internally and will fail if there are uncommitted diffs.
 
 The `lint` target runs:
-- **claudelint** -- validates plugin structure
+- **[skillsaw](https://github.com/stbenjam/skillsaw)** -- validates plugin structure, skills, and commands
 - **ruff** -- checks and formats Python code
 - **shellcheck** -- lints shell scripts
 - Verifies that `make update` produces no uncommitted changes

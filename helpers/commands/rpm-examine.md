@@ -1,6 +1,6 @@
 ---
 description: Analyze RPM build.log failures
-argument-hint: [copr-chroot-url] OR [build-log-url] [srpm-url] OR [build.log] [specfile|dist-git] [sources]
+argument-hint: "[copr-chroot-url] OR [build-log-url] [srpm-url] OR [build.log] [specfile|dist-git] [sources]"
 ---
 
 ## Name

@@ -87,7 +87,7 @@ Present as a hierarchical summary or grouped by level.
 - **Invalid Ticket Key**: Verify the ticket exists and is accessible
 - **Permission Denied**: Check that the API token has permission to view the ticket
 - **Script Not Found**: Verify the script exists at the expected path
-- **No Children Found**: Report on the parent ticket only and note that no child tickets were found
+- **No Children Found**: Report on the parent ticket only; state that no child tickets exist
 
 ## Examples
 

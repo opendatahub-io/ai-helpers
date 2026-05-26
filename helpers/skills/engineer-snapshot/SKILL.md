@@ -138,6 +138,7 @@ If the engineer has a `notes_file` configured in the team config, read
 it using the `Read` tool. Look for open action items by searching for:
 
 - Unchecked markdown checkboxes: `- [ ]`
+<!-- skillsaw-disable content-placeholder-text -->
 - Sections titled "Action Items", "Follow-ups", or "TODO"
 
 If no `notes_file` is configured, skip this step and note it in the

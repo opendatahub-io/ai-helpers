@@ -190,7 +190,7 @@ If the attachment doesn't appear in the list, report the issue and check the upl
 - `acli` does not support uploading attachments, so this skill uses the Jira REST API directly
 - Requires JIRA_API_TOKEN and JIRA_EMAIL environment variables (in addition to acli auth)
 - File size limits depend on Jira instance configuration (typically 10MB)
-- For very large files, consider using a file sharing service and posting a link instead
+- For very large files, use a file sharing service and post a link instead
 
 ## Examples
 

@@ -223,7 +223,7 @@ may need to be done from a terminal. Copy and run:
 
 ### Phase 5: Verify Setup
 
-Run validation checks to ensure everything is configured correctly:
+Run validation checks to confirm `torchtalk status` reports all green and `mcp-serve` starts without errors:
 
 ```bash
 torchtalk status

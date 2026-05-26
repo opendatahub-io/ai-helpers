@@ -1,5 +1,5 @@
 """
-Custom claudelint rules for AIPCC AI helpers
+Custom skillsaw rules for AIPCC AI helpers
 """
 
 import subprocess
@@ -9,8 +9,7 @@ try:
     from src.context import RepositoryContext
     from src.rule import Rule, RuleViolation, Severity
 except ImportError:
-    # Fallback for when running as a custom rule
-    from claudelint import RepositoryContext, Rule, RuleViolation, Severity
+    from skillsaw import RepositoryContext, Rule, RuleViolation, Severity
 
 
 class PluginsDocUpToDateRule(Rule):
