@@ -21,6 +21,14 @@
       }
     },
     {
+      "name": "torch-request-skills",
+      "description": "File PyTorch team build/external/internal/team requests to Jira.",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/TorchedHat/torch-request-skills.git"
+      }
+    },
+    {
       "name": "odh-ai-helpers",
       "source": "./helpers",
       "description": "AI automation tools, plugins, and assistants for enhanced productivity",

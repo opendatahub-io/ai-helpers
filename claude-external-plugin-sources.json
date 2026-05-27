@@ -16,6 +16,14 @@
         "source": "url",
         "url": "https://github.com/opendatahub-io/autofix-skills.git"
       }
+    },
+    {
+      "name": "torch-request-skills",
+      "description": "File PyTorch team build/external/internal/team requests to Jira.",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/TorchedHat/torch-request-skills.git"
+      }
     }
   ]
 }

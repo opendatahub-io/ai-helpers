@@ -10,6 +10,7 @@
   "enabledPlugins": {
     "odh-ai-helpers@odh-ai-helpers": true,
     "odh-ai-helpers@fips-compliance-checker": true,
-    "odh-ai-helpers@autofix-skills": true
+    "odh-ai-helpers@autofix-skills": true,
+    "odh-ai-helpers@torch-request-skills": true
   }
 }
