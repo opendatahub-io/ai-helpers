@@ -16,6 +16,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
+    - name: Run skillsaw
+      uses: stbenjam/skillsaw@d252498eb6260e197c9c395a650643d9c49ae37b # v0
+      with:
+        strict: 'true'
+
     - name: Set up Python
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
       with:
@@ -30,9 +35,22 @@ jobs:
       run: sudo apt-get update && sudo apt-get install -y shellcheck
 
     - name: Install Python dependencies
-      run: uv pip install --system ruff PyYAML skillsaw
+      run: uv pip install --system ruff PyYAML
 
-    - name: Run lint
-      env:
-        SKILLSAW_BIN: skillsaw
-      run: make lint
+    - name: Run ruff check
+      run: ruff check .
+
+    - name: Run ruff format check
+      run: ruff format --check --diff .
+
+    - name: Run shellcheck
+      run: find . -name '*.sh' -type f -exec shellcheck {} +
+
+    - name: Check make update generates no changes
+      run: |
+        make update
+        if ! git diff --quiet; then
+          echo "ERROR: 'make update' generates uncommitted changes"
+          git diff
+          exit 1
+        fi
