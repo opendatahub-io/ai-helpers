@@ -28,6 +28,9 @@
     },
     "git workflows": {
       "name": "Git Workflows"
+    },
+    "compliance": {
+      "name": "Compliance"
     }
   },
   "tools": {
@@ -362,6 +365,14 @@
         "file_path": "helpers/skills/learning-mode/SKILL.md",
         "id": "learning-mode",
         "allowed_tools": ""
+      },
+      {
+        "name": "non-redhat-rpms",
+        "description": "Use this skill to identify non-Red Hat RPM packages installed in container images or on the local machine. For containers, pulls images across multiple architectures and release tags; for local scans, inspects the host directly. Extracts RPM signing metadata and reports packages not signed with the Red Hat GPG key as CSV output. Use when auditing compliance, checking supply-chain provenance, or scanning for third-party RPMs in RHOAI component images.\n",
+        "category": "compliance",
+        "file_path": "helpers/skills/non-redhat-rpms/SKILL.md",
+        "id": "non-redhat-rpms",
+        "allowed_tools": "Bash"
       },
       {
         "name": "oci-cve-checker",
