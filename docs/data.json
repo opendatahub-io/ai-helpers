@@ -25,6 +25,9 @@
     },
     "team management": {
       "name": "Team Management"
+    },
+    "git workflows": {
+      "name": "Git Workflows"
     }
   },
   "tools": {
@@ -247,6 +250,14 @@
         "file_path": "helpers/skills/git-shallow-clone/SKILL.md",
         "id": "git-shallow-clone",
         "allowed_tools": "Bash"
+      },
+      {
+        "name": "github-sync-upstream",
+        "description": "Sync code from an upstream GitHub repository into a target fork (e.g., opendatahub-io midstream). Detects remotes from the current repo, or clones fresh if run from outside. Fetches upstream, merges into a sync branch, restores protected files, resolves conflicts, and opens a PR to the target GitHub repo. Use when asked to sync upstream, merge upstream changes, or bring a GitHub fork up to date with its upstream source.",
+        "category": "git workflows",
+        "file_path": "helpers/skills/github-sync-upstream/SKILL.md",
+        "id": "github-sync-upstream",
+        "allowed_tools": "Bash Read AskUserQuestion"
       },
       {
         "name": "gitlab-pipeline-debugger",
