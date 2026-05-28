@@ -4,32 +4,37 @@ set -euo pipefail
 STORAGE_ROOT=""
 NO_HEADER=false
 LOCAL_SCAN=false
+QUIET=false
+INPUT_FILE=""
 
 : "${REDHAT_KEY:=199e2f91fd431d51}"
 : "${ARCHS:=amd64}"
 : "${DEFAULT_TAGS:=latest}"
 : "${SIZE_WARN_MB:=1024}"
 : "${AUTO_CONFIRM:=false}"
+: "${PARALLEL:=1}"
 
 usage() {
     cat >&2 <<EOF
-Usage: $0 [-s <storage_path>] [-H] [-y] <image_url> [tag1 tag2 ...]
-       $0 [-s <storage_path>] [-H] [-y] -f <input_file> [tag1 tag2 ...]
+Usage: $0 [-s <storage_path>] [-H] [-y] [-q] <image_url> [tag1 tag2 ...]
+       $0 [-s <storage_path>] [-H] [-y] [-q] -f <input_file> [tag1 tag2 ...]
        $0 [-H] -l
 
 Extract non-Red Hat-signed RPMs from container images or the local machine.
 Images larger than ${SIZE_WARN_MB}MB trigger a size warning before pulling.
 
 Options:
+  -f <file>  Read image URLs from file (one per line, # for comments)
   -h         Show this help message
   -l         Scan the local machine instead of a container image
+  -q         Quiet mode: suppress podman progress bars (useful for parallel
+             runs or agent-driven scans)
   -s <path>  Podman storage root (passed as --root to podman)
   -H         Suppress CSV header (useful when appending to existing output)
   -y         Auto-confirm large image pulls (skip size warning prompt)
 
 Arguments:
   image_url   Container image URL without tag (e.g. quay.io/rhoai/odh-vllm-rocm-rhel9)
-  -f <file>   Read image URLs from file (one per line, # for comments)
   tag1 ...    Release tags to check (appended to image URL as :tag)
 
 Environment variables:
@@ -43,6 +48,7 @@ Environment variables:
                 (default: 1024)
   AUTO_CONFIRM    Set to 'true' to skip size warning prompts
                 (default: false)
+  PARALLEL        Max concurrent image scans (default: 1, sequential)
 
 Image resolution:
   If the repository is not found, the script also tries appending -rhel9
@@ -75,14 +81,19 @@ Examples:
 
   # Full matrix — all architectures and multiple tags:
   ARCHS="amd64 arm64 s390x ppc64le" $0 quay.io/rhoai/odh-vllm-rocm-rhel9 rhoai-3.4 rhoai-3.5
+
+  # Batch scan from input file with 4 parallel workers (quiet mode):
+  PARALLEL=4 $0 -q -y -f images.input rhoai-3.5-ea.2 > results.csv
 EOF
     exit "${1:-1}"
 }
 
-while getopts ":hls:Hy" opt; do
+while getopts ":f:hlqs:Hy" opt; do
     case $opt in
+        f) INPUT_FILE="$OPTARG" ;;
         h) usage 0 ;;
         l) LOCAL_SCAN=true ;;
+        q) QUIET=true ;;
         s) STORAGE_ROOT="$OPTARG" ;;
         H) NO_HEADER=true ;;
         y) AUTO_CONFIRM=true ;;
@@ -115,7 +126,7 @@ scan_local() {
     echo "[local] Extracting RPM info ..." >&2
 
     local raw_output
-    raw_output=$(rpm -qai \
+    raw_output=$(LC_ALL=C rpm -qai \
         | awk '/^Name/{name=$3} /^Signature/{if($0~/Key ID/){kid=$NF}else{kid="(none)"}; print name" "kid}')
 
     local total_pkgs
@@ -154,7 +165,7 @@ for cmd in podman skopeo jq; do
     fi
 done
 
-if [ $# -lt 1 ]; then
+if [ $# -lt 1 ] && [ -z "$INPUT_FILE" ]; then
     usage
 fi
 
@@ -170,26 +181,20 @@ read -ra ARCH_ARRAY <<< "$ARCHS"
 read -ra DEFAULT_TAG_ARRAY <<< "$DEFAULT_TAGS"
 
 IMAGES=()
-if [ "$1" = "-f" ]; then
-    if [ $# -lt 2 ]; then
-        echo "Error: -f requires a file argument." >&2
-        usage
-    fi
-    input_file="$2"
-    if [ ! -f "$input_file" ]; then
-        echo "Error: input file not found: ${input_file}" >&2
+if [ -n "$INPUT_FILE" ]; then
+    if [ ! -f "$INPUT_FILE" ]; then
+        echo "Error: input file not found: ${INPUT_FILE}" >&2
         exit 1
     fi
-    if [ ! -r "$input_file" ]; then
-        echo "Error: input file not readable: ${input_file}" >&2
+    if [ ! -r "$INPUT_FILE" ]; then
+        echo "Error: input file not readable: ${INPUT_FILE}" >&2
         exit 1
     fi
-    shift 2
     while IFS= read -r line; do
         [[ -z "$line" || "$line" == \#* ]] && continue
         IMAGES+=("$line")
-    done < "$input_file"
-else
+    done < "$INPUT_FILE"
+elif [ $# -ge 1 ]; then
     IMAGES+=("$1")
     shift
 fi
@@ -345,7 +350,11 @@ scan_tag() {
             continue
         fi
         echo "[${image_name}/${tag}/${arch}] Pulling ..." >&2
-        if ! podman pull --platform "linux/${arch}" "${container_image}" >&2 2>&1; then
+        local -a pull_opts=(--platform "linux/${arch}")
+        if [ "$QUIET" = true ]; then
+            pull_opts+=(--quiet)
+        fi
+        if ! podman pull "${pull_opts[@]}" "${container_image}" >&2 2>&1; then
             echo "[${image_name}/${tag}/${arch}] Not available, skipping." >&2
             pull_failed=$((pull_failed + 1))
             continue
@@ -356,7 +365,7 @@ scan_tag() {
         echo "[${image_name}/${tag}/${arch}] Digest: ${image_digest}" >&2
 
         echo "[${image_name}/${tag}/${arch}] Extracting RPM info ..." >&2
-        raw_output=$(podman run --rm --platform "linux/${arch}" --entrypoint /bin/bash "${container_image}" -c 'rpm -qai | awk "/^Name/{name=\$3} /^Signature/{if(\$0~/Key ID/){kid=\$NF}else{kid=\"(none)\"}; print name\" \"kid}"')
+        raw_output=$(podman run --rm --platform "linux/${arch}" --entrypoint /bin/bash "${container_image}" -c 'LC_ALL=C rpm -qai | awk "/^Name/{name=\$3} /^Signature/{if(\$0~/Key ID/){kid=\$NF}else{kid=\"(none)\"}; print name\" \"kid}"')
 
         total_pkgs=$(echo "$raw_output" | wc -l)
         filtered_output=$(echo "$raw_output" | grep -vi "${REDHAT_KEY}" || true)
@@ -383,13 +392,15 @@ if [ "$NO_HEADER" = false ]; then
     echo "tag,arch,image_name,image_ref,pkg_name,key_id"
 fi
 
-for RAW_IMAGE in "${IMAGES[@]}"; do
+process_image() {
+    local RAW_IMAGE="$1" out_csv="$2" out_log="$3"
+    local IMAGE
     IMAGE=$(resolve_image "$RAW_IMAGE")
-    image_name="${IMAGE##*/}"
-    all_tags_failed=true
+    local image_name="${IMAGE##*/}"
+    local all_tags_failed=true
 
     for tag in "${TAGS[@]}"; do
-        pull_failures=0
+        local pull_failures=0
         scan_tag "$IMAGE" "$tag" || pull_failures=$?
         if [ "$pull_failures" -lt "${#ARCH_ARRAY[@]}" ]; then
             all_tags_failed=false
@@ -398,12 +409,53 @@ for RAW_IMAGE in "${IMAGES[@]}"; do
 
     if [ "$all_tags_failed" = true ] && [ "$USER_TAGS" = false ]; then
         echo "[${image_name}] Default tag(s) not available, auto-discovering tags ..." >&2
+        local discovered_tag
         discovered_tag=$(discover_tags "$IMAGE") || true
         if [ -n "$discovered_tag" ]; then
             scan_tag "$IMAGE" "$discovered_tag" || true
         fi
     fi
-done
+}
+
+if [ "$PARALLEL" -le 1 ]; then
+    for RAW_IMAGE in "${IMAGES[@]}"; do
+        process_image "$RAW_IMAGE" "" ""
+    done
+else
+    WORK_DIR=$(mktemp -d)
+    trap 'rm -rf "${WORK_DIR}"' EXIT
+    active=0
+    pids=()
+
+    for RAW_IMAGE in "${IMAGES[@]}"; do
+        img_slug="${RAW_IMAGE##*/}"
+        out_csv="${WORK_DIR}/${img_slug}.csv"
+        out_log="${WORK_DIR}/${img_slug}.log"
+
+        process_image "$RAW_IMAGE" "" "" >"$out_csv" 2>"$out_log" &
+        pids+=($!)
+        active=$((active + 1))
+
+        if [ "$active" -ge "$PARALLEL" ]; then
+            wait -n 2>/dev/null || true
+            active=$((active - 1))
+        fi
+    done
+
+    for pid in "${pids[@]}"; do
+        wait "$pid" 2>/dev/null || true
+    done
+
+    for RAW_IMAGE in "${IMAGES[@]}"; do
+        img_slug="${RAW_IMAGE##*/}"
+        if [ -s "${WORK_DIR}/${img_slug}.log" ]; then
+            cat "${WORK_DIR}/${img_slug}.log" >&2
+        fi
+        if [ -s "${WORK_DIR}/${img_slug}.csv" ]; then
+            cat "${WORK_DIR}/${img_slug}.csv"
+        fi
+    done
+fi
 
 ALL_ARCHS="amd64 arm64 s390x ppc64le"
 scanned="${ARCHS}"
