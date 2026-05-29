@@ -399,6 +399,14 @@
         "allowed_tools": "Bash Read"
       },
       {
+        "name": "python-packaging-binary-audit",
+        "description": "Scan a Python package repository for compiled/binary files using Fromager-style detection and malcontent YARA analysis, then triage findings with deterministic rules and AI reasoning to produce a structured risk report section.",
+        "category": "general",
+        "file_path": "helpers/skills/python-packaging-binary-audit/SKILL.md",
+        "id": "python-packaging-binary-audit",
+        "allowed_tools": "Bash Read Grep"
+      },
+      {
         "name": "python-packaging-bug-finder",
         "description": "Use when you need to find known packaging bugs, fixes, and workarounds for Python projects by searching GitHub issues and analyzing their resolution status",
         "category": "general",
@@ -423,6 +431,14 @@
         "allowed_tools": "Bash Read Grep Glob"
       },
       {
+        "name": "python-packaging-git-audit",
+        "description": "Inspect recent git history of a Python package repository for suspicious commits touching supply-chain-sensitive files, then triage findings with AI reasoning to produce a structured risk report section.",
+        "category": "general",
+        "file_path": "helpers/skills/python-packaging-git-audit/SKILL.md",
+        "id": "python-packaging-git-audit",
+        "allowed_tools": "Bash Read Grep"
+      },
+      {
         "name": "python-packaging-license-checker",
         "description": "Use this skill to check whether a Python package license is compatible with redistribution in Red Hat products, using the Fedora License Data as the authoritative policy source. Produces a structured six-field verdict with escalation guidance for non-trivial cases.",
         "category": "general",
@@ -440,7 +456,7 @@
       },
       {
         "name": "python-packaging-security-audit",
-        "description": "Use this skill to evaluate the security of a Python package repository with static code analysis and a scan of git history for suspicious commits, then triaging findings to produce an actionable security report with a risk rating.",
+        "description": "Use this skill to evaluate the security of a Python package repository by orchestrating static analysis, binary scanning, and git history inspection sub-skills in parallel, then combining their results into a unified security report with a risk rating.",
         "category": "general",
         "file_path": "helpers/skills/python-packaging-security-audit/SKILL.md",
         "id": "python-packaging-security-audit",
@@ -453,6 +469,14 @@
         "file_path": "helpers/skills/python-packaging-source-finder/SKILL.md",
         "id": "python-packaging-source-finder",
         "allowed_tools": "Bash WebSearch WebFetch"
+      },
+      {
+        "name": "python-packaging-static-audit",
+        "description": "Run hexora static analysis on a Python package repository to detect suspicious code patterns, then triage findings with deterministic rules and AI reasoning to produce a structured risk report section.",
+        "category": "general",
+        "file_path": "helpers/skills/python-packaging-static-audit/SKILL.md",
+        "id": "python-packaging-static-audit",
+        "allowed_tools": "Bash Read Grep"
       },
       {
         "name": "security-alert",

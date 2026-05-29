@@ -2,7 +2,8 @@
 # Run hexora with the tuned rule set for package onboarding security audits.
 # Usage: ./run-hexora.sh <repo-path>
 # Output: JSON findings on stdout, diagnostics on stderr.
-# Exit codes: 0 = ran successfully (may have findings), 1 = hexora unavailable.
+# Exit codes: 0 = ran successfully (may have findings), 1 = runtime error,
+#              2 = hexora unavailable (neither hexora nor uvx found).
 
 set -euo pipefail
 
@@ -39,6 +40,6 @@ if command -v hexora >/dev/null 2>&1; then
 elif command -v uvx >/dev/null 2>&1; then
   uvx --with-requirements "$script_dir/requirements.txt" hexora "${HEXORA_ARGS[@]}"
 else
-  echo "ERROR: neither hexora nor uvx found" >&2
-  exit 1
+  echo "ERROR: neither hexora nor uvx found -- hexora analysis will be skipped" >&2
+  exit 2
 fi
