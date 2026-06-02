@@ -10,7 +10,6 @@ description: >-
   worth alerting on to findings.json.
 author: AIPCC
 allowed-tools: Bash(curl:https://hn.algolia.com/*) Read Write
-model: claude-sonnet-4-5
 ---
 
 # Security Alert: Developer Supply-Chain Threat Filter
