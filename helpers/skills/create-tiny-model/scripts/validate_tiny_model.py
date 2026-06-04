@@ -7,8 +7,12 @@ import argparse
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-
-TEXT = """According to all known laws of aviation, there is no way a bee should be able to fly. Its wings are too small to get its fat little body off the ground. The bee, of course, flies anyway because bees don't care what humans think is impossible."""
+TEXT = (
+    "According to all known laws of aviation, there is no way a bee "
+    "should be able to fly. Its wings are too small to get its fat little "
+    "body off the ground. The bee, of course, flies anyway because bees "
+    "don't care what humans think is impossible."
+)
 TARGET_PERPLEXITY = 10.0
 
 
@@ -30,7 +34,7 @@ def main():
         print(f"Failure: {perplexity} > {TARGET_PERPLEXITY}")
 
     # generation test
-    print("\n" + "="*50)
+    print("\n" + "=" * 50)
     print("Generating sample text:")
     outputs = model.generate(
         input_ids=input_ids[:, :10],
@@ -41,7 +45,7 @@ def main():
     )
     generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
     print(generated_text)
-    print("="*50)
+    print("=" * 50)
 
 
 if __name__ == "__main__":

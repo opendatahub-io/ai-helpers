@@ -24,7 +24,7 @@ Scripts are located in `.claude/skills/create-tiny-model/scripts/`:
 - `save_tiny_model.py` - Template for saving a tiny version of the model
 - `inspect_tensors.py` - Inspect and analyze tensors in models
 - `finetune.py` - Finetune tiny models on a toy dataset
-- `validate_tiny_model.py` - Validate that the tiny model was created correctly
+- `validate_tiny_model.py` - Validate that the tiny model was created and produces sane outputs
 
 ## Templates
 
@@ -43,13 +43,13 @@ When this skill is invoked, the following steps will be completed:
 
 IMPORTANT: Start by only modifying the number of layers in the model. If the model is significantly larger than 1B parameters, then consider reducing the hidden sizes, number of experts, and other configurations.
 
-3. **Fine-tune**: Fine tune the model on a toy dataset using `finetune.py`. This validates that the model can actually learn. Note: vision-language models may require script modifications to load correctly. Make sure the target perplexity is ~3.0, a model with a high perplexity with respect to the toy dataset is not considered valid.
+3. **Fine-tune**: Fine tune the model on a toy dataset using `finetune.py`. This validates that the model can actually learn. Note: vision-language models may require script modifications to load. Make sure the target perplexity is ~3.0, a model with a high perplexity with respect to the toy dataset is not considered valid.
 
 IMPORTANT: If the model is a vision-language model, do not worry about trying to fine tune on a vision dataset, only fine tune on the provided text dataset.
 
 4. **Validate checkpoint structure**: Make sure that the saved model checkpoint structure is analogous to the checkpoint structure of the original large model checkpoint. The `transformers` library can sometimes contain bugs where models are saved in invalid checkpoint structures. First, inspect the original checkpoint structure using the HuggingFace Hub API or by checking `https://huggingface.co/{model_id}/resolve/main/model.safetensors.index.json`. If this file does not exist, download the original checkpoint directly. Use `inspect_tensors.py` to inspect the checkpoint format of the saved model and/or the downloaded model. If the two structures do not match, create a converter script to convert our tiny saved checkpoint structure into a checkpoint structure which matches the original.
 
-5. **Validate model**: Confirm that the model loads and inferences correctly using `validate_tiny_model.py`.
+5. **Validate model**: Confirm that the model loads and inferences expected outputs using `validate_tiny_model.py`.
 
 6. **Generate README**: Create a comprehensive README.md for the model using the template at `templates/README_TEMPLATE.md`. Fill in all placeholders with actual values:
    - `{model_name}` - Name of the tiny model directory
