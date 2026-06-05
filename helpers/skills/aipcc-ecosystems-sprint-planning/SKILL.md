@@ -47,13 +47,13 @@ Create `~/.claude/sprint-planning-config.json`:
 
 Simply invoke the skill:
 
-```
+```text
 run aipcc ecosystems sprint planning
 ```
 
 Or specify a target Monday date:
 
-```
+```text
 run aipcc ecosystems sprint planning for 2026-06-08
 ```
 
@@ -155,7 +155,7 @@ This creates a professionally formatted Google Doc with:
 **Sunday evening or Monday morning:**
 
 1. Generate sprint planning analysis:
-   ```
+   ```text
    run aipcc ecosystems sprint planning
    ```
 

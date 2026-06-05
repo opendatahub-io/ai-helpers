@@ -358,8 +358,8 @@ def create_google_doc(title, markdown_file):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python create-google-doc-final.py <markdown-file>")
-        print("Example: python create-google-doc-final.py sprint-planning-2026-06-08.md")
+        print("Usage: python create-google-doc.py <markdown-file>")
+        print("Example: python create-google-doc.py sprint-planning-2026-06-08.md")
         sys.exit(1)
 
     markdown_file = sys.argv[1]
