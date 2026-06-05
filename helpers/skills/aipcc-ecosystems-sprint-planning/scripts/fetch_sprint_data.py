@@ -141,7 +141,9 @@ def fetch_issues(jira: JIRA, project: str, fix_version: str, components: list[st
                     assignee = fields.assignee.displayName
 
                 # Get components
-                components_list = [comp.name for comp in fields.components] if fields.components else []
+                components_list = (
+                    [comp.name for comp in fields.components] if fields.components else []
+                )
 
                 issue_data = {
                     "key": issue.key,
@@ -283,8 +285,10 @@ def main() -> None:
         "metadata": {
             "fetched_at": datetime.now(timezone.utc).isoformat(),
             "total_issues": len(issues),
-            "total_epics": sum(len([i for i in squad_issues if i["issue_type"] == "Epic"])
-                             for squad_issues in squads.values()),
+            "total_epics": sum(
+                len([i for i in squad_issues if i["issue_type"] == "Epic"])
+                for squad_issues in squads.values()
+            ),
             "jira_url": JIRA_URL,
         },
     }
