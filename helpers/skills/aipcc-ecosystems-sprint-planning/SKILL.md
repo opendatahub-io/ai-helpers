@@ -111,16 +111,37 @@ For each of 8 squads (CUDA, ROCm, Gaudi, IBM Spyre, TPU, AWS Neuron, Delivery, T
 - Recommendations
 - Code freeze readiness
 
-## Converting to Google Doc
+## Converting to Google Doc (Optional)
 
-To create a polished Google Doc from the generated markdown:
+To create a polished Google Doc from the generated markdown, use the included script.
 
-1. Set up Google Docs API (one-time setup required)
-2. Run the conversion script:
+### One-Time Setup
+
+1. **Install Python dependencies:**
+   ```bash
+   python3 -m venv ~/.google-docs-env
+   source ~/.google-docs-env/bin/activate
+   pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
+   ```
+
+2. **Set up Google Docs API credentials:**
+   - Go to [Google Cloud Console](https://console.cloud.google.com)
+   - Enable Google Docs API and Google Drive API
+   - Create OAuth 2.0 credentials (Desktop app)
+   - Download credentials JSON to `~/.google-docs-credentials.json`
+
+3. **First run will authenticate:**
+   ```bash
+   source ~/.google-docs-env/bin/activate
+   python3 scripts/create-google-doc.py ~/sprint-planning-YYYY-MM-DD.md
+   ```
+   Browser opens for authorization (one-time)
+
+### Daily Usage
 
 ```bash
-source ~/google-docs-env/bin/activate
-python3 ~/create-google-doc-final.py ~/sprint-planning-YYYY-MM-DD.md
+source ~/.google-docs-env/bin/activate
+python3 scripts/create-google-doc.py ~/sprint-planning-YYYY-MM-DD.md
 ```
 
 This creates a professionally formatted Google Doc with:
@@ -135,16 +156,16 @@ This creates a professionally formatted Google Doc with:
 
 1. Generate sprint planning analysis:
    ```
-   run sprint planning prep
+   run aipcc ecosystems sprint planning
    ```
 
-2. Convert to Google Doc:
+2. (Optional) Convert to Google Doc:
    ```bash
-   source ~/google-docs-env/bin/activate
-   python3 ~/create-google-doc-final.py ~/sprint-planning-2026-06-08.md
+   source ~/.google-docs-env/bin/activate
+   python3 scripts/create-google-doc.py ~/sprint-planning-2026-06-08.md
    ```
 
-3. Share Google Doc link with squad leads 30+ minutes before Monday call
+3. Share markdown or Google Doc link with squad leads 30+ minutes before Monday call
 
 4. Use during Monday call to walk through each squad's priorities (6-8 min per squad)
 
