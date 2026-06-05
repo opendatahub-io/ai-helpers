@@ -113,7 +113,7 @@
       {
         "name": "aipcc-ecosystems-sprint-planning",
         "description": "Automate Monday sprint planning preparation for AIPCC Ecosystems team (8 squads)",
-        "category": "general",
+        "category": "aipcc",
         "file_path": "helpers/skills/aipcc-ecosystems-sprint-planning/SKILL.md",
         "id": "aipcc-ecosystems-sprint-planning",
         "allowed_tools": "mcp__atlassian__*"

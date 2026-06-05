@@ -5,6 +5,7 @@ AIPCC:
   - jira-aipcc-create
   - jira-status-summary
   - security-alert
+  - aipcc-ecosystems-sprint-planning
 
 PyTorch:
   - torchtalk-analyzer
