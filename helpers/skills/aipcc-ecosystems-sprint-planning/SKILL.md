@@ -115,7 +115,7 @@ For each of 8 squads (CUDA, ROCm, Gaudi, IBM Spyre, TPU, AWS Neuron, Delivery, T
 
 To create a polished Google Doc from the generated markdown:
 
-1. Set up Google Docs API (one-time, see `/Users/belwell/GOOGLE-DOCS-SETUP.md`)
+1. Set up Google Docs API (one-time setup required)
 2. Run the conversion script:
 
 ```bash
@@ -176,7 +176,5 @@ The skill handles:
 
 ## Related Documentation
 
-- Full README: `~/.claude/skills/sprint-planning-prep/README.md`
-- Google Docs setup: `/Users/belwell/GOOGLE-DOCS-SETUP.md`
-- Process design: `/Users/belwell/docs/superpowers/specs/2026-05-29-ecosystems-sprint-planning-design.md`
-- Skill design: `/Users/belwell/docs/superpowers/specs/2026-06-05-sprint-planning-skill-design.md`
+- Full README: See `README.md` in this skill directory
+- Configuration: `~/.claude/sprint-planning-config.json`
