@@ -1,11 +1,11 @@
 ---
-name: sprint-planning-prep
+name: aipcc-ecosystems-sprint-planning
 description: Automate Monday sprint planning preparation for AIPCC Ecosystems team (8 squads)
 allowed-tools: mcp__atlassian__*
 user-invocable: true
 ---
 
-# Sprint Planning Prep
+# AIPCC Ecosystems Sprint Planning
 
 Automates the 30-45 minute Monday sprint planning preparation by pulling Jira data from the AIPCC project, analyzing priorities across 8 Ecosystems squads, and generating a formatted planning document.
 
@@ -48,13 +48,13 @@ Create `~/.claude/sprint-planning-config.json`:
 Simply invoke the skill:
 
 ```
-run sprint planning prep
+run aipcc ecosystems sprint planning
 ```
 
 Or specify a target Monday date:
 
 ```
-run sprint planning prep for 2026-06-08
+run aipcc ecosystems sprint planning for 2026-06-08
 ```
 
 ## Implementation
