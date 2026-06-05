@@ -1,7 +1,7 @@
 ---
 name: aipcc-ecosystems-sprint-planning
 description: Automate Monday sprint planning preparation for AIPCC Ecosystems team (8 squads)
-allowed-tools: mcp__atlassian__*
+allowed-tools: Bash
 user-invocable: true
 ---
 
@@ -11,8 +11,10 @@ Automates the 30-45 minute Monday sprint planning preparation by pulling Jira da
 
 ## Prerequisites
 
-- Atlassian MCP server configured and authenticated
-- Access to AIPCC Jira project
+- Python 3 and `uv` must be installed and available in PATH
+- `JIRA_API_TOKEN` environment variable must be set with a valid API token for https://redhat.atlassian.net
+- `JIRA_EMAIL` environment variable must be set with the email address associated with your Atlassian account
+- Access to AIPCC Jira project with appropriate permissions
 - Configuration file at `~/.claude/sprint-planning-config.json`
 
 ## Configuration
@@ -59,33 +61,61 @@ run aipcc ecosystems sprint planning for 2026-06-08
 
 ## Implementation
 
-This skill performs the following steps:
+### Step 1: Determine Sprint Details
 
-1. **Determine sprint dates and fix version**
-   - Calculate next Monday's date (or use provided date)
-   - Identify the current fix version for sprint planning (e.g., rhoai-3.5.EA2)
+1. If the user provides a Monday date, use it
+2. Otherwise, calculate the next Monday from today
+3. Determine the fix version to analyze (e.g., rhoai-3.5.EA2)
+   - If user specifies "for rhoai-3.5.EA3", use that version
+   - Otherwise, use the current/upcoming version based on the Monday date
 
-2. **Query Jira data**
-   - Search for all Features, Initiatives, Epics, and Stories in AIPCC project
-   - Filter by target fix version and configured components
-   - Pull epic details, parent features, assignees, and status
+### Step 2: Fetch Sprint Data
 
-3. **Analyze by squad**
-   - Group work items by the 8 accelerator squads using team field mapping
-   - Count epics by status (Closed, In Progress, New, To Do)
-   - Identify unassigned work
+Run the fetch script located at `scripts/fetch_sprint_data.py` relative to this skill. Execute it directly (not via `python`) to invoke uv via the shebang:
 
-4. **Generate contextual questions**
-   - Analyze patterns (old work, capacity warnings, blockers)
-   - Create squad-specific questions for Monday planning call
-   - Flag risks and code freeze readiness
+```bash
+./scripts/fetch_sprint_data.py --fix-version rhoai-3.5.EA2
+```
 
-5. **Create planning document**
-   - Generate markdown with executive summary
-   - Squad-by-squad breakdown with clickable Jira links
-   - Nested bullet lists for epic organization
-   - Cross-squad analysis and recommendations
-   - Save to `~/sprint-planning-YYYY-MM-DD.md`
+The script outputs JSON to stdout containing:
+- All issues (Features, Initiatives, Epics, Stories) for the fix version
+- Issues grouped by squad using team field mapping (customfield_10001)
+- Status counts and metrics per squad
+- Epic-specific analysis with parent feature tracking
+
+### Step 3: Interpret the JSON into a Sprint Planning Document
+
+Analyze the JSON output and generate a markdown document with the following sections:
+
+#### Executive Summary
+- Total epic count for the fix version
+- Status breakdown (Closed, In Progress, New, To Do)
+- Code freeze date and readiness alerts
+- Overall risk assessment
+
+#### Squad-by-Squad Breakdown
+
+For each squad with work assigned, create a section with:
+- **Epic count by status**
+- **Clickable links** to all epics, grouped by status:
+  - Closed epics (nested bullet list with links)
+  - In Progress epics (nested bullet list with links)
+  - New epics (nested bullet list with links)
+- **Parent features** being tracked
+- **Contextual questions** based on patterns in the data:
+  - Capacity warnings if many new epics near code freeze
+  - Questions about old work still open
+  - Blocker and dependency questions
+  - Specific issues identified (duplicates, unclear ownership, etc.)
+
+#### Cross-Squad Analysis
+- Positive indicators (good progress, clear ownership)
+- Risk flags (capacity concerns, blocked work, stale items)
+- Recommendations for the planning call
+- Code freeze readiness assessment
+
+#### Output
+Save the markdown to `~/sprint-planning-YYYY-MM-DD.md` where YYYY-MM-DD is the Monday date.
 
 ## Output Format
 
@@ -189,11 +219,16 @@ This creates a professionally formatted Google Doc with:
 
 ## Error Handling
 
-The skill handles:
-- Missing configuration file (prompts to create one)
-- Atlassian MCP authentication failures (guides through OAuth)
-- Empty sprint data (notifies and suggests fix version check)
-- Unassigned epics (creates "Unassigned Work" section)
+The fetch script handles:
+- Missing environment variables (JIRA_API_TOKEN, JIRA_EMAIL) with clear error messages
+- Missing or invalid configuration file at ~/.claude/sprint-planning-config.json
+- Jira API failures (authentication, permissions, network errors)
+- Empty results (no issues found for the fix version)
+
+The skill interpretation handles:
+- Missing squad assignments (creates "Unassigned" section)
+- Empty squad data (only includes squads with work)
+- Malformed JSON from the fetch script (reports error to user)
 
 ## Related Documentation
 
