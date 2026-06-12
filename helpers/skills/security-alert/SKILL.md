@@ -62,43 +62,58 @@ software developers or the software supply chain. This is a judgment call —
 do not rely on keyword matching. A relevant story may use none of the obvious
 terms.
 
-**Include a story if it describes any of the following:**
+**Include a story only if it describes an adversarial attack on the software
+supply chain itself — meaning the dependency, build, or distribution
+infrastructure has been compromised or weaponized. Specifically:**
 
-**Package-level threats (npm / PyPI)**
-- A specific package containing malicious code, credential theft,
-  data exfiltration, or unexpected execution at install or import time
-- A supply-chain attack, typosquatting campaign, dependency confusion
-  attack, or backdoor inserted into a package
+**Malicious or typosquatted packages**
+- A package published to npm, PyPI, or another public registry that
+  contains malicious code, credential theft, data exfiltration, or
+  unexpected execution at install or import time
+- A typosquatting campaign or dependency confusion attack targeting a
+  public registry
 
-**Developer tooling threats**
-- A malicious or compromised IDE extension, editor plugin, build tool,
-  linter, formatter, or code generator
-- A compromised CLI tool distributed via a package manager or installer
+**Compromised maintainer accounts or signing keys**
+- A package maintainer account on a registry or code host has been taken
+  over and used to push unauthorized code
+- Package signing keys have been stolen or misused
 
-**Source code and repository threats**
-- Unauthorized access to, or exfiltration from, a source code host
-  (GitHub, GitLab, Bitbucket, etc.)
-- A breach affecting developer credentials, tokens, or SSH keys stored
-  in or used by a code host
+**Backdoors in open-source dependencies**
+- Malicious code inserted into an open-source library, framework, or
+  tool that developers pull as a dependency
 
-**CI/CD and infrastructure threats**
-- A compromised CI/CD system, build pipeline, or artifact registry
-- An attack on infrastructure widely used in software development
-  (container registries, package mirrors, signing infrastructure)
+**Attacks on source code repositories or CI/CD infrastructure**
+- Poisoned build steps, compromised CI runners, leaked secrets in build
+  pipelines, or unauthorized pushes to a repository
+- A compromised artifact registry, container registry, package mirror,
+  or signing infrastructure
+
+**Dependency confusion or namespace hijacking**
+- An attacker claiming an internal package name on a public registry to
+  trick build systems into pulling the malicious version
 
 **Exclude** stories about:
-- CVEs or vulnerabilities in software that developers *use* (browsers, OSes,
-  editors) where the attack vector is not the software supply chain itself —
-  e.g. a Chromium bug exploited via the browser is not a supply-chain attack
+- IDEs, editors, or tools generating code with insecure patterns — this
+  is a code-quality issue, not a supply-chain attack (e.g. an AI code
+  assistant suggesting vulnerable code)
+- Platform outages or authentication incidents — operational disruptions
+  are not adversarial supply-chain compromises (e.g. a code host's auth
+  service going down and breaking CI/CD)
+- Project governance or policy decisions — changes to contribution rules,
+  PR policies, or project management are not security threats (e.g. a
+  project restricting PRs or changing maintainership criteria)
+- General vulnerability disclosures in end-user software unrelated to
+  the dependency supply chain (e.g. a browser RCE, an OS privilege
+  escalation)
 - General data breaches unrelated to developer tooling or source code
-- Vulnerabilities in deployed/production software with no supply-chain angle
+- Security research or proof-of-concept disclosures with no active
+  exploitation of a supply-chain vector
 - Geopolitical or policy news
-- Security research or proof-of-concept disclosures with no active exploitation
-  of a supply-chain vector
 
-**The test:** would a developer's *build, publish, or dependency pipeline* be
-compromised? If the answer is no — if the threat only affects them as an
-end-user of software — exclude it.
+**The test:** has the *dependency, build, or distribution pipeline* been
+adversarially compromised or weaponized? If the answer is no — if the
+story describes a quality issue, an outage, a policy decision, or a
+vulnerability that only affects end-users of software — exclude it.
 
 Fetch the HN thread for any story that is not immediately obvious noise (title
 makes it unambiguously unrelated). Cap total thread fetches at **15** per run —
