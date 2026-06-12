@@ -31,6 +31,9 @@
     },
     "compliance": {
       "name": "Compliance"
+    },
+    "odh modules": {
+      "name": "ODH Modules"
     }
   },
   "tools": {
@@ -365,6 +368,30 @@
         "file_path": "helpers/skills/learning-mode/SKILL.md",
         "id": "learning-mode",
         "allowed_tools": ""
+      },
+      {
+        "name": "module-compliance",
+        "description": "Check an ODH module operator repository for contract violations against the platform onboarding guide. Validates PlatformObject status, CRD structure, Helm chart content, webhook ownership, metadata conventions, and reconciler chain ordering. Use during code review or after scaffolding a new module.",
+        "category": "odh modules",
+        "file_path": "helpers/skills/module-compliance/SKILL.md",
+        "id": "module-compliance",
+        "allowed_tools": "Read Grep Glob"
+      },
+      {
+        "name": "module-migrate",
+        "description": "Read existing in-tree ODH operator component code and produce a step-by-step extraction checklist for migrating it to a standalone module. Analyzes controller logic, webhooks, RBAC, embedded manifests, and DSC field mappings. Use when extracting a component from the monolithic operator into its own module repo.",
+        "category": "odh modules",
+        "file_path": "helpers/skills/module-migrate/SKILL.md",
+        "id": "module-migrate",
+        "allowed_tools": "Bash Read Grep Glob Write"
+      },
+      {
+        "name": "module-scaffold",
+        "description": "Given a component name, generate a complete standalone ODH module operator repository. Produces Go module, CRD types implementing PlatformObject, controller skeleton with reconciler builder pattern, Helm chart, Makefile, CI config, singleton webhook, and AGENTS.md. Use when starting a new module from scratch.",
+        "category": "odh modules",
+        "file_path": "helpers/skills/module-scaffold/SKILL.md",
+        "id": "module-scaffold",
+        "allowed_tools": "Bash Read Grep Glob Write Edit"
       },
       {
         "name": "non-redhat-rpms",
