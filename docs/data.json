@@ -31,6 +31,9 @@
     },
     "compliance": {
       "name": "Compliance"
+    },
+    "llm-d": {
+      "name": "LLM-D"
     }
   },
   "tools": {
@@ -381,6 +384,14 @@
         "file_path": "helpers/skills/oci-cve-checker/SKILL.md",
         "id": "oci-cve-checker",
         "allowed_tools": "Bash Read"
+      },
+      {
+        "name": "odh-llm-d-release",
+        "description": "Orchestrate the opendatahub-io release for all llm-d components in one cycle. Collects upstream(llm-d) versions, auto-discovers the release tracker issue, then spawns parallel sub-agents — one per component (release branch, Konflux onboarder workflow, PR validation, approve+merge, Quay image verify, GitHub draft release) plus one KServe metadata PR sub-agent — and posts the final #Release# tracker comment. Use when the release manager runs on/before ODH code-freeze date for the llm-d team.",
+        "category": "llm-d",
+        "file_path": "helpers/skills/odh-llm-d-release/SKILL.md",
+        "id": "odh-llm-d-release",
+        "allowed_tools": "Bash Read AskUserQuestion Agent"
       },
       {
         "name": "pr-jira-linker",

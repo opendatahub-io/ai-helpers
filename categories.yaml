@@ -56,3 +56,6 @@ Git Workflows:
 
 Compliance:
   - non-redhat-rpms
+
+LLM-D:
+  - odh-llm-d-release
