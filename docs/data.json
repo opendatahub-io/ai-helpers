@@ -127,6 +127,14 @@
         "allowed_tools": "Bash(gh pr view:*) Bash(gh repo view:*) Bash(git remote:*) Bash(git branch:*) Bash(gh pr list:*) Bash(gh api:*) Bash(curl:*) Bash(sha256sum:*) Read Glob Grep Edit AskUserQuestion"
       },
       {
+        "name": "create-tiny-model",
+        "description": "Create and manage tiny models for testing and development. Includes utilities for saving tiny models, inspecting tensors, and finetuning workflows.",
+        "category": "general",
+        "file_path": "helpers/skills/create-tiny-model/SKILL.md",
+        "id": "create-tiny-model",
+        "allowed_tools": ""
+      },
+      {
         "name": "cve-fix-apply",
         "description": "Use this skill to apply a CVE fix to a repository. Reads .cve-fix/examples.md for repo-specific guidance (branch naming, co-upgrades, files that change together). Supports Go version bumps, module updates, npm overrides, Python deps, and base image updates. Writes result to autofix-output/cve-fix-result.json.",
         "category": "cve remediation",
