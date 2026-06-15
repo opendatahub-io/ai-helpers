@@ -127,6 +127,14 @@
         "allowed_tools": "Bash(gh pr view:*) Bash(gh repo view:*) Bash(git remote:*) Bash(git branch:*) Bash(gh pr list:*) Bash(gh api:*) Bash(curl:*) Bash(sha256sum:*) Read Glob Grep Edit AskUserQuestion"
       },
       {
+        "name": "create-delivery-postmortem",
+        "description": "Use when a release delay, missed deadline, or delivery incident needs a structured post-mortem. Facilitates context gathering, timeline synthesis, and interactive Five Whys root cause analysis. Produces an executive-ready document in HTML or Markdown.",
+        "category": "general",
+        "file_path": "helpers/skills/create-delivery-postmortem/SKILL.md",
+        "id": "create-delivery-postmortem",
+        "allowed_tools": "Read Write Bash(git config:*) Bash(open:*) Bash(xdg-open:*) AskUserQuestion"
+      },
+      {
         "name": "cve-fix-apply",
         "description": "Use this skill to apply a CVE fix to a repository. Reads .cve-fix/examples.md for repo-specific guidance (branch naming, co-upgrades, files that change together). Supports Go version bumps, module updates, npm overrides, Python deps, and base image updates. Writes result to autofix-output/cve-fix-result.json.",
         "category": "cve remediation",

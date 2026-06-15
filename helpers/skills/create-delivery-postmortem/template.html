@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{TITLE}} — Post-Mortem</title>
+<style>
+  :root {
+    --color-bg: #ffffff;
+    --color-text: #1a1a1a;
+    --color-muted: #5a5a5a;
+    --color-border: #d4d4d4;
+    --color-accent: #2563eb;
+    --color-accent-light: #eff6ff;
+    --color-critical: #dc2626;
+    --color-high: #ea580c;
+    --color-medium: #ca8a04;
+    --color-low: #16a34a;
+    --color-section-bg: #f8f9fa;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--color-text);
+    background: var(--color-bg);
+    line-height: 1.6;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 2rem 4rem;
+  }
+
+  header {
+    border-bottom: 3px solid var(--color-text);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  .meta-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--color-muted);
+  }
+
+  .meta-bar .label {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .priority-badge {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 3px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .priority-critical { background: var(--color-critical); color: #fff; }
+  .priority-high { background: var(--color-high); color: #fff; }
+  .priority-medium { background: var(--color-medium); color: #fff; }
+  .priority-low { background: var(--color-low); color: #fff; }
+
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  p, ul, ol {
+    margin-bottom: 0.75rem;
+  }
+
+  ul, ol {
+    padding-left: 1.5rem;
+  }
+
+  li {
+    margin-bottom: 0.35rem;
+  }
+
+  .executive-summary {
+    background: var(--color-section-bg);
+    border-left: 4px solid var(--color-accent);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .five-whys {
+    margin: 1rem 0;
+  }
+
+  .five-whys .why-step {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--color-section-bg);
+    border-radius: 4px;
+    border-left: 3px solid var(--color-accent);
+  }
+
+  .five-whys .why-step:last-child {
+    border-left-color: var(--color-critical);
+    background: #fef2f2;
+  }
+
+  .five-whys .why-number {
+    font-weight: 700;
+    color: var(--color-accent);
+    min-width: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .five-whys .why-step:last-child .why-number {
+    color: var(--color-critical);
+  }
+
+  .five-whys .why-content {
+    flex: 1;
+  }
+
+  .five-whys .why-question {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .five-whys .why-answer {
+    color: var(--color-muted);
+    font-size: 0.9rem;
+  }
+
+  .five-whys .why-evidence {
+    font-size: 0.8rem;
+    color: var(--color-accent);
+    font-style: italic;
+    margin-top: 0.25rem;
+  }
+
+  .root-cause-box {
+    background: #fef2f2;
+    border: 2px solid var(--color-critical);
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .root-cause-box .root-cause-label {
+    font-weight: 700;
+    color: var(--color-critical);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+  }
+
+  .lessons-section {
+    margin-top: 1rem;
+  }
+
+  .lessons-section h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  a {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.8rem;
+    color: var(--color-muted);
+  }
+
+  @media print {
+    body {
+      max-width: 100%;
+      padding: 0;
+      font-size: 11pt;
+    }
+
+    header {
+      border-bottom-width: 2px;
+    }
+
+    .priority-badge {
+      border: 1px solid currentColor;
+    }
+
+    h2, h3, h4 {
+      page-break-after: avoid;
+    }
+
+    .five-whys .why-step,
+    .executive-summary,
+    .root-cause-box {
+      break-inside: avoid;
+    }
+
+    a {
+      color: var(--color-text);
+    }
+
+    a[href]::after {
+      content: " (" attr(href) ")";
+      font-size: 0.8em;
+      color: var(--color-muted);
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>{{TITLE}}</h1>
+  <div class="meta-bar">
+    <span><span class="label">Author:</span> {{AUTHOR}}</span>
+    <span><span class="label">Date:</span> {{DATE}}</span>
+    {{RELEASE_META}}
+    {{PRIORITY_META}}
+  </div>
+</header>
+
+<h2>Executive Summary</h2>
+<div class="executive-summary">
+  {{EXECUTIVE_SUMMARY}}
+</div>
+
+<h2>Incident Details</h2>
+
+<h3>Leadup</h3>
+{{LEADUP}}
+
+<h3>Impact</h3>
+{{IMPACT}}
+
+<h3>Detection and Timeline</h3>
+{{DETECTION_TIMELINE}}
+
+<h3>Response</h3>
+{{RESPONSE}}
+
+<h3>Recovery</h3>
+{{RECOVERY}}
+
+<h2>Root Cause Analysis</h2>
+
+<h3>Five Whys</h3>
+<div class="five-whys">
+  {{FIVE_WHYS}}
+</div>
+
+<div class="root-cause-box">
+  <div class="root-cause-label">Root Cause</div>
+  {{ROOT_CAUSE}}
+</div>
+
+{{RELATED_INCIDENTS}}
+
+{{BACKLOG_CHECK}}
+
+<h2>Lessons Learned</h2>
+<div class="lessons-section">
+  {{LESSONS_LEARNED}}
+</div>
+
+<footer>
+  Generated on {{GENERATED_DATE}}
+</footer>
+
+</body>
+</html>
