@@ -17,11 +17,34 @@ triaged findings and a risk assessment.
 - **output_file** (optional): Write the report section to this file path instead of
   returning it inline. The first line of the file must be `RISK_RATING:<value>` so
   the orchestrator can parse it without reading the full report.
+- **hexora_results** (optional): File path to pre-computed hexora JSON output
+  (`hexora-results.json`). Schema: `{status, total, findings[]}`. When provided,
+  skip running `run-hexora.sh` and parse this file directly for triage. Status
+  values: `"success"`, `"unavailable"`, `"timeout"`, `"error"`.
 
-## Step 1: Run Hexora
+## Step 1: Obtain Hexora Results
 
-Run the wrapper script which handles hexora installation and applies the tuned
-rule exclusions:
+### Option A - Pre-computed results (CI mode)
+
+If `hexora_results` is provided and the file exists, read and parse it as JSON:
+
+- If `status` is `"success"`: use the `findings` array as the hexora output.
+  Each entry is a raw hexora JSONL object (rule, severity, file, line, etc.).
+  Rules HX1000, HX1020, HX1030, HX3010, HX3040, HX5000-HX5050, HX6020-HX6060,
+  HX7000-HX7020 are already excluded by the CI runner; minimum confidence is
+  `medium`. Proceed directly to Step 2 (Triage).
+- If `status` is `"unavailable"`, `"timeout"`, or `"error"`: skip to the Output
+  section and produce the report with `risk_rating = needs_review`, noting the
+  degraded status and any `error` message from the JSON. **Do not re-run hexora.**
+  The CI runner already attempted execution under controlled conditions, and
+  re-running in the agent container would likely hit the same failure.
+- For any other `status` value not listed above: treat it as an error and report
+  `risk_rating = needs_review`, noting the unrecognized status value.
+
+### Option B - Run hexora locally (standalone mode)
+
+If `hexora_results` is not provided, run the wrapper script which handles hexora
+installation and applies the tuned rule exclusions:
 
 ```bash
 ./scripts/run-hexora.sh <repo-path>
@@ -113,3 +136,5 @@ above. If `output_file` is not provided, return the report section inline.
 |----------|----------|
 | Hexora returns empty results | Report "no findings" for hexora section, risk_rating = no_issues |
 | Hexora is unavailable (`uvx` and `hexora` both missing) | Report hexora unavailable, risk_rating = needs_review |
+| Pre-computed `hexora_results` file path provided but file missing, unreadable, or invalid JSON | Report hexora unavailable, risk_rating = needs_review |
+| Pre-computed `hexora_results` has degraded `status` (`unavailable`/`timeout`/`error`) | Do not re-run hexora; report the degraded status, risk_rating = needs_review |

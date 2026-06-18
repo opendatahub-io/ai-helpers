@@ -17,11 +17,32 @@ YARA-based analysis on any detected binaries. Produces a self-contained
 - **output_file** (optional): Write the report section to this file path instead of
   returning it inline. The first line of the file must be `RISK_RATING:<value>` so
   the orchestrator can parse it without reading the full report.
+- **binary_scan** (optional): File path to pre-computed binary scanner JSON output
+  (`binary-scan.json`). Schema: `{total, findings[{path, match_type, suffix, size,
+  magic?}]}`. When provided, skip running `scan_binaries.py`.
+- **malcontent_results** (optional): File path to pre-computed malcontent JSON
+  output (`malcontent-results.json`). Schema: `{status, Files?}`. Status values:
+  `"success"`, `"unavailable"`, `"timeout"`, `"failed"`, `"invalid"`, `"skipped"`.
+  When provided, skip running `run_malcontent.py`.
 
-## Step 1: Detect Binaries
+## Step 1: Obtain Binary Scan Results
 
-Run the binary scanner to find compiled files using Fromager-style extension and
-magic-header detection:
+### Option A - Pre-computed results (CI mode)
+
+If `binary_scan` is provided and the file exists, read and parse it as JSON.
+Use the `total` and `findings` fields directly. Skip running `scan_binaries.py`
+and skip creating the staging directory (STAGING_DIR) since binaries are already
+analyzed. Each finding has: `path` (relative to repo root), `match_type`
+(`"extension"` or `"magic_header"`), `suffix`, `size`, and optionally `magic`
+(ELF, MachO, ar_archive, etc.).
+
+If `total` is 0, skip to the Output section and note "No binary files detected"
+in the report.
+
+### Option B - Run binary scanner locally (standalone mode)
+
+If `binary_scan` is not provided, run the binary scanner to find compiled files
+using Fromager-style extension and magic-header detection:
 
 ```bash
 STAGING_DIR=$(mktemp -d -t malcontent-staging-XXXXXX)
@@ -38,9 +59,38 @@ relative paths for malcontent analysis in the next step.
 If the scanner finds **zero** binaries, skip to the Output section and note
 "No binary files detected" in the report.
 
-## Step 2: Run Malcontent
+## Step 2: Obtain Malcontent Results
 
-Run malcontent analysis on the staged binaries:
+### Option A - Pre-computed results (CI mode)
+
+If `malcontent_results` is provided and the file exists, read and parse it as JSON:
+
+- If `status` is `"success"`: use the `Files` dict as malcontent output (keyed by
+  file path, native malcontent `--format json` structure). Proceed to Step 3
+  (Triage).
+- If `status` is `"unavailable"`, `"timeout"`, `"failed"`, or `"invalid"`:
+  treat malcontent as unavailable. **Do not re-run malcontent.** The CI runner
+  already attempted execution under controlled conditions, and re-running in the
+  agent container would likely hit the same failure. Proceed to
+  triage using only the binary scan metadata (extension, magic header, size).
+  Note the degraded status and any `error` message from the JSON in the report.
+- If `status` is `"skipped"`: no binaries were detected upstream. If
+  `binary_scan.total == 0`, this is consistent; skip to Output. If
+  `binary_scan.total > 0`, this is a data inconsistency from the CI pipeline.
+  treat malcontent as unavailable and triage using binary scan metadata only;
+  note the inconsistency in the report.
+- For any other `status` value not listed above: treat malcontent as unavailable
+  and triage using binary scan metadata only, noting the unrecognized status.
+
+### Mixed mode - binary_scan only
+
+If `malcontent_results` is NOT provided but `binary_scan` WAS provided, treat
+malcontent as unavailable and triage using binary scan metadata only.
+
+### Option B - Run malcontent locally (standalone mode)
+
+If neither `binary_scan` nor `malcontent_results` is provided, run malcontent
+analysis on the staged binaries:
 
 ```bash
 ./scripts/run_malcontent.py "$STAGING_DIR"
@@ -97,7 +147,9 @@ For findings that remain unresolved after deterministic rules, classify each as:
 
 ## Step 4: Cleanup
 
-Remove the staging directory when analysis is complete:
+Remove the staging directory if it was created (Step 1 Option B). When both
+`binary_scan` and `malcontent_results` were pre-computed, no STAGING_DIR exists
+and this step is a no-op.
 
 ```bash
 if [ -n "${STAGING_DIR}" ] && [ -d "${STAGING_DIR}" ]; then
@@ -149,3 +201,7 @@ above. If `output_file` is not provided, return the report section inline.
 | Malcontent unavailable (exit code 2) | Triage binary findings using scan metadata only (extension, magic header, size); note malcontent was unavailable |
 | Malcontent times out (exit code 1) | Report partial results; note timeout; REVIEW verdict for affected binaries |
 | Malcontent produces invalid JSON (exit code 1) | Triage binary findings using scan metadata only; note malcontent output error |
+| Pre-computed `binary_scan` file path provided but file missing, unreadable, or invalid JSON | Report binary scan unavailable, risk_rating = needs_review |
+| Pre-computed `malcontent_results` file path provided but file missing, unreadable, or invalid JSON | Proceed with binary scan metadata only; note malcontent output error |
+| Pre-computed `malcontent_results` has degraded `status` (`unavailable`/`timeout`/`failed`/`invalid`) | Do not re-run malcontent; triage with binary scan metadata only; note the degraded status |
+| Pre-computed `malcontent_results` has `status` `"skipped"` but `binary_scan.total > 0` | Data inconsistency; treat malcontent as unavailable; triage with binary scan metadata; note inconsistency |

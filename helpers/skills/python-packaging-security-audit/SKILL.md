@@ -15,10 +15,23 @@ orchestrator reads all files and assembles the unified report.
 
 - **repo_path** (optional): Local filesystem path to an already-cloned repository
 - **package_name** (optional): Python package name — the skill will locate and clone the repository
+- **hexora_results** (optional): File path to pre-computed hexora JSON output
+  (`hexora-results.json`). Forwarded to the `python-packaging-static-audit`
+  sub-skill.
+- **binary_scan** (optional): File path to pre-computed binary scanner JSON output
+  (`binary-scan.json`). Forwarded to the `python-packaging-binary-audit` sub-skill.
+- **malcontent_results** (optional): File path to pre-computed malcontent JSON
+  output (`malcontent-results.json`). Forwarded to the
+  `python-packaging-binary-audit` sub-skill.
 
-At least one of the two must be provided. If `repo_path` is given and points to an
-existing directory, skip straight to Step 2. Otherwise, use `package_name` to
-discover and clone the repository.
+At least one of `repo_path` or `package_name` must be provided. If `repo_path`
+is given and points to an existing directory, skip straight to Step 2. Otherwise,
+use `package_name` to discover and clone the repository.
+
+When pre-computed scan inputs are provided, `repo_path` is still needed for triage
+context (reading source files to understand findings). Always use `--depth 50`
+for cloning because the git-audit sub-skill runs its own git history commands
+and needs sufficient commit history.
 
 ## Step 1: Resolve Repository
 
@@ -58,18 +71,26 @@ Dispatch three background agents **in parallel**. Each agent invokes one sub-ski
 and writes its findings to an individual file. The orchestrator does not need the
 intermediate reasoning context — only the final report sections matter.
 
+When pre-computed scan inputs are available, forward them to the corresponding
+sub-skill so it skips tool execution and goes straight to triage.
+
 **Agent 1 — Static Analysis:**
 
 ```text
 Dispatch a background Agent that invokes the python-packaging-static-audit skill
-with repo_path=<repo-path> and output_file=$AUDIT_DIR/static-audit.md, then exits.
+with repo_path=<repo-path> and output_file=$AUDIT_DIR/static-audit.md.
+If hexora_results is provided, also pass hexora_results=<path>.
+Then exits.
 ```
 
 **Agent 2 — Binary Scan:**
 
 ```text
 Dispatch a background Agent that invokes the python-packaging-binary-audit skill
-with repo_path=<repo-path> and output_file=$AUDIT_DIR/binary-audit.md, then exits.
+with repo_path=<repo-path> and output_file=$AUDIT_DIR/binary-audit.md.
+If binary_scan is provided, also pass binary_scan=<path>.
+If malcontent_results is provided, also pass malcontent_results=<path>.
+Then exits.
 ```
 
 **Agent 3 — Git History:**
