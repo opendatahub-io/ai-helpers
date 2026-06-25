@@ -19,7 +19,6 @@ python3 scripts/build-website.py
 
 This extracts information from:
 - `categories.yaml` - Centralized category registry
-- `helpers/commands/*.md` - Command definitions
 - `helpers/skills/*/SKILL.md` - Skill definitions
 - `helpers/agents/*.md` - Agent definitions
 - `helpers/gems/gems.yaml` - Gemini Gems definitions
@@ -41,7 +40,7 @@ The site will be available at: `https://opendatahub-io.github.io/ai-helpers/`
 
 ## Updating
 
-When plugins or commands are added/modified:
+When tools are added/modified:
 
 1. Run `python3 scripts/build-website.py` to regenerate `data.json`
 2. Commit both `data.json` and any changes

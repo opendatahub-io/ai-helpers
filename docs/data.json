@@ -111,6 +111,14 @@
         "allowed_tools": "Bash Read Grep Glob"
       },
       {
+        "name": "aipcc-commit-suggest",
+        "description": "Generate AIPCC Commits style commit messages or summarize existing commits",
+        "category": "aipcc",
+        "file_path": "helpers/skills/aipcc-commit-suggest/SKILL.md",
+        "id": "aipcc-commit-suggest",
+        "allowed_tools": ""
+      },
+      {
         "name": "code-review",
         "description": "Perform AI code review on a GitLab MR or local branch. Reviews all commits since the base branch, produces structured JSON feedback with inline comments, and posts results to GitLab (CI) or displays them locally. Use when asked to review code changes, do a code review, or run ai-review.\n",
         "category": "general",
@@ -295,6 +303,14 @@
         "allowed_tools": "Bash"
       },
       {
+        "name": "hello-world-echo",
+        "description": "Hello world plugin implementation",
+        "category": "general",
+        "file_path": "helpers/skills/hello-world-echo/SKILL.md",
+        "id": "hello-world-echo",
+        "allowed_tools": ""
+      },
+      {
         "name": "jira-activity",
         "description": "Summarize Jira ticket activity, including child tickets, to detect stale tickets in the backlog. Use when user asks to review one or more Jira tickets to determine if they are being worked on.",
         "category": "jira management",
@@ -317,6 +333,14 @@
         "file_path": "helpers/skills/jira-autofix-cve-resolve/SKILL.md",
         "id": "jira-autofix-cve-resolve",
         "allowed_tools": "Read Write Bash Skill"
+      },
+      {
+        "name": "jira-sprint-summary",
+        "description": "Generate comprehensive sprint summaries by analyzing JIRA sprint data, including issue breakdown, progress metrics, and team performance insights.",
+        "category": "general",
+        "file_path": "helpers/skills/jira-sprint-summary/SKILL.md",
+        "id": "jira-sprint-summary",
+        "allowed_tools": ""
       },
       {
         "name": "jira-status-summary",
@@ -365,6 +389,22 @@
         "file_path": "helpers/skills/jira-workitem-view/SKILL.md",
         "id": "jira-workitem-view",
         "allowed_tools": "Bash, Skill"
+      },
+      {
+        "name": "konflux-application",
+        "description": "Manage Konflux application",
+        "category": "general",
+        "file_path": "helpers/skills/konflux-application/SKILL.md",
+        "id": "konflux-application",
+        "allowed_tools": ""
+      },
+      {
+        "name": "konflux-component",
+        "description": "Manage Konflux component",
+        "category": "general",
+        "file_path": "helpers/skills/konflux-component/SKILL.md",
+        "id": "konflux-component",
+        "allowed_tools": ""
       },
       {
         "name": "learning-mode",
@@ -487,6 +527,14 @@
         "allowed_tools": "Bash Read Grep"
       },
       {
+        "name": "rpm-examine",
+        "description": "Analyze RPM build.log failures",
+        "category": "general",
+        "file_path": "helpers/skills/rpm-examine/SKILL.md",
+        "id": "rpm-examine",
+        "allowed_tools": ""
+      },
+      {
         "name": "security-alert",
         "description": "Use this skill to filter a pre-fetched set of Hacker News stories down to those that report supply-chain security threats relevant to software developers — including malicious packages on npm or PyPI, compromised developer tooling, and attacks targeting source code repositories or CI/CD infrastructure. Reads stories from stories.json in the workspace, performs semantic analysis (fetching HN threads when the title alone is ambiguous), and writes the stories worth alerting on to findings.json.",
         "category": "aipcc",
@@ -509,6 +557,22 @@
         "file_path": "helpers/skills/torchtalk-analyzer/SKILL.md",
         "id": "torchtalk-analyzer",
         "allowed_tools": "Bash Read Grep Glob"
+      },
+      {
+        "name": "torchtalk-setup",
+        "description": "Install and configure TorchTalk MCP server for PyTorch cross-language analysis",
+        "category": "pytorch",
+        "file_path": "helpers/skills/torchtalk-setup/SKILL.md",
+        "id": "torchtalk-setup",
+        "allowed_tools": ""
+      },
+      {
+        "name": "torchtalk-trace",
+        "description": "Trace a PyTorch function's cross-language binding chain (Python -> C++ -> CUDA)",
+        "category": "pytorch",
+        "file_path": "helpers/skills/torchtalk-trace/SKILL.md",
+        "id": "torchtalk-trace",
+        "allowed_tools": ""
       },
       {
         "name": "triage-bug-readiness",
@@ -589,72 +653,6 @@
         "file_path": "helpers/skills/vllm-slack-summary/SKILL.md",
         "id": "vllm-slack-summary",
         "allowed_tools": ""
-      }
-    ],
-    "commands": [
-      {
-        "name": "aipcc-commit-suggest",
-        "description": "Generate AIPCC Commits style commit messages or summarize existing commits",
-        "category": "aipcc",
-        "file_path": "helpers/commands/aipcc-commit-suggest.md",
-        "argument_hint": "[N]",
-        "synopsis": "/aipcc:commit-suggest       # Analyze staged changes"
-      },
-      {
-        "name": "hello-world-echo",
-        "description": "Hello world plugin implementation",
-        "category": "general",
-        "file_path": "helpers/commands/hello-world-echo.md",
-        "argument_hint": "[name]",
-        "synopsis": "/hello-world:echo [name]"
-      },
-      {
-        "name": "jira-sprint-summary",
-        "description": "Generate comprehensive sprint summaries by analyzing JIRA sprint data, including issue breakdown, progress metrics, and team performance insights.",
-        "category": "general",
-        "file_path": "helpers/commands/jira-sprint-summary.md",
-        "argument_hint": "<sprint-name> [options]",
-        "synopsis": "/jira:sprint-summary <sprint-name> [options]"
-      },
-      {
-        "name": "konflux-application",
-        "description": "Manage Konflux application",
-        "category": "general",
-        "file_path": "helpers/commands/konflux-application.md",
-        "argument_hint": "<subcommand> [args]",
-        "synopsis": "/konflux:application status <application>"
-      },
-      {
-        "name": "konflux-component",
-        "description": "Manage Konflux component",
-        "category": "general",
-        "file_path": "helpers/commands/konflux-component.md",
-        "argument_hint": "<subcommand> [args]",
-        "synopsis": "/konflux:component status <component>"
-      },
-      {
-        "name": "rpm-examine",
-        "description": "Analyze RPM build.log failures",
-        "category": "general",
-        "file_path": "helpers/commands/rpm-examine.md",
-        "argument_hint": "\"[copr-chroot-url] OR [build-log-url] [srpm-url] OR [build.log] [specfile|dist-git] [sources]\"",
-        "synopsis": "/rpm:examine <copr-chroot-url>"
-      },
-      {
-        "name": "torchtalk-setup",
-        "description": "Install and configure TorchTalk MCP server for PyTorch cross-language analysis",
-        "category": "pytorch",
-        "file_path": "helpers/commands/torchtalk-setup.md",
-        "argument_hint": "",
-        "synopsis": "/torchtalk:setup"
-      },
-      {
-        "name": "torchtalk-trace",
-        "description": "Trace a PyTorch function's cross-language binding chain (Python -> C++ -> CUDA)",
-        "category": "pytorch",
-        "file_path": "helpers/commands/torchtalk-trace.md",
-        "argument_hint": "<function-name> [focus]",
-        "synopsis": "/torchtalk:trace <function-name>"
       }
     ],
     "agents": [

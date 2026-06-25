@@ -1,4 +1,5 @@
 ---
+name: torchtalk-trace
 description: Trace a PyTorch function's cross-language binding chain (Python -> C++ -> CUDA)
 argument-hint: <function-name> [focus]
 ---

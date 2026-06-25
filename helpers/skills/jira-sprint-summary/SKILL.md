@@ -1,6 +1,7 @@
 ---
-argument-hint: <sprint-name> [options]
+name: jira-sprint-summary
 description: Generate comprehensive sprint summaries by analyzing JIRA sprint data, including issue breakdown, progress metrics, and team performance insights.
+argument-hint: <sprint-name> [options]
 ---
 
 ## Name

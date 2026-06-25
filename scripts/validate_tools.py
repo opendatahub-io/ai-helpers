@@ -30,7 +30,7 @@ except ImportError:
     sys.exit(1)
 
 
-VALID_TOOL_TYPES = {"skill", "command", "agent", "gem"}
+VALID_TOOL_TYPES = {"skill", "agent", "gem"}
 
 
 def title_to_slug(title: str) -> str:
@@ -62,23 +62,6 @@ def get_filesystem_tools_with_duplicates_check(
                     tool_locations[tool_name] = []
                 tool_locations[tool_name].append(("skill", str(item)))
                 filesystem_tools[tool_name] = "skill"
-
-    # Commands - .md files in helpers/commands/
-    commands_dir = helpers_dir / "commands"
-    if commands_dir.exists() and commands_dir.is_dir():
-        for item in commands_dir.iterdir():
-            if item.is_file() and item.suffix == ".md":
-                # Skip README.md files (case-insensitive)
-                if item.name.lower() == "readme.md":
-                    continue
-                tool_name = item.stem
-                if tool_name not in tool_locations:
-                    tool_locations[tool_name] = []
-                tool_locations[tool_name].append(("command", str(item)))
-                if tool_name in filesystem_tools:
-                    # Already exists with different type
-                    continue
-                filesystem_tools[tool_name] = "command"
 
     # Agents - .md files in helpers/agents/
     agents_dir = helpers_dir / "agents"
