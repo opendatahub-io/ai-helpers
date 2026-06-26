@@ -90,24 +90,6 @@ def get_filesystem_tools(helpers_dir: Path) -> Dict[str, str]:
                     )
                 filesystem_tools[tool_name] = "skill"
 
-    # Commands - .md files in helpers/commands/
-    commands_dir = helpers_dir / "commands"
-    if commands_dir.exists() and commands_dir.is_dir():
-        for item in commands_dir.iterdir():
-            if item.is_file() and item.suffix == ".md":
-                # Skip README.md files (case-insensitive)
-                if item.name.lower() == "readme.md":
-                    continue
-                tool_name = item.stem
-                if tool_name in filesystem_tools:
-                    print(
-                        f"Warning: Duplicate tool name '{tool_name}' found"
-                        f" - command ({item}) conflicts with"
-                        f" {filesystem_tools[tool_name]}",
-                        file=sys.stderr,
-                    )
-                filesystem_tools[tool_name] = "command"
-
     # Agents - .md files in helpers/agents/
     agents_dir = helpers_dir / "agents"
     if agents_dir.exists() and agents_dir.is_dir():
@@ -171,8 +153,6 @@ def get_tool_source_path(tool: Dict) -> str:
 
     if tool_type == "skill":
         return f"./helpers/skills/{tool_name}"
-    elif tool_type == "command":
-        return f"./helpers/commands/{tool_name}.md"
     elif tool_type == "agent":
         return f"./helpers/agents/{tool_name}.md"
     elif tool_type == "gem":

@@ -51,16 +51,6 @@ def get_filesystem_tools(helpers_dir: Path) -> Dict[str, str]:
             if item.is_dir() and not item.name.startswith("_"):
                 filesystem_tools[item.name] = "skill"
 
-    # Commands - .md files in helpers/commands/
-    commands_dir = helpers_dir / "commands"
-    if commands_dir.exists() and commands_dir.is_dir():
-        for item in commands_dir.iterdir():
-            if item.is_file() and item.suffix == ".md":
-                # Skip README.md files (case-insensitive)
-                if item.name.lower() == "readme.md":
-                    continue
-                filesystem_tools[item.stem] = "command"
-
     # Agents - .md files in helpers/agents/
     agents_dir = helpers_dir / "agents"
     if agents_dir.exists() and agents_dir.is_dir():
@@ -105,8 +95,6 @@ def get_tool_file_path(tool: Dict, base_path: Path) -> str:
         else:
             print(f"Warning: Skill file not found: {skill_file}")
             return f"helpers/skills/{tool_name}/SKILL.md"
-    elif tool_type == "command":
-        return f"helpers/commands/{tool_name}.md"
     elif tool_type == "agent":
         return f"helpers/agents/{tool_name}.md"
     elif tool_type == "gem":
@@ -159,49 +147,6 @@ def get_tool_metadata(tool: Dict, category: str, base_path: Path) -> Dict:
             metadata["id"] = tool["name"]
         if "allowed_tools" not in metadata:
             metadata["allowed_tools"] = ""
-
-    elif tool_type == "command":
-        # Read command metadata from frontmatter
-        cmd_file = base_path / "helpers" / "commands" / f"{tool['name']}.md"
-        if cmd_file.exists():
-            try:
-                content = cmd_file.read_text()
-                frontmatter = {}
-
-                # Parse frontmatter - simple key: value parser
-                if content.startswith("---\n"):
-                    end_marker = content.find("\n---\n", 4)
-                    if end_marker != -1:
-                        frontmatter_content = content[4:end_marker]
-                        for line in frontmatter_content.strip().split("\n"):
-                            if ":" in line:
-                                key, value = line.split(":", 1)
-                                frontmatter[key.strip()] = value.strip()
-
-                # Extract synopsis
-                import re
-
-                match = re.search(r"## Synopsis\s*```[^\n]*\n([^\n]+)", content, re.MULTILINE)
-
-                # Only add synopsis to metadata if we found a non-empty match
-                metadata_updates = {
-                    "description": frontmatter.get("description", ""),
-                    "argument_hint": frontmatter.get("argument-hint", ""),
-                }
-                if match:
-                    synopsis = match.group(1).strip()
-                    if synopsis:  # Only add if non-empty
-                        metadata_updates["synopsis"] = synopsis
-
-                metadata.update(metadata_updates)
-            except Exception as e:
-                print(f"Warning: Could not read command metadata from {cmd_file}: {e}")
-
-        # Add default fields for commands
-        if "synopsis" not in metadata:
-            metadata["synopsis"] = f"/{tool['name']}"
-        if "argument_hint" not in metadata:
-            metadata["argument_hint"] = ""
 
     elif tool_type == "agent":
         # Read agent metadata from frontmatter
@@ -330,7 +275,7 @@ def build_website_data():
         "name": "odh-ai-helpers",
         "owner": "ODH",
         "categories": categories,
-        "tools": {"gemini": [], "skills": [], "commands": [], "agents": []},
+        "tools": {"gemini": [], "skills": [], "agents": []},
     }
 
     # Process General tools first (uncategorized tools)
@@ -344,8 +289,6 @@ def build_website_data():
 
                 if tool_type == "skill":
                     website_data["tools"]["skills"].append(tool_metadata)
-                elif tool_type == "command":
-                    website_data["tools"]["commands"].append(tool_metadata)
                 elif tool_type == "agent":
                     website_data["tools"]["agents"].append(tool_metadata)
                 elif tool_type == "gem":
@@ -378,8 +321,6 @@ def build_website_data():
 
             if tool_type == "skill":
                 website_data["tools"]["skills"].append(tool_metadata)
-            elif tool_type == "command":
-                website_data["tools"]["commands"].append(tool_metadata)
             elif tool_type == "agent":
                 website_data["tools"]["agents"].append(tool_metadata)
             elif tool_type == "gem":
@@ -387,7 +328,6 @@ def build_website_data():
 
     # Sort all tool arrays alphabetically by name to ensure consistent ordering
     website_data["tools"]["skills"].sort(key=lambda x: x["name"])
-    website_data["tools"]["commands"].sort(key=lambda x: x["name"])
     website_data["tools"]["agents"].sort(key=lambda x: x["name"])
     website_data["tools"]["gemini"].sort(key=lambda x: x["name"])
 
@@ -408,13 +348,11 @@ if __name__ == "__main__":
 
     # Calculate statistics for new tool structure
     skills_tools = data["tools"]["skills"]
-    commands_tools = data["tools"]["commands"]
     agents_tools = data["tools"]["agents"]
     gemini_tools = data["tools"]["gemini"]
-    all_tools = skills_tools + commands_tools + agents_tools + gemini_tools
+    all_tools = skills_tools + agents_tools + gemini_tools
 
     print(f"Total Skills: {len(skills_tools)}")
-    print(f"Total Commands: {len(commands_tools)}")
     print(f"Total Agents: {len(agents_tools)}")
     print(f"Total Gemini Gems: {len(gemini_tools)}")
     print(f"Total tools: {len(all_tools)}")

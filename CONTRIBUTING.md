@@ -42,7 +42,6 @@ This is the most common type of contribution. The repository hosts four tool typ
 | Type | Location | Format |
 |------|----------|--------|
 | **Skills** | `helpers/skills/<name>/` | Directory with `SKILL.md` and optional `scripts/` |
-| **Commands** | `helpers/commands/` | Single Markdown file |
 | **Agents** | `helpers/agents/` | Single Markdown file |
 | **Gemini Gems** | `helpers/gems/` | Entry in `gems.yaml` |
 
@@ -75,14 +74,14 @@ make lint      # Run all linters and validation checks
 Run `make update` first and **commit any generated changes** before running `make lint`. The `lint` target re-runs `make update` internally and will fail if there are uncommitted diffs.
 
 The `lint` target runs:
-- **[skillsaw](https://github.com/stbenjam/skillsaw)** -- validates plugin structure, skills, and commands
+- **[skillsaw](https://github.com/stbenjam/skillsaw)** -- validates plugin structure and skills
 - **ruff** -- checks and formats Python code
 - **shellcheck** -- lints shell scripts
 - Verifies that `make update` produces no uncommitted changes
 
 ### Test Locally (Claude Code)
 
-To test a skill or command with Claude Code before submitting:
+To test a skill with Claude Code before submitting:
 
 1. Open `claude`
 2. Run `/plugin marketplace add ./`
@@ -127,16 +126,6 @@ Common optional fields:
 | `metadata` | Block for `author`, `version`, and `tags` |
 
 Study existing skills in `helpers/skills/` for examples of structure and patterns.
-
-### Commands
-
-Commands are single Markdown files in `helpers/commands/`:
-
-```text
-helpers/commands/my-command.md
-```
-
-See `helpers/commands/hello-world-echo.md` for an example.
 
 ### Agents
 

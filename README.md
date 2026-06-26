@@ -27,7 +27,7 @@ Want to work on an issue? Comment `/assign` on it to assign yourself.
 This repository is made for collaboration. We highly welcome contributions.
 
 For skills, check out the `helpers/skills/` directory for examples.
-For commands, check the `helpers/commands/` directory, and for agents see the `helpers/agents/` directory.
+For agents, see the `helpers/agents/` directory.
 Using AI code assistant itself to develop the tools is highly encouraged.
 
 ### Adding New Tools
@@ -35,9 +35,8 @@ Using AI code assistant itself to develop the tools is highly encouraged.
 When contributing new tools:
 
 1. **Skills**: Add to the `helpers/skills/` directory following the agentskills.io format
-2. **Commands**: Add to the `helpers/commands/` directory as Markdown files
-3. **Agents**: Add to the `helpers/agents/` directory with appropriate documentation
-4. **Gemini Gems**: Add to the `helpers/gems/` directory
+2. **Agents**: Add to the `helpers/agents/` directory with appropriate documentation
+3. **Gemini Gems**: Add to the `helpers/gems/` directory
 
 Once you have added the tool, you'd have to run have to run `make update` in order to generate the website data.
 Then you should git commit your change and after than running `make lint` would run local tests to validate the syntax.
@@ -289,7 +288,7 @@ cursor-container() {
 
 [OpenCode.ai](https://opencode.ai) is an open-source AI coding assistant that supports custom skills and commands. Our helpers can be integrated as OpenCode skills and commands to enhance your development workflow.
 
-**Note**: OpenCode.ai agents are not currently compatible due to format differences. Only skills and commands are supported at this time.
+**Note**: OpenCode.ai agents are not currently compatible due to format differences. Only skills are supported at this time.
 
 ### Setup
 
@@ -301,9 +300,8 @@ cursor-container() {
 
 2. **Install globally:**
    ```bash
-   mkdir -p ~/.config/opencode/skills ~/.config/opencode/commands
+   mkdir -p ~/.config/opencode/skills
    ln -sf $(pwd)/helpers/skills/* ~/.config/opencode/skills/
-   ln -sf $(pwd)/helpers/commands/* ~/.config/opencode/commands/
    ```
 
 These helpers are available when loading the odh-ai-helpers plugin from the marketplace as instructed above.
@@ -325,7 +323,7 @@ make lint
 
 This runs the following checks in order:
 
-1. **[skillsaw](https://github.com/stbenjam/skillsaw)** — lints skills, plugins, and commands against the agentskills.io spec with content intelligence
+1. **[skillsaw](https://github.com/stbenjam/skillsaw)** — lints skills and plugins against the agentskills.io spec with content intelligence
 2. **[ruff](https://docs.astral.sh/ruff/) check** — Python syntax and style errors
 3. **ruff format --check** — Python formatting consistency
 4. **[shellcheck](https://www.shellcheck.net/)** — shell script analysis for all `*.sh` files

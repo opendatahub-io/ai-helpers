@@ -1,6 +1,7 @@
 ---
-argument-hint: <subcommand> [args]
+name: konflux-component
 description: Manage Konflux component
+argument-hint: <subcommand> [args]
 ---
 
 ## Name

@@ -1,4 +1,5 @@
 ---
+name: aipcc-commit-suggest
 description: Generate AIPCC Commits style commit messages or summarize existing commits
 argument-hint: [N]
 ---

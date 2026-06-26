@@ -1,4 +1,5 @@
 ---
+name: torchtalk-setup
 description: Install and configure TorchTalk MCP server for PyTorch cross-language analysis
 ---
 

@@ -7,14 +7,6 @@ custom-rules:
   - .skillsaw-custom.py
 
 rules:
-  command-sections:
-    enabled: true
-    severity: warning
-
-  command-name-format:
-    enabled: true
-    severity: warning
-
   plugins-doc-up-to-date:
     enabled: true
     severity: error
@@ -27,9 +19,6 @@ rules:
     enabled: true
     severity: warning
     limits:
-      command:
-        warn: 3000
-        error: 6000
       agent:
         warn: 5000
         error: 10000

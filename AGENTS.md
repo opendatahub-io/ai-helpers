@@ -4,9 +4,8 @@ This repository serves as a collaborative marketplace for AI automation tools, p
 
 ## Repository Purpose
 
-The odh-ai-helpers repository hosts collections of four distinct tool types:
+The odh-ai-helpers repository hosts collections of three distinct tool types:
 - **Skills**: Standardized capabilities using agentskills.io format, compatible with Claude Code and Cursor
-- **Commands**: Atomic, executable actions for immediate functionality
 - **Agents**: Specialized AI entities for complex, multi-step workflows and analysis
 - **Gemini Gems**: Conversational AI assistants optimized for specific domains
 
@@ -18,11 +17,6 @@ This enables teams to automate repetitive tasks, integrate with development tool
 Standardized capabilities that work across multiple AI platforms using the agentskills.io specification. Skills provide reusable functionality with cross-platform compatibility.
 
 **→ Located in [helpers/skills/](helpers/skills/) directory**
-
-### Commands
-Atomic, executable actions that provide immediate functionality. Commands are designed for quick, specific tasks and can be invoked directly by AI agents.
-
-**→ Located in [helpers/commands/](helpers/commands/) directory**
 
 ### Agents
 Specialized AI entities capable of complex reasoning and multi-step workflows. Agents maintain context and can execute sophisticated analysis within their domain of expertise.
@@ -38,18 +32,14 @@ Conversational AI assistants created within Google's Gemini platform. Each Gem i
 
 ### Claude Code
 - **Skills**: Available through marketplace plugin entries
-- **Commands**: Available through marketplace plugin entries
 - **Agents**: Available as sub-agents through marketplace plugin entries
-
 
 ### OpenCode.ai
 - **Skills**: Compatible as OpenCode skills in ~/.config/opencode/skills/
-- **Commands**: Compatible as OpenCode commands in ~/.config/opencode/commands/
 - **Agents**: Not currently compatible due to format differences
 
 ### Cursor AI
 - **Skills**: Compatible through agentskills.io format
-- **Commands**: Can be adapted for Cursor command structure
 - **Agents**: Can be used as specialized workflow guides
 
 ## How to Create New Tools
@@ -139,8 +129,8 @@ These rules prevent the most common review findings. Follow them when generating
 - Pin GitHub Actions to full 40-character commit SHAs, not version tags.
 - Pin inline script dependencies to specific versions.
 
-### Skills and Commands
-- Run `make update` after creating or modifying any skill, command, or agent.
+### Skills
+- Run `make update` after creating or modifying any skill or agent.
 - `allowed_tools` in frontmatter must follow least-privilege — only list tools the skill actually uses.
 - Never reference real people by name (see ETHICS.md).
 - Use team/org identifiers in `metadata.author`, not personal names.

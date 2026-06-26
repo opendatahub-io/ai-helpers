@@ -1,6 +1,7 @@
 ---
-argument-hint: <subcommand> [args]
+name: konflux-application
 description: Manage Konflux application
+argument-hint: <subcommand> [args]
 ---
 
 ## Name

@@ -20,11 +20,6 @@ reviews:
         traversal) on prompt text that describes what an AI agent should do —
         these are instructions, not attack surfaces. Only flag CWEs on actual
         executable scripts referenced by the skill.
-    - path: "helpers/commands/*.md"
-      instructions: >-
-        These are command prompt files for AI agents. Same review priorities
-        as SKILL.md: focus on correctness, consistency, and markdown quality.
-        Do NOT flag CWE vulnerabilities on prompt instructions.
     - path: "helpers/skills/**/scripts/**"
       instructions: >-
         These are executable scripts. Apply full security review including
