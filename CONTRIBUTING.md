@@ -224,6 +224,7 @@ We are committed to providing a welcoming and respectful environment for everyon
 ## Getting Help
 
 - **Questions about contributing?** Open a [blank issue](https://github.com/opendatahub-io/ai-helpers/issues/new) or reach out to the maintainers.
+- **Need assistance on a PR or issue?** Ping `@odh-ai-helpers` in `#forum-aipcc` or `#team-ai-eng-all` on Red Hat Slack and someone from the team will help.
 - **Not sure which tool type to use?** Review the [README](README.md) for descriptions of each type, or open an [Idea issue](https://github.com/opendatahub-io/ai-helpers/issues/new?assignees=&labels=enhancement%2Chelp+wanted%2Cidea&template=07_idea_request.md&title=%5BIdea%5D+) and we'll help.
 - **Using AI to develop tools is encouraged!** This is an AI tools repository -- using Claude Code, Cursor, or other AI assistants to help build your contribution is perfectly fine.
 
