@@ -16,6 +16,14 @@
         "source": "url",
         "url": "https://github.com/opendatahub-io/autofix-skills.git"
       }
+    },
+    {
+      "name": "pipeline-skills",
+      "description": "Pipeline failure analysis — error grouping and root cause analysis",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/opendatahub-io/pipeline-skills.git"
+      }
     }
   ]
 }

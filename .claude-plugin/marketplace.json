@@ -21,6 +21,14 @@
       }
     },
     {
+      "name": "pipeline-skills",
+      "description": "Pipeline failure analysis \u2014 error grouping and root cause analysis",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/opendatahub-io/pipeline-skills.git"
+      }
+    },
+    {
       "name": "odh-ai-helpers",
       "source": "./helpers",
       "description": "AI automation tools, plugins, and assistants for enhanced productivity",
