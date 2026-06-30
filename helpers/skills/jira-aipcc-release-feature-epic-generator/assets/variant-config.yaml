@@ -393,5 +393,7 @@ jira_defaults:
   products:
     - RHAI
     - RHAAIS
+  # Default component for variant-level template output.
+  # The creation-time component (used when filing tickets) is in jira-creation-config.yaml.
   components:
     - Accelerator Enablement

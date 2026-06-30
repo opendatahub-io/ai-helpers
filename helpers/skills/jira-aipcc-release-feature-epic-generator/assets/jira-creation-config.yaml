@@ -48,7 +48,7 @@ due_dates:
 # Keys match epic summaries (or squad names); values are schedule milestone names.
 epic_due_date_overrides:
   "Release AIPCC base images for {version}": "AIPCC Base Image RC"
-  "Public index": "AIPCC Package Index inital push to prod"
+  "{version} public index": "AIPCC Package Index inital push to prod"
 
 # Release schedule spreadsheet
 # Contains milestone dates per release. The skill reads the section matching

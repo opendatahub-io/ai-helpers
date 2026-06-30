@@ -33,13 +33,13 @@ Verify before starting:
 
 If no version is provided, ask the user for the target release version.
 
-**Spreadsheet URL:** Always ask the user for the Google Spreadsheet URL. The URL may change between releases. Extract the spreadsheet ID from the URL path segment between `/d/` and the next `/`.
+**Spreadsheet URL:** Always ask the user for the Google Spreadsheet URL. The URL may change between releases. Extract the spreadsheet ID (the 44-character alphanumeric token) from the URL — it appears after `/d/` and before the next `/` or query parameter (e.g., `?usp=sharing`). Handle URL variants like `/spreadsheets/u/0/d/<ID>/`.
 
 ## Workflow
 
 ### Step 1: Setup
 
-1. Sanitize the version for use as a directory name (remove hyphens: `3.5-EA2` → `3.5EA2`)
+1. Sanitize the version for use as a directory name: strip all characters except alphanumerics, dots, and underscores (e.g., `3.5-EA2` → `3.5EA2`). Reject the input if the result is empty or starts with `.`.
 2. Create the output directory: `ep-working-docs/<sanitized-version>/`
 3. Load the variant configuration from `<skill-base>/assets/variant-config.yaml`
 4. Extract the spreadsheet ID from the user-provided URL
@@ -49,7 +49,7 @@ If no version is provided, ask the user for the target release version.
 Read the spreadsheet metadata to list all sheet names:
 
 ```bash
-gws sheets spreadsheets get --params '{"spreadsheetId": "<ID>"}' 2>/dev/null
+gws sheets spreadsheets get --params '{"spreadsheetId": "<ID>"}'
 ```
 
 Parse the JSON response to extract sheet titles and IDs. Filter out non-accelerator sheets:
@@ -63,8 +63,10 @@ If a sheet in the spreadsheet doesn't match any config entry, note it as unrecog
 For each accelerator sheet, read ALL rows (up to 50 rows) to capture all version track sections:
 
 ```bash
-gws sheets spreadsheets values get --params '{"spreadsheetId": "<ID>", "range": "'<sheet-name>'!A1:Z50"}' 2>/dev/null
+gws sheets spreadsheets values get --params '{"spreadsheetId": "<ID>", "range": "<sheet-name>!A1:Z50"}'
 ```
+
+Note: If a sheet name contains special characters (spaces, apostrophes), ensure proper JSON escaping in the `range` value.
 
 Parse the JSON `values` array. Each row is an array of cell values.
 
@@ -101,9 +103,9 @@ For each active track, scan its rows and extract version data from the target re
 |------------|-------------|
 | Accelerator version | Track header row, target column (e.g., "CUDA 12.9", "ROCm 7.2.x") |
 | Python | Row where column A contains "python" (case-insensitive) |
-| Torch | Row where any cell in the row contains "torch" |
-| vLLM | Row where any cell in the row contains "vllm" |
-| Extra versions | Match `extra_version_rows` patterns from variant config |
+| Torch | Row where column A contains "torch" (case-insensitive) |
+| vLLM | Row where column A contains "vllm" (case-insensitive) |
+| Extra versions | Match `extra_version_rows` patterns from variant config against column A |
 
 **Handling version values:**
 - If the cell contains `(?)` or `?`, keep the value but mark it as tentative: `"2.11 (?)"` → `"2.11 (?)"`
@@ -260,7 +262,7 @@ After generating the output files, the user may ask to create the actual JIRA ti
 
 Before creating any tickets, **always** perform these steps:
 
-1. **Read the release schedule spreadsheet** — The URL is in `jira-creation-config.yaml` under `schedule_spreadsheet`. Extract the spreadsheet ID and read all rows. Find the section matching the target release (e.g., "RH AI 3.5 EA2" as a row header). Extract key milestone dates from that section. Dates in the spreadsheet may lack a year — infer the year from context (current year or the release timeline). Present a table of key milestones to the user.
+1. **Read the release schedule spreadsheet** — The URL is in `jira-creation-config.yaml` under `schedule_spreadsheet`. Extract the spreadsheet ID and read all rows. Find the section matching the target release (e.g., "RH AI 3.5 EA2" as a row header). Extract key milestone dates from that section. Dates in the spreadsheet may lack a year — resolve using this precedence: (1) extract year from the release version string if present, (2) use surrounding dates in the schedule that do include a year, (3) current year as final fallback. Flag any inferred years for explicit user confirmation. Present a table of key milestones to the user.
 
 2. **Resolve due dates from milestones** — Use the milestone names in `jira-creation-config.yaml` to look up dates:
    - `due_dates.feature_milestone` → Feature due date (default: "AIPCC Code Freeze")
