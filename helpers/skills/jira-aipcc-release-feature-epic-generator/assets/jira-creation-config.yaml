@@ -1,0 +1,89 @@
+# JIRA Ticket Creation Configuration
+#
+# Defines the fields used when creating Features, Epics, Stories, and Tasks
+# in JIRA from the generated release template YAML.
+#
+# IMPORTANT: Update these values before each release cycle or when project
+# settings change. Replace all placeholder values marked with angle brackets
+# (<...>) with your team's actual values.
+
+project: AIPCC
+
+# Component applied to all created issues
+component: "AIPCC Ecosystems"
+
+# Label applied to all created issues (release-specific)
+label: null
+
+# Team field (Jira custom field customfield_10001)
+# Note: may not be settable via API due to screen restrictions.
+# If creation fails with team, set it manually on the board.
+team:
+  field: customfield_10001
+  id: "<team-id>"
+  name: "<team-name>"
+
+# Fix Version — can only be set at creation time via additionalAttributes.
+# Cannot be set via REST edit (screen restriction).
+# Format in additionalAttributes: "fixVersions": [{"name": "<value>"}]
+fix_version: "<fix-version>"
+
+# Due dates (REQUIRED — read from schedule spreadsheet, confirm with user)
+# Format: YYYY-MM-DD
+#
+# Source: release schedule spreadsheet (see schedule_spreadsheet below).
+# The skill reads the schedule, extracts milestone dates, presents them
+# to the user for confirmation, then applies them based on the mapping below.
+#
+# Default due dates by issue type (milestone name from schedule spreadsheet):
+#   - feature_milestone → all Features
+#   - epic_milestone    → all Epics (unless overridden below)
+# Stories and Tasks inherit their parent Epic's due date.
+due_dates:
+  feature_milestone: "AIPCC Code Freeze"
+  epic_milestone: "AIPCC Base Image Development"  # use the END date of the range
+
+# Per-epic due date overrides
+# Certain epics use a different milestone than the default.
+# Keys match epic summaries (or squad names); values are schedule milestone names.
+epic_due_date_overrides:
+  "Release AIPCC base images for {version}": "AIPCC Base Image RC"
+  "Public index": "AIPCC Package Index inital push to prod"
+
+# Release schedule spreadsheet
+# Contains milestone dates per release. The skill reads the section matching
+# the target release version (e.g., "RH AI 3.5 EA2") and extracts key dates.
+# Replace with the URL of your team's release schedule spreadsheet.
+schedule_spreadsheet: "<google-sheets-url>"
+
+# Target Version (customfield_10855) — version-type field
+# Can only be set at creation time via additionalAttributes, not via REST edit.
+# Format: "customfield_10855": [{"name": "<value>"}]
+target_version:
+  field: customfield_10855
+  value: "<target-version>"
+
+# Parent issue for all Features (set to null for top-level)
+parent: null
+
+# Issue creation order:
+#   1. Create Feature (top-level per variant)
+#   2. Create Epics as children of the Feature
+#   3. Create Stories/Tasks as children of their parent Epic
+#
+# Each issue is created via:
+#   acli jira workitem create --from-json <file>
+#
+# JSON template structure:
+# {
+#   "projectKey": "<project>",
+#   "type": "<Feature|Epic|Story|Task>",
+#   "summary": "<from release template>",
+#   "description": { ADF format },
+#   "assignee": "<from variant-config squad or default>",
+#   "additionalAttributes": {
+#     "components": [{"name": "<component>"}],
+#     "labels": ["<label>"],
+#     "parent": {"key": "<parent-key>"}  // omit for top-level Features
+#   }
+# }

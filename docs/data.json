@@ -330,6 +330,14 @@
         "allowed_tools": "Bash, AskUserQuestion"
       },
       {
+        "name": "jira-aipcc-release-feature-epic-generator",
+        "description": "Generate JIRA features and epics for an AIPCC release from the accelerator\nvariant planning spreadsheet. Use when creating release work items, generating\nfeature/epic lists for a new release version, or preparing JIRA templates.\nTriggers: \"generate features for release\", \"create release features\",\n\"release feature list\", \"JIRA template for release\".\n",
+        "category": "aipcc",
+        "file_path": "helpers/skills/jira-aipcc-release-feature-epic-generator/SKILL.md",
+        "id": "jira-aipcc-release-feature-epic-generator",
+        "allowed_tools": "Bash, AskUserQuestion, Read, Write"
+      },
+      {
         "name": "jira-autofix-cve-resolve",
         "description": "Use this skill to orchestrate CVE remediation for a Jira Vulnerability ticket. Resolves affected repositories via component-repository-mappings.json, then for each repo and branch: scans, fixes, verifies, and creates PRs. Handles upstream-to-downstream ordering, fork fallback, existing PR detection, VEX justifications, and multi-branch coverage. Writes final verdict to autofix-output/.autofix-verdict.json.",
         "category": "cve remediation",

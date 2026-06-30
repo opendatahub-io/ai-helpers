@@ -1,0 +1,397 @@
+# Accelerator Variant Configuration for AIPCC Release Feature Generation
+#
+# This file defines:
+#   1. Which spreadsheet sheets map to which accelerators
+#   2. How to identify version tracks within each sheet
+#   3. Squad metadata (leads, assignees, labels, watchers)
+#   4. Epic templates per variant type
+#   5. Cross-cutting squad definitions
+#
+# Maintained as the single source of truth for JIRA issue structure.
+# Version data comes from the planning spreadsheet at runtime.
+#
+# IMPORTANT: Before first use, replace all placeholder values marked with
+# angle brackets (<...>) with your team's actual squad leads, Jira usernames,
+# and watcher lists.
+
+# ---------------------------------------------------------------------------
+# Spreadsheet structure
+# ---------------------------------------------------------------------------
+#
+# Each accelerator sheet follows this layout:
+#   Row 0: Status header (stable vs planning)
+#   Row 1: Release header — "Release:" | "prehistory" | "RHAI 3.3" | ...
+#   Row 2+: Version track sections, separated by blank rows
+#
+# A version track section starts with a header row where column A contains
+# the track name (e.g., "CUDA 12.9", "ROCm 7.1"). Subsequent rows contain:
+#   - Architecture (e.g., "x86_64 and aarch64")
+#   - Python version
+#   - Torch version
+#   - vLLM version
+#   - Additional packages (varies by accelerator)
+#   - GCC version
+#   - RHEL version
+#
+# Sheets that are NOT accelerator sheets and should be skipped:
+#   - "Retired - Planning 2026"
+#   - "Major related releases"
+#   - "Additional info"
+
+# ---------------------------------------------------------------------------
+# Row identification patterns
+# ---------------------------------------------------------------------------
+# These patterns match the first cell (column A) of data rows within a track
+# section. Used to extract version data from the correct row.
+
+row_patterns:
+  python: "python"
+  torch: "torch"
+  vllm: "vllm"
+  gcc: "GCC"
+  rhel: "RHEL"
+  triton: "triton"
+  tensorflow: "tensorflow"
+  nvshmem: "nvshmem"
+  llm_compressor: "llm-compressor"
+  speculators: "speculators"
+
+# ---------------------------------------------------------------------------
+# Accelerator sheet definitions
+# ---------------------------------------------------------------------------
+
+accelerator_sheets:
+
+  - sheet: "Intel Gaudi"
+    accelerator: gaudi
+    track_pattern: "Intel Gaudi"
+    variant_name_override: "gaudi"
+    variant_suffix: "-ubi9"
+    version_row_label: "Intel Gaudi"
+    squad:
+      name: Gaudi
+      lead: "<squad-lead-name>"
+      assignee: "<jira-username>"
+      labels: [aipcc-ae-gaudi]
+      watchers: []
+    epic_template: gaudi
+
+  - sheet: "CPU"
+    accelerator: cpu
+    track_pattern: "CPU"
+    variant_name_override: "cpu"
+    variant_suffix: "-ubi9"
+    version_row_label: null
+    squad:
+      name: CPU
+      lead: "<squad-lead-name>"
+      assignee: "<jira-username>"
+      labels: [aipcc-ae-cpu]
+      watchers: []
+    epic_template: cpu
+
+  - sheet: "Google TPU"
+    accelerator: tpu
+    track_pattern: "Google TPU"
+    variant_name_override: "tpu"
+    variant_suffix: "-ubi9"
+    version_row_label: "Google TPU"
+    extra_version_rows:
+      tpu_plugin: "TPU plugin"
+    squad:
+      name: TPU
+      lead: "<squad-lead-name>"
+      assignee: "<jira-username>"
+      labels: [aipcc-ae-tpu]
+      watchers: []
+    epic_template: standard_with_qe
+
+  - sheet: "AWS Neuron"
+    accelerator: neuron
+    track_pattern: "AWS Neuron"
+    variant_name_override: "neuron"
+    variant_suffix: "-ubi9"
+    version_row_label: "AWS Neuron"
+    extra_version_rows:
+      neuron_plugin: "Neuron plugin"
+    squad:
+      name: AWS Neuron
+      lead: "<squad-lead-name>"
+      assignee: "<jira-username>"
+      labels: [aipcc-ae-neuron]
+      watchers: []
+    epic_template: standard_with_ae_testplan
+
+  - sheet: "CUDA"
+    accelerator: cuda
+    track_pattern: "CUDA"
+    variant_suffix: "-ubi9"
+    version_row_label: "CUDA"
+    extra_version_rows:
+      nvshmem: "nvshmem"
+      llm_compressor: "llm-compressor"
+      speculators: "speculators"
+    squad:
+      name: CUDA
+      lead: "<squad-lead-name>"
+      assignee: "<jira-username>"
+      labels: [aipcc-ae-cuda]
+      watchers: []
+    # Epic template is selected per track:
+    #   - Tracks with "13" in the version get "cuda_with_modelopt"
+    #   - Others get "standard_with_qe"
+    epic_template_rules:
+      - match: "13"
+        template: cuda_with_modelopt
+      - default: standard_with_qe
+
+  - sheet: "Spyre"
+    accelerator: spyre
+    track_pattern: "Spyre"
+    variant_name_override: "spyre"
+    variant_suffix: "-ubi9"
+    version_row_label: "Spyre"
+    extra_version_rows:
+      spyre_plugin: "Spyre plugin"
+    squad:
+      name: IBM Spyre
+      lead: "<squad-lead-name>"
+      assignee: "<jira-username>"
+      labels: [aipcc-ae-spyre]
+      watchers: []
+    epic_template: spyre
+
+  - sheet: "ROCm"
+    accelerator: rocm
+    track_pattern: "ROCm"
+    variant_suffix: "-ubi9"
+    version_row_label: "ROCm"
+    squad:
+      name: ROCm
+      lead: "<squad-lead-name>"
+      assignee: "<jira-username>"
+      labels: [aipcc-ae-rocm]
+      watchers: []
+    epic_template: rocm
+
+# ---------------------------------------------------------------------------
+# Epic templates
+# ---------------------------------------------------------------------------
+# Each template defines the set of Epics (and optionally Stories/Tasks)
+# created as children of the variant's Feature.
+#
+# Placeholders:
+#   {variant}      — Full variant name (e.g., "cuda12.9-ubi9")
+#   {version}      — Release version (e.g., "3.5-EA2")
+#   {torch}        — Torch version from spreadsheet
+#   {vllm}         — vLLM version from spreadsheet
+#   {accel_version}— Accelerator-specific version from spreadsheet
+#   {accelerator}  — Accelerator display name (e.g., "CUDA", "ROCm 7.1")
+
+epic_templates:
+
+  gaudi:
+    children:
+      - type: Epic
+        summary: "Update gaudi-ubi9 stack to {accel_version}"
+        description: "Update the Gaudi SDK/driver stack in base images and builder."
+      - type: Epic
+        summary: "Update torch to {torch}"
+      - type: Epic
+        summary: "Update vllm to {vllm}"
+
+  cpu:
+    children:
+      - type: Epic
+        summary: "Prepare for torch {torch} support for {version} {variant}"
+        children:
+          - type: Story
+            summary: "[Step 1] Update builder to support torch {torch} in {variant}"
+          - type: Story
+            summary: "[Step 2] Ensure that builder version in RHAI pipeline is updated"
+          - type: Story
+            summary: "[Step 3] Create MR that adds torch and dependant packages to deletion YAML config."
+          - type: Story
+            summary: "[Step 4] Create MR that updates torch to {torch} in RHAI {version} pipeline for {variant}"
+      - type: Epic
+        summary: "Update RHAI {version} pipeline to torch {torch}"
+        children:
+          - type: Story
+            summary: "[Step 1] Announce that RHAI pipeline is being updated to torch {torch}"
+          - type: Story
+            summary: "[Step 2] Delete old versions of torch and dependant packages in {version} {variant}"
+          - type: Story
+            summary: "[Step 3] Revert the deletion YAML config entries"
+          - type: Story
+            summary: "[Step 4] Merge the MR that updates torch to {torch} in RHAI {version} pipeline for {variant}"
+          - type: Story
+            summary: "[Step 5] Announce that RHAI pipeline is updated to torch {torch}"
+      - type: Epic
+        summary: "Deliver {variant} wheels for vLLM {vllm} for {version}"
+        children:
+          - type: Story
+            summary: "Update builder to support vLLM {vllm} in {variant}"
+          - type: Story
+            summary: "Update RHAI pipeline to build vLLM {vllm} for {variant}"
+
+  standard_with_qe:
+    children:
+      - type: Epic
+        summary: "Update {variant} base images for {version}"
+      - type: Epic
+        summary: "Update torch to {torch}"
+      - type: Epic
+        summary: "Update vllm to {vllm}"
+      - type: Epic
+        summary: "QE: Validate {accelerator} packages for {version}"
+
+  cuda_with_modelopt:
+    children:
+      - type: Epic
+        summary: "Update {variant} base images for {version}"
+      - type: Epic
+        summary: "Update torch to {torch}"
+      - type: Epic
+        summary: "Update vllm to {vllm}"
+      - type: Epic
+        summary: "Update Model-Opt packages (speculators, llmcompressor)"
+      - type: Epic
+        summary: "QE: Validate CUDA packages for {version}"
+
+  standard_with_ae_testplan:
+    children:
+      - type: Epic
+        summary: "Update {variant} stack for {version}"
+      - type: Epic
+        summary: "Update torch to {torch}"
+      - type: Epic
+        summary: "Update vllm to {vllm}"
+      - type: Epic
+        summary: "AE TestPlan: Validate {accelerator} for {version}"
+
+  rocm:
+    children:
+      - type: Epic
+        summary: "Update {variant} stack for {version}"
+      - type: Epic
+        summary: "Update torch to {torch}"
+      - type: Epic
+        summary: "Update vllm to {vllm}"
+      - type: Epic
+        summary: "AE Test Plan for {version} for {accelerator}"
+
+  spyre:
+    children:
+      - type: Epic
+        summary: "Update wheels in the builder collection"
+      - type: Epic
+        summary: "Update wheel collections"
+        description: "Update wheel collections to support new package builds."
+        children:
+          - type: Story
+            summary: "Update wheel collection in rhaiis/pipeline"
+          - type: Story
+            summary: "Update wheel collections in rhai/pipeline"
+      - type: Epic
+        summary: "RHAII Containerfile/environment variable updates"
+        description: "Update RHAII containerfile/env variable/entrypoint to support new Spyre stack."
+      - type: Epic
+        summary: "Create and share RC images for test with IBM"
+        description: "Create and share RC images for test with IBM, depends on base image and wheel collections being delivered."
+      - type: Epic
+        summary: "Create customer-facing base images for IBM Spyre"
+        description: "Create final customer-facing base images for IBM Spyre, depends on RC images being delivered and testing."
+
+# ---------------------------------------------------------------------------
+# Feature template
+# ---------------------------------------------------------------------------
+# The Feature wrapping each variant's epics.
+
+feature_template:
+  type: Feature
+  summary: "{variant} for {version}"
+  description: >-
+    This issue tracks the requirements to update the {accelerator} stack for {version}.
+
+# ---------------------------------------------------------------------------
+# Cross-cutting squads
+# ---------------------------------------------------------------------------
+# These are not per-variant — they produce a fixed set of issues per release.
+
+cross_cutting_squads:
+
+  - name: base-images
+    labels: [aipcc-base-images]
+    template:
+      - type: Epic
+        summary: "Release AIPCC base images for {version}"
+        description: >-
+          This epic will have tasks that are involved in release of AIPCC base images.
+        assignee: "<jira-username>"
+        watchers: []
+        children:
+          - type: Task
+            summary: "Create {version} branch"
+          - type: Task
+            summary: "Update to {version} RHAI production index before branching"
+          - type: Task
+            summary: "Update to RPM repository before branching"
+          - type: Task
+            summary: "Push {version} base images to Production"
+          - type: Task
+            summary: "After branching update main branch to use the next test index"
+
+  - name: delivery
+    labels: [aipcc-delivery]
+    template:
+      - type: Feature
+        summary: "Delivery Squad work for {version}"
+        description: >-
+          This issue tracks delivery squad work for {version}.
+        assignee: "<jira-username>"
+        watchers: []
+        children:
+          - type: Epic
+            summary: "Branch RHAI wheel pipeline for {version}"
+            children:
+              - type: Story
+                summary: "Step 0: Copy wheels from {prev_version} to {version} distribution"
+              - type: Story
+                summary: "Step 1: Create infrastructure for the {version} builds"
+              - type: Story
+                summary: "Step 2: Set PRODUCT_VERSION to {version} on main"
+              - type: Story
+                summary: "Enable test jobs for onboarding collections"
+              - type: Story
+                summary: "Publish newest {prev_version} wheels to production"
+              - type: Story
+                summary: "Step 3: Enable Repeatable builds in {prev_version} release branch"
+              - type: Story
+                summary: "Step 4: Configure renovate regex for release branch"
+              - type: Story
+                summary: "Step 5: Disable nightly builds in {prev_version} protected branch"
+              - type: Story
+                summary: "Announce branching finalization"
+              - type: Story
+                summary: "Backports to {prev_version}"
+          - type: Epic
+            summary: "{version} public index"
+            children:
+              - type: Story
+                summary: "[{version} ongoing] Publish the production indexes"
+              - type: Story
+                summary: "[{version} ongoing] Trigger all out index tests"
+          - type: Epic
+            summary: "Bugs in packages found during the wide RHAI {version} testing"
+
+# ---------------------------------------------------------------------------
+# JIRA defaults
+# ---------------------------------------------------------------------------
+
+jira_defaults:
+  project: AIPCC
+  products:
+    - RHAI
+    - RHAAIS
+  components:
+    - Accelerator Enablement
