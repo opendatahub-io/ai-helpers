@@ -11,13 +11,19 @@
 #     --target-branch main \
 #     --upstream-repo upstream-org/my-project \
 #     [--commit <sha>] \
-#     [--protected-patterns "OWNERS* .tekton/*.yaml Dockerfile*konflux"]
+#     [--protected-patterns "/OWNERS /OWNERS_ALIASES .tekton/*.yaml Dockerfile*konflux"] \
+#     [--co-author "Claude <noreply@anthropic.com>"]
+#
+# --co-author is optional: when set, a "Co-authored-by:" trailer is appended
+# to the merge commit so the agent driving the sync is credited alongside the
+# human author. Carries onto the conflict-resolve and protected-file commits.
 #
 # Exit codes:
 #   0 = clean merge (or clean after protected file restore)
 #   1 = unresolved conflicts remain (details printed to stdout)
 #   2 = argument/setup error
 #   3 = duplicate branch exists (DUPLICATE_BRANCH lines printed to stdout)
+#   4 = nothing to sync (target already up to date; no branch created)
 #
 # Output on success:
 #   BRANCH	sync/upstream-<short_sha>
@@ -35,6 +41,7 @@ TARGET_BRANCH="main"
 UPSTREAM_REPO=""
 COMMIT=""
 PROTECTED_PATTERNS=""
+CO_AUTHOR=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -46,6 +53,7 @@ while [[ $# -gt 0 ]]; do
     --upstream-repo)       UPSTREAM_REPO="$2"; shift 2;;
     --commit)              COMMIT="$2"; shift 2;;
     --protected-patterns)  PROTECTED_PATTERNS="$2"; shift 2;;
+    --co-author)           CO_AUTHOR="$2"; shift 2;;
     *) echo "Unknown arg: $1" >&2; exit 2;;
   esac
 done
@@ -55,14 +63,25 @@ if [[ -z "${REPO}" || -z "${UPSTREAM_REMOTE}" || -z "${TARGET_REMOTE}" || -z "${
   exit 2
 fi
 
-# Match a file path against a protected pattern. Patterns without '/'
-# match basename only; patterns with '/' match the relative path.
+# Match a file path against a protected pattern. A leading '/' anchors the
+# pattern to the repo root (e.g. '/OWNERS' matches only the top-level OWNERS,
+# not nested ones). A pattern that otherwise contains '/' matches the relative
+# path. A bare pattern matches the basename anywhere in the tree.
 matches_protected() {
   local file="$1"
   local basename
   basename=$(basename "${file}")
-  for pattern in ${PROTECTED_PATTERNS}; do
-    if [[ "${pattern}" == */* ]]; then
+  # Split on whitespace without glob-expanding the patterns against the cwd.
+  local -a patterns
+  read -ra patterns <<<"${PROTECTED_PATTERNS}"
+  local pattern
+  for pattern in "${patterns[@]}"; do
+    if [[ "${pattern}" == /* ]]; then
+      # shellcheck disable=SC2254
+      case "${file}" in
+        ${pattern#/}) return 0;;
+      esac
+    elif [[ "${pattern}" == */* ]]; then
       # shellcheck disable=SC2254
       case "${file}" in
         ${pattern}) return 0;;
@@ -90,6 +109,17 @@ fi
 
 COMMIT_COUNT=$(git -C "${REPO}" log \
   "${TARGET_REMOTE}/${TARGET_BRANCH}..${FULL_SHA}" --oneline | wc -l)
+
+# Nothing to sync: the target already contains the upstream tip. Exit early —
+# before creating a branch, merging, or pushing — so we never leave empty
+# branches behind or open empty PRs, and we don't waste any further work.
+if [[ "${COMMIT_COUNT}" -eq 0 ]]; then
+  echo "NOTHING_TO_SYNC	${TARGET_REMOTE}/${TARGET_BRANCH} already up to date with ${UPSTREAM_REMOTE}/${UPSTREAM_BRANCH} (${SHORT_SHA})"
+  printf 'FULL_SHA\t%s\n'    "${FULL_SHA}"
+  printf 'SHORT_SHA\t%s\n'   "${SHORT_SHA}"
+  printf 'COMMIT_COUNT\t0\n'
+  exit 4
+fi
 
 # Show summary
 echo "=== Sync Summary ==="
@@ -131,8 +161,16 @@ git -C "${REPO}" checkout -b "${BRANCH}" "${TARGET_REMOTE}/${TARGET_BRANCH}"
 
 # Merge
 MERGE_FAILED=false
+# Build the merge message, appending a Co-authored-by trailer when requested
+# (e.g. to credit the agent that drove the sync alongside the human author).
+# The message is stored in MERGE_MSG so it is reused on the conflict-resolve
+# `git commit --no-edit` and the protected-file `--amend` paths below.
+MERGE_MSG="Sync upstream ${UPSTREAM_REPO} ${SHORT_SHA}"
+if [[ -n "${CO_AUTHOR}" ]]; then
+  MERGE_MSG="${MERGE_MSG}"$'\n\n'"Co-authored-by: ${CO_AUTHOR}"
+fi
 git -C "${REPO}" merge --no-ff "${FULL_SHA}" --no-edit \
-  -m "Sync upstream ${UPSTREAM_REPO} ${SHORT_SHA}" || MERGE_FAILED=true
+  -m "${MERGE_MSG}" || MERGE_FAILED=true
 
 if [[ "${MERGE_FAILED}" == "true" ]]; then
   # Auto-resolve protected files if patterns are set
@@ -140,9 +178,14 @@ if [[ "${MERGE_FAILED}" == "true" ]]; then
     while IFS= read -r file; do
       [[ -z "${file}" ]] && continue
       if matches_protected "${file}"; then
-        echo "Auto-resolving protected file: ${file}"
-        git -C "${REPO}" checkout "${TARGET_REMOTE}/${TARGET_BRANCH}" -- "${file}"
-        git -C "${REPO}" add "${file}"
+        if git -C "${REPO}" cat-file -e "${TARGET_REMOTE}/${TARGET_BRANCH}:${file}" 2>/dev/null; then
+          echo "Auto-resolving protected file: ${file}"
+          git -C "${REPO}" checkout "${TARGET_REMOTE}/${TARGET_BRANCH}" -- "${file}"
+          git -C "${REPO}" add "${file}"
+        else
+          echo "Auto-resolving protected file (remove, absent from target): ${file}"
+          git -C "${REPO}" rm -q -- "${file}"
+        fi
       fi
     done < <(git -C "${REPO}" diff --name-only --diff-filter=U 2>/dev/null || true)
   fi
@@ -166,8 +209,13 @@ if [[ -n "${PROTECTED_PATTERNS}" ]]; then
   while IFS= read -r file; do
     [[ -z "${file}" ]] && continue
     if matches_protected "${file}"; then
-      echo "Restoring protected file: ${file}"
-      git -C "${REPO}" checkout "${TARGET_REMOTE}/${TARGET_BRANCH}" -- "${file}"
+      if git -C "${REPO}" cat-file -e "${TARGET_REMOTE}/${TARGET_BRANCH}:${file}" 2>/dev/null; then
+        echo "Restoring protected file: ${file}"
+        git -C "${REPO}" checkout "${TARGET_REMOTE}/${TARGET_BRANCH}" -- "${file}"
+      else
+        echo "Removing protected file absent from target: ${file}"
+        git -C "${REPO}" rm -q -- "${file}"
+      fi
       RESTORED=true
     fi
   done < <(git -C "${REPO}" diff --name-only \

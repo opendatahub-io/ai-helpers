@@ -55,8 +55,13 @@ Save `ORIGINAL_BRANCH` from current HEAD.
 
 Protected files keep the target version, discarding upstream changes.
 Ask via `AskUserQuestion` for glob patterns to protect (or none).
-Suggest common examples: `OWNERS*`, `.tekton/*.yaml`,
+Suggest common examples: `/OWNERS`, `/OWNERS_ALIASES`, `.tekton/*.yaml`,
 `Dockerfile*konflux`.
+
+Anchor ownership patterns to the repo root with a leading `/`. A bare
+`OWNERS*` matches by basename and so also deletes nested OWNERS files that
+upstream owns (e.g. `pkg/.../OWNERS`), which is rarely intended — only the
+root `OWNERS` / `OWNERS_ALIASES` are usually target-specific.
 
 ## Step 4: Pre-flight Check
 
@@ -65,15 +70,39 @@ the user to set origin to their personal fork and stop.
 
 ## Step 5: Merge
 
-Run `scripts/sync-merge.sh`. Handle exit codes 0 (success), 1 (conflicts), and
-3 (duplicate branch) as described in `references/workflow.md`.
+Run `scripts/sync-merge.sh`. Handle exit codes 0 (success), 1 (conflicts),
+3 (duplicate branch — a sync PR for this tip already exists), and 4 (nothing
+to sync — target already up to date; report and stop, no PR) as described in
+`references/workflow.md`.
+
+When an agent is driving this skill, pass `--co-author "Claude
+<noreply@anthropic.com>"` so the merge commit credits the agent alongside the
+human author.
 
 ## Step 6: Push and Open PR
 
 Show PR summary and ask via `AskUserQuestion`: open a PR or just push?
-If confirmed, run `scripts/open-pr.sh`.
+If confirmed, run `scripts/open-pr.sh`. The PR body's commit count and
+diffstat are derived automatically from the merge commit. If any conflicts
+were resolved in Step 5, pass them via `--conflicts` (markdown table rows,
+no header) so a "## Conflict Resolution" section is appended.
+
+To put a human on the PR, pass `--assignee <handle>` (assignee, **not**
+reviewer — GitHub forbids requesting review from the PR author, so a
+`--reviewer` equal to the author is silently dropped). `open-pr.sh` is
+idempotent: if an open PR for the branch already exists it returns that URL
+without creating a duplicate.
 
 ## Step 7: Cleanup and Summary
 
-Check out `ORIGINAL_BRANCH`. For Path B clones, inform the user of the
-temp directory. Display the summary per `references/workflow.md`.
+Check out `ORIGINAL_BRANCH`. Then, **if the sync branch was successfully
+pushed in Step 6**, delete the now-redundant *local* sync branch
+(`git branch -D <sync-branch>`): the PR tracks the branch pushed to the fork
+(`origin`), so the local copy is no longer needed. Never delete the *remote*
+branch — the open PR depends on it. If the push failed (no PR was opened),
+**keep** the local branch so the work can be retried.
+
+For Path B (clone-from-scratch) the entire temp clone is discarded, so there
+is no local branch to clean up — just inform the user of the temp directory.
+
+Display the summary per `references/workflow.md`.
