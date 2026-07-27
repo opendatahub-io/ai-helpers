@@ -472,6 +472,14 @@
         "allowed_tools": "Bash"
       },
       {
+        "name": "notebooks-cve-resolution",
+        "description": "Complete CVE resolution workflow for OpenDataHub/RHOAI Notebooks. Autonomously searches Jira for CVE tickets, assigns them, researches fix versions, updates cve-constraints.txt, runs make refresh-lock-files, creates PRs to downstream release branches (rhoai-X.Y), comments on Jira, and generates team summaries. Requires Atlassian MCP for Jira access.",
+        "category": "cve remediation",
+        "file_path": "helpers/skills/notebooks-cve-resolution/SKILL.md",
+        "id": "notebooks-cve-resolution",
+        "allowed_tools": "Read Write Glob Grep Bash Edit WebSearch MCP"
+      },
+      {
         "name": "oci-cve-checker",
         "description": "Use this skill to compare CVE vulnerabilities between two OCI container images and generate reports showing fixed and new CVEs.",
         "category": "general",
