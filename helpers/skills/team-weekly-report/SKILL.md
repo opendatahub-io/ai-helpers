@@ -10,7 +10,7 @@ argument-hint: "--config <path-to-team-config.yaml> [--days N]"
 allowed-tools: Bash
 user-invocable: true
 metadata:
-  author: rhaieng-pytorch
+  author: aipcc-pytorch
   version: "1.0"
   tags: reporting, jira, github, team-management, weekly-report
 ---

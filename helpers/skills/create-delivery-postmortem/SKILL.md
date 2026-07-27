@@ -8,7 +8,7 @@ allowed-tools: Read Write Bash(git config:*) Bash(open:*) Bash(xdg-open:*) AskUs
 user-invocable: true
 argument-hint: title=<title> release=<release> priority=<priority> format=<html|markdown>
 metadata:
-  author: RHAIENG
+  author: AIPCC
   version: "1.0"
   tags:
     - postmortem

@@ -87,7 +87,7 @@ Parse the JSON output and extract the following fields for display:
 
 Present the parsed information in a structured, human-readable format:
 
-```
+```text
 === RHAIENG-1234: Fix duplicate CI pipeline runs ===
 
 Type: Bug

@@ -5,8 +5,8 @@
     "general": {
       "name": "General"
     },
-    "rhaieng": {
-      "name": "RHAIENG"
+    "aipcc": {
+      "name": "AIPCC"
     },
     "pytorch": {
       "name": "PyTorch"
@@ -45,6 +45,13 @@
   "tools": {
     "gemini": [
       {
+        "name": "aipcc-adr-assistant",
+        "description": "My purpose is to help you generate well-structured Architecture Decision Records (ADRs) in AIPCC. You provide the relevant documents and notes, and I will synthesize that information to populate a predefined ADR template.",
+        "category": "aipcc",
+        "file_path": "",
+        "link": "https://gemini.google.com/gem/11WO66DX_4-MQHIF6fj4LeM8dKxDzkz17?usp=sharing"
+      },
+      {
         "name": "codebase-explainer",
         "description": "Your AI guide for code exploration. I help you understand complex repositories, from big-picture overviews to file-level details.",
         "category": "general",
@@ -53,8 +60,8 @@
       },
       {
         "name": "commit-message-assistant",
-        "description": "I am the RHAIENG Commit Message Assistant. Please provide a description of your code changes, and I will generate a well-formatted commit message for you.",
-        "category": "rhaieng",
+        "description": "I am the AIPCC Commit Message Assistant. Please provide a description of your code changes, and I will generate a well-formatted commit message for you.",
+        "category": "aipcc",
         "file_path": "",
         "link": "https://gemini.google.com/gem/1j7GV5eSdCl3jtT2dYWrRlDpV6q7eBqqc?usp=sharing"
       },
@@ -71,13 +78,6 @@
         "category": "general",
         "file_path": "",
         "link": "https://gemini.google.com/gem/1BuXxrQY7YZS7TluLX9iF3fezVzPoCwHL?usp=sharing"
-      },
-      {
-        "name": "rhaieng-adr-assistant",
-        "description": "My purpose is to help you generate well-structured Architecture Decision Records (ADRs) in RHAIENG. You provide the relevant documents and notes, and I will synthesize that information to populate a predefined ADR template.",
-        "category": "rhaieng",
-        "file_path": "",
-        "link": "https://gemini.google.com/gem/11WO66DX_4-MQHIF6fj4LeM8dKxDzkz17?usp=sharing"
       },
       {
         "name": "technical-spike-investigation",
@@ -338,7 +338,7 @@
       {
         "name": "jira-rhaieng-create",
         "description": "Create Jira issues in the RHAIENG project. Infers summary, description, type, and component from conversation context, confirms with the user before creating. Use when the user wants to file a new RHAIENG Jira issue.",
-        "category": "rhaieng",
+        "category": "aipcc",
         "file_path": "helpers/skills/jira-rhaieng-create/SKILL.md",
         "id": "jira-rhaieng-create",
         "allowed_tools": "Bash, AskUserQuestion"
@@ -354,7 +354,7 @@
       {
         "name": "jira-status-summary",
         "description": "Update the Status Summary and Color Status fields on RHAIENG Feature and Initiative tickets. Fetches child ticket activity via the jira-activity skill, generates a brief summary and sets the red/yellow/green color status. Use when asked to update the status summary for a Jira ticket.\n",
-        "category": "rhaieng",
+        "category": "aipcc",
         "file_path": "helpers/skills/jira-status-summary/SKILL.md",
         "id": "jira-status-summary",
         "allowed_tools": "Bash"
@@ -578,7 +578,7 @@
       {
         "name": "rhaieng-commit-suggest",
         "description": "Generate RHAIENG Commits style commit messages or summarize existing commits",
-        "category": "rhaieng",
+        "category": "aipcc",
         "file_path": "helpers/skills/rhaieng-commit-suggest/SKILL.md",
         "id": "rhaieng-commit-suggest",
         "allowed_tools": ""
@@ -594,7 +594,7 @@
       {
         "name": "security-alert",
         "description": "Use this skill to filter a pre-fetched set of Hacker News stories down to those that report supply-chain security threats relevant to software developers — including malicious packages on npm or PyPI, compromised developer tooling, and attacks targeting source code repositories or CI/CD infrastructure. Reads stories from stories.json in the workspace, performs semantic analysis (fetching HN threads when the title alone is ambiguous), and writes the stories worth alerting on to findings.json.",
-        "category": "rhaieng",
+        "category": "aipcc",
         "file_path": "helpers/skills/security-alert/SKILL.md",
         "id": "security-alert",
         "allowed_tools": "Bash(curl:https://hn.algolia.com/*) Read Write"

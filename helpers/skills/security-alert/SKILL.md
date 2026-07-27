@@ -8,7 +8,7 @@ description: >-
   infrastructure. Reads stories from stories.json in the workspace, performs
   semantic analysis (fetching HN threads when the title alone is ambiguous), and writes the stories
   worth alerting on to findings.json.
-author: RHAIENG
+author: AIPCC
 allowed-tools: Bash(curl:https://hn.algolia.com/*) Read Write
 ---
 

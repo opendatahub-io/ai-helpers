@@ -177,7 +177,7 @@ acli jira workitem search \
 
 Parse the JSON output and format as a table:
 
-```
+```text
 Found 15 tickets matching: project = RHAIENG AND status = "In Progress"
 
 KEY          STATUS        ASSIGNEE      UPDATED     SUMMARY
@@ -190,7 +190,7 @@ RHAIENG-910    In Progress   Unassigned    2024-03-18  Update documentation
 
 For smaller result sets (< 10 tickets), show more detail:
 
-```
+```text
 === 3 tickets found ===
 
 1. RHAIENG-1234: Fix duplicate CI pipeline runs
@@ -238,7 +238,7 @@ echo "Results exported to: $TEMP_CSV"
 
 Extract the list of ticket keys from results and store them for potential bulk operations:
 
-```
+```text
 Ticket keys: RHAIENG-1234, RHAIENG-5678, RHAIENG-910
 
 Use these keys with other skills for bulk operations.

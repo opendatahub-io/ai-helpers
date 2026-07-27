@@ -81,7 +81,7 @@ Each suggestion includes:
 - Required sign-off line
 
 **Example:**
-```
+```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Suggestion #1 (Recommended)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -109,7 +109,7 @@ Which suggestion would you like to use? (1/2/3 or skip)
 
 ### RHAIENG Format
 All commits must follow this project-specific format:
-```
+```text
 RHAIENG-XXX: Short description
 
 Longer explanation of what the commit does, written in at least one
@@ -135,7 +135,7 @@ Signed-off-by: Your Name <your.email@example.com>
 - **Breaking Changes**: Note significant API changes in the body
 
 ### Examples
-```
+```text
 RHAIENG-456: Fix memory leak in authentication service
 
 Resolve memory leak caused by unclosed database connections in the
@@ -148,7 +148,7 @@ Co-Authored-By: [AI_NAME] ([AI_MODEL])
 Signed-off-by: Jane Developer <jane@example.com>
 ```
 
-```
+```text
 RHAIENG-789: Add user profile management API
 
 Implement REST endpoints for user profile CRUD operations.

@@ -33,8 +33,8 @@ Analyze the conversation to determine:
    - `Accelerator Enablement`
    - `AI Eng Agilist`
    - `AI Testing + Workflow Validation`
-   - `RHAIENG Ecosystems`
-   - `RHAIENG Productization`
+   - `AIPCC Ecosystems`
+   - `AIPCC Productization`
    - `Development Platform`
    - `Model Validation`
    - `PyTorch`
@@ -48,7 +48,7 @@ If any field cannot be confidently inferred, ask the user.
 
 Present the proposed issue details to the user in a clear format:
 
-```
+```text
 I'll create the following RHAIENG JIRA issue:
 
 **Type**: Bug
@@ -152,7 +152,7 @@ Assistant: [Uses provided info, infers description and component, confirms, crea
 ```text
 User: File a task for updating the CI pipeline docs
 Assistant: I'll create an RHAIENG task. Which component does this fall under?
-  1. RHAIENG Productization
+  1. AIPCC Productization
   2. Wheel Package Index
   3. Development Platform
   ...
