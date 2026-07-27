@@ -115,6 +115,7 @@ To set a slide background color:
 
 ```python
 from pptx.oxml.ns import qn
+
 bg = slide.background
 fill = bg.fill
 fill.solid()
@@ -125,9 +126,8 @@ To add a thin accent line below the title:
 
 ```python
 from pptx.util import Inches, Pt, Emu
-line = slide.shapes.add_shape(
-    MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.15), Inches(11.5), Pt(2)
-)
+
+line = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.15), Inches(11.5), Pt(2))
 line.fill.solid()
 line.fill.fore_color.rgb = RGBColor(0x31, 0x82, 0xCE)
 line.line.fill.background()  # no border on the shape
