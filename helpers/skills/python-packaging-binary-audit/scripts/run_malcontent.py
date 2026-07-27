@@ -4,7 +4,7 @@
 Expects the ``mal`` binary to be available on PATH or specified via
 the ``MALCONTENT_BIN`` environment variable.  The pipeline CI job is
 responsible for installing malcontent before invoking this skill
-(see AIPCC-16968).
+(see RHAIENG-16968).
 
 Usage:
     ./scripts/run_malcontent.py <directory>

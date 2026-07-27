@@ -1,5 +1,5 @@
 """
-Custom skillsaw rules for AIPCC AI helpers
+Custom skillsaw rules for RHAIENG AI helpers
 """
 
 import subprocess

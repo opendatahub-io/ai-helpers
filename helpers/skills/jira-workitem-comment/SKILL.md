@@ -49,7 +49,7 @@ For plain text comments, write the comment text to a temporary file and use acli
 # Validate ticket key format (PROJECT-NUMBER)
 TICKET_KEY="<ticket-key-from-step-2>"
 if [[ ! "$TICKET_KEY" =~ ^[A-Z]+-[0-9]+$ ]]; then
-  echo "Error: Invalid ticket key format. Expected PROJECT-NUMBER (e.g., AIPCC-1234)"
+  echo "Error: Invalid ticket key format. Expected PROJECT-NUMBER (e.g., RHAIENG-1234)"
   exit 1
 fi
 
@@ -205,7 +205,7 @@ Write the ADF JSON to a temporary file and create the comment:
 # Validate ticket key format (PROJECT-NUMBER)
 TICKET_KEY="<ticket-key-from-step-2>"
 if [[ ! "$TICKET_KEY" =~ ^[A-Z]+-[0-9]+$ ]]; then
-  echo "Error: Invalid ticket key format. Expected PROJECT-NUMBER (e.g., AIPCC-1234)"
+  echo "Error: Invalid ticket key format. Expected PROJECT-NUMBER (e.g., RHAIENG-1234)"
   exit 1
 fi
 
@@ -281,29 +281,29 @@ Use simple text (Step 3a) for:
 ### Simple Text Comment
 
 ```text
-User: Add a comment to AIPCC-1234 saying the fix is ready for review
+User: Add a comment to RHAIENG-1234 saying the fix is ready for review
 Assistant: [Creates simple text comment]
-Comment added to AIPCC-1234
-View: https://redhat.atlassian.net/browse/AIPCC-1234
+Comment added to RHAIENG-1234
+View: https://redhat.atlassian.net/browse/RHAIENG-1234
 ```
 
 ### Code Block Comment
 
 ```text
-User: Comment on AIPCC-5678 with this error message: [paste error]
+User: Comment on RHAIENG-5678 with this error message: [paste error]
 Assistant: [Creates ADF comment with code block]
-Comment added to AIPCC-5678 with formatted code block
-View: https://redhat.atlassian.net/browse/AIPCC-5678
+Comment added to RHAIENG-5678 with formatted code block
+View: https://redhat.atlassian.net/browse/RHAIENG-5678
 ```
 
 ### Structured Update
 
 ```text
-User: Add a status update to AIPCC-910 with these action items:
+User: Add a status update to RHAIENG-910 with these action items:
 - Fix merged to main
 - QA testing in progress
 - Deployment scheduled for Friday
 Assistant: [Creates ADF comment with bullet list]
-Comment added to AIPCC-910
-View: https://redhat.atlassian.net/browse/AIPCC-910
+Comment added to RHAIENG-910
+View: https://redhat.atlassian.net/browse/RHAIENG-910
 ```

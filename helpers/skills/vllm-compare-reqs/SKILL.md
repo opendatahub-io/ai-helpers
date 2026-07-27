@@ -9,7 +9,7 @@ user-invocable: true
 
 ## Purpose
 
-Compare vllm requirements files **and Dockerfiles** between versions to identify dependency changes, providing intelligent analysis for AIPCC package onboarding workflows.
+Compare vllm requirements files **and Dockerfiles** between versions to identify dependency changes, providing intelligent analysis for RHAIENG package onboarding workflows.
 
 **For accelerator builds** (ROCm, CUDA, TPU, XPU), Dockerfile comparison is critical because they specify exact commits/branches for dependencies built from source (PyTorch, Triton, Flash Attention, etc.) - information not available in requirements files.
 
@@ -23,7 +23,7 @@ Compare vllm requirements files **and Dockerfiles** between versions to identify
 
 Use this skill when you need to:
 - Compare vllm runtime AND build requirements between versions before upgrading
-- Identify new packages that need onboarding to the AIPCC wheels builder
+- Identify new packages that need onboarding to the RHAIENG wheels builder
 - Understand dependency changes for specific hardware variants (ROCm, CUDA, etc.)
 - **Analyze Dockerfile ARG changes** (build commits/branches for ROCm/CUDA)
 - Debug build failures related to dependency mismatches
@@ -142,7 +142,7 @@ After running the script and displaying the output, **you must provide intellige
    - Breaking changes (major version bumps)
    - Removed dependencies
    - **Dockerfile ARG changes** (especially BASE_IMAGE, PYTORCH_BRANCH, etc.)
-3. **AIPCC Wheels Builder Impact**:
+3. **RHAIENG Wheels Builder Impact**:
    - ✅ No Action Required: Stable dependencies
    - ⚠️ Action Required: New packages to onboard, version updates
    - 🚨 Breaking Changes: Major issues, base image changes
@@ -165,7 +165,7 @@ After running the script and displaying the output, **you must provide intellige
 
 ### Impact Level: Medium
 
-### AIPCC Wheels Builder Impact:
+### RHAIENG Wheels Builder Impact:
 
 #### ✅ No Action Required:
 - ROCm version remains at 6.4
@@ -196,7 +196,7 @@ After running the script and displaying the output, **you must provide intellige
 **Context:** This release adds gRPC support and updates to PyTorch 2.9.1.
 ```
 
-## Integration with AIPCC Workflows
+## Integration with RHAIENG Workflows
 
 ### Package Onboarding
 
@@ -242,6 +242,6 @@ The script detects and reports errors for:
 ## See Also
 
 - [vllm GitHub Repository](https://github.com/vllm-project/vllm)
-- [AIPCC Package Onboarding Guide](../../../AGENTS.md)
+- [RHAIENG Package Onboarding Guide](../../../AGENTS.md)
 - [Fromager Documentation](https://fromager.readthedocs.io/)
 

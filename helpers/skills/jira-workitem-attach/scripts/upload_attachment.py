@@ -18,7 +18,7 @@ Usage:
   upload_attachment.py <ticket-key> <file-path>
 
 Examples:
-  upload_attachment.py AIPCC-1234 /tmp/error.log
+  upload_attachment.py RHAIENG-1234 /tmp/error.log
   JIRA_API_TOKEN=xyz123 upload_attachment.py PROJ-567 ./screenshot.png
 """
 
@@ -158,7 +158,7 @@ def main() -> None:
     )
     parser.add_argument(
         "ticket_key",
-        help="JIRA ticket key (e.g., AIPCC-1234, PROJ-567)",
+        help="JIRA ticket key (e.g., RHAIENG-1234, PROJ-567)",
     )
     parser.add_argument(
         "file_path",

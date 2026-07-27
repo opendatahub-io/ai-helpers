@@ -1,8 +1,8 @@
-AIPCC:
-  - aipcc-commit-suggest
+RHAIENG:
+  - rhaieng-commit-suggest
   - commit-message-assistant
-  - aipcc-adr-assistant
-  - jira-aipcc-create
+  - rhaieng-adr-assistant
+  - jira-rhaieng-create
   - jira-status-summary
   - security-alert
 

@@ -25,7 +25,7 @@ This skill fetches activity data for a Jira ticket and its entire descendant hie
 ### Step 1: Determine the Ticket Key
 
 1. If a ticket key is provided by the user, use it
-2. Otherwise, search the conversation history for JIRA ticket references (e.g., "AIPCC-1234", "RHOAIENG-567")
+2. Otherwise, search the conversation history for JIRA ticket references (e.g., "RHAIENG-1234", "RHOAIENG-567")
 3. If no ticket is found in context, ask the user: "Which JIRA ticket should I analyze? (e.g., RHOAIENG-1234)"
 
 Optionally the user may specify a `--days N` flag to control the lookback window (default: 30 days).
@@ -99,7 +99,7 @@ Assistant: [Runs fetch script, analyzes JSON, produces staleness report]
 
 ### Custom Lookback Window
 ```text
-User: Is AIPCC-500 stale? Look back 60 days.
+User: Is RHAIENG-500 stale? Look back 60 days.
 Assistant: [Runs fetch script with --days 60, produces report]
 ```
 

@@ -33,7 +33,7 @@ assignees: ''
 ### Category Suggestion
 <!-- Which category should this Gem belong to? -->
 - [ ] General
-- [ ] AIPCC
+- [ ] RHAIENG
 - [ ] New category: <!-- specify name -->
 
 ### Additional Context

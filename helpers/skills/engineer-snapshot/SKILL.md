@@ -10,7 +10,7 @@ argument-hint: "<engineer-name> --config <path> [--jira-days N] [--github-days N
 allowed-tools: Bash, Read
 user-invocable: true
 metadata:
-  author: aipcc-pytorch
+  author: rhaieng-pytorch
   version: "1.0"
   tags: reporting, jira, github, 1-on-1, engineer-management
 ---

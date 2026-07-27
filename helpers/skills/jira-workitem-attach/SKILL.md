@@ -197,27 +197,27 @@ If the attachment doesn't appear in the list, report the issue and check the upl
 ### Attach a File
 
 ```text
-User: Attach error.log to AIPCC-1234
+User: Attach error.log to RHAIENG-1234
 Assistant: [Verifies file exists, uploads via API]
-Attachment uploaded to AIPCC-1234
+Attachment uploaded to RHAIENG-1234
 File: error.log (15.2 KB)
-View: https://redhat.atlassian.net/browse/AIPCC-1234
+View: https://redhat.atlassian.net/browse/RHAIENG-1234
 ```
 
 ### Attach Chat Log
 
 ```text
-User: Attach the conversation log to AIPCC-5678
+User: Attach the conversation log to RHAIENG-5678
 Assistant: [Exports conversation, uploads to ticket]
-Attachment uploaded to AIPCC-5678
+Attachment uploaded to RHAIENG-5678
 File: conversation-2024-03-20.md (42.1 KB)
-View: https://redhat.atlassian.net/browse/AIPCC-5678
+View: https://redhat.atlassian.net/browse/RHAIENG-5678
 ```
 
 ### Large File Warning
 
 ```text
-User: Attach large-dataset.csv to AIPCC-910
+User: Attach large-dataset.csv to RHAIENG-910
 Assistant: Warning: large-dataset.csv is 15.3 MB, which exceeds the typical 10MB Jira limit.
 The upload may fail. Would you like to proceed anyway?
 User: Yes
@@ -230,12 +230,12 @@ Consider compressing the file or using a file sharing service instead.
 ### List Attachments After Upload
 
 ```text
-User: Attach screenshot.png to AIPCC-1234
+User: Attach screenshot.png to RHAIENG-1234
 Assistant: [Uploads file]
-Attachment uploaded to AIPCC-1234
+Attachment uploaded to RHAIENG-1234
 File: screenshot.png (234 KB)
 
-Current attachments on AIPCC-1234:
+Current attachments on RHAIENG-1234:
 - screenshot.png (234 KB) - uploaded just now
 - error.log (15.2 KB) - uploaded 2024-03-19
 - build.log (8.1 KB) - uploaded 2024-03-18
