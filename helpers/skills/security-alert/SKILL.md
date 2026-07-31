@@ -2,12 +2,11 @@
 name: security-alert
 description: >-
   Use this skill to filter a pre-fetched set of Hacker News stories down to
-  those that report supply-chain security threats relevant to software
-  developers — including malicious packages on npm or PyPI, compromised
-  developer tooling, and attacks targeting source code repositories or CI/CD
-  infrastructure. Reads stories from stories.json in the workspace, performs
-  semantic analysis (fetching HN threads when the title alone is ambiguous), and writes the stories
-  worth alerting on to findings.json.
+  those that report supply-chain security threats relevant to the Red Hat /
+  RHEL ecosystem, Python (PyPI/pip), or JavaScript/TypeScript (npm/yarn/pnpm).
+  Reads stories from stories.json in the workspace, performs semantic analysis
+  (fetching HN threads when the title alone is ambiguous), and writes the
+  stories worth alerting on to findings.json.
 author: AIPCC
 allowed-tools: Bash(curl:https://hn.algolia.com/*) Read Write
 ---
@@ -15,8 +14,9 @@ allowed-tools: Bash(curl:https://hn.algolia.com/*) Read Write
 # Security Alert: Developer Supply-Chain Threat Filter
 
 Read a set of Hacker News stories and decide which ones are worth alerting on
-— meaning they plausibly report a threat to the software supply chain or
-developer infrastructure. Write those stories to `findings.json`.
+— meaning they plausibly report a supply-chain threat that affects the **Red
+Hat / RHEL ecosystem, Python, or JavaScript/TypeScript**. Write those stories
+to `findings.json`.
 
 The pipeline controls when this skill runs and has already built the candidate
 story list. The scope here is semantic analysis only — do not re-fetch or
@@ -57,84 +57,117 @@ If the array is empty, **stop here** and write an empty findings array to
 
 ## Step 2: Filter each story
 
-Read each story title. Decide whether it is reporting a threat relevant to
-software developers or the software supply chain. This is a judgment call —
-do not rely on keyword matching. A relevant story may use none of the obvious
-terms.
+Apply two independent tests to each story. A story must **pass both** to be
+included. This is a judgment call — do not rely on keyword matching alone.
 
-**Include a story only if it describes an adversarial attack on the software
-supply chain itself — meaning the dependency, build, or distribution
-infrastructure has been compromised or weaponized. Specifically:**
+---
+
+### Test A — Ecosystem relevance (scope gate)
+
+The story must directly involve one of these ecosystems:
+
+**Python**
+- PyPI packages, pip, pipenv, Poetry, conda, or any Python-specific
+  tooling or runtime
+- Python-language libraries, frameworks, or build tools (e.g. setuptools,
+  wheel, twine)
+
+**JavaScript / TypeScript**
+- npm, yarn, pnpm, Bun, Deno, or any JS/TS package registry or runtime
+- Node.js tooling, bundlers (webpack, Vite, Rollup, esbuild), or
+  JS/TS-language libraries and frameworks
+
+**Red Hat / RHEL ecosystem**
+- RHEL, Fedora, CentOS Stream, or RPM-based package repositories (dnf,
+  rpm, COPR, official Red Hat repos)
+- Red Hat products and platforms: OpenShift, OKD, Ansible, Ansible
+  Galaxy/Automation Hub, Quay.io, Podman, Buildah, RHACS, Satellite,
+  Insights, or any `registry.redhat.io` / `registry.access.redhat.com`
+  image
+- Red Hat developer tooling: CodeReady, Developer Hub, RHDH, RHEL AI,
+  InstructLab, or official Red Hat SDKs
+
+**Exclude** stories where the affected ecosystem is clearly something else
+entirely — Go modules, Rust crates, Ruby gems, Java/Maven, .NET NuGet,
+Swift, Dart, PHP Composer, etc. — even if the attack technique is novel or
+interesting.
+
+**Ecosystem uncertain?** If you cannot confirm the story touches one of
+the three ecosystems above (even after reading the HN thread), **exclude
+it**. Reducing false positives is the priority here.
+
+---
+
+### Test B — Supply-chain attack (threat gate)
+
+The story must also describe an adversarial attack on the software supply
+chain itself — the dependency, build, or distribution infrastructure has
+been compromised or weaponized. Specifically:
 
 **Malicious or typosquatted packages**
-- A package published to npm, PyPI, or another public registry that
+- A package published to npm, PyPI, or another in-scope registry that
   contains malicious code, credential theft, data exfiltration, or
   unexpected execution at install or import time
-- A typosquatting campaign or dependency confusion attack targeting a
-  public registry
+- A typosquatting campaign or dependency confusion attack
 
 **Compromised maintainer accounts or signing keys**
-- A package maintainer account on a registry or code host has been taken
-  over and used to push unauthorized code
-- Package signing keys have been stolen or misused
+- A registry account taken over to push unauthorized code
+- Package signing keys stolen or misused
 
 **Backdoors in open-source dependencies**
-- Malicious code inserted into an open-source library, framework, or
-  tool that developers pull as a dependency
+- Malicious code inserted into a library, framework, or tool that
+  developers pull as a dependency
 
 **Attacks on source code repositories or CI/CD infrastructure**
-- Poisoned build steps, compromised CI runners, leaked secrets in build
+- Poisoned build steps, compromised CI runners, leaked secrets in
   pipelines, or unauthorized pushes to a repository
 - A compromised artifact registry, container registry, package mirror,
   or signing infrastructure
 
 **Dependency confusion or namespace hijacking**
-- An attacker claiming an internal package name on a public registry to
-  trick build systems into pulling the malicious version
+- An attacker claiming an internal package name on a public registry
 
 **Exclude** stories about:
-- IDEs, editors, or tools generating code with insecure patterns — this
-  is a code-quality issue, not a supply-chain attack (e.g. an AI code
-  assistant suggesting vulnerable code)
-- Platform outages or authentication incidents — operational disruptions
-  are not adversarial supply-chain compromises (e.g. a code host's auth
-  service going down and breaking CI/CD)
-- Project governance or policy decisions — changes to contribution rules,
-  PR policies, or project management are not security threats (e.g. a
-  project restricting PRs or changing maintainership criteria)
-- General vulnerability disclosures in end-user software unrelated to
+- IDEs, editors, or tools generating code with insecure patterns — code
+  quality, not a supply-chain attack
+- Platform outages or auth incidents — operational, not adversarial
+- Project governance or policy decisions
+- General vulnerability disclosures that affect only end-users and not
   the dependency supply chain (e.g. a browser RCE, an OS privilege
-  escalation)
+  escalation in an unrelated OS)
 - General data breaches unrelated to developer tooling or source code
 - Security research or proof-of-concept disclosures with no active
   exploitation of a supply-chain vector
 - Geopolitical or policy news
 
 **The test:** has the *dependency, build, or distribution pipeline* been
-adversarially compromised or weaponized? If the answer is no — if the
-story describes a quality issue, an outage, a policy decision, or a
-vulnerability that only affects end-users of software — exclude it.
+adversarially compromised or weaponized *in an in-scope ecosystem*? If
+either part of that test fails, exclude the story.
 
-Fetch the HN thread for any story that is not immediately obvious noise (title
-makes it unambiguously unrelated). Cap total thread fetches at **15** per run —
-if you reach the cap, include remaining untouched stories in findings so they
-are not silently dropped.
+---
+
+Fetch the HN thread for any story that is not immediately obvious noise
+(title makes it unambiguously out of scope). Cap total thread fetches at
+**15** per run — if you reach the cap, **exclude** remaining ambiguous
+stories rather than including them unchecked.
 
 ```bash
 curl -sf "https://hn.algolia.com/api/v1/items/<id>"
 ```
 
 If this exits non-zero or returns no data (network error, timeout), decide
-based on the title alone and proceed — do not let a single fetch failure block
-the run.
+based on the title alone and proceed — do not let a single fetch failure
+block the run.
 
 While reading the thread:
-- Decide whether to include this story.
+- Apply both tests and decide whether to include this story.
 - **Summarize** the linked article or post in one sentence. Capture what
   happened, what was compromised, and who is affected. Store as `article_summary`.
 
-**When uncertain, include the story.** A false negative (missing a real threat)
-is worse than an extra alert that turns out to be nothing.
+**When uncertain about ecosystem relevance (Test A), exclude.** When
+uncertain about whether a confirmed in-scope story describes a real
+supply-chain attack (Test B), include — a missed real threat is worse than
+one extra alert.
 
 ---
 
@@ -183,4 +216,5 @@ jq . findings.json >/dev/null
 | `stories.json` present but empty array | Write `[]` to `findings.json`; stop |
 | Thread fetch fails (curl non-zero) | Decide on title alone; proceed |
 | No stories are relevant | Write `[]` to `findings.json`; stop |
-| Uncertain whether a story is relevant | Include it |
+| Uncertain about ecosystem (Test A) | Exclude it |
+| Uncertain about threat type (Test B), ecosystem confirmed | Include it |
