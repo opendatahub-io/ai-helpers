@@ -112,6 +112,7 @@ These rules prevent the most common review findings. Follow them when generating
 - Quote all variable expansions — never interpolate unsanitized variables into commands.
 - Use `mktemp -d` for temporary directories, never hardcoded `/tmp/` paths.
 - Do not suppress errors from `gh`, `curl`, or `git` — propagate failures explicitly.
+- Add timeouts to `curl` commands (e.g., `curl -sf --connect-timeout 5 --max-time 20`) to prevent indefinite blocking.
 - Use `grep -E` instead of `grep -P` (PCRE is not available on macOS).
 - Do not use `git add -A` in scripts — stage specific files only.
 
@@ -131,7 +132,7 @@ These rules prevent the most common review findings. Follow them when generating
 
 ### Skills
 - Run `make update` after creating or modifying any skill or agent.
-- `allowed_tools` in frontmatter must follow least-privilege — only list tools the skill actually uses.
+- `allowed_tools` in frontmatter must list exactly the tools the skill uses — no extras (least-privilege) and no omissions (the skill will fail if a required tool is missing).
 - Never reference real people by name (see ETHICS.md).
 - Use team/org identifiers in `metadata.author`, not personal names.
 - Prefer native CLI tools (`gh`, `glab`, `acli`) via Bash over MCP equivalents for forge and service operations. These CLIs are already available, add no tool schema overhead to the system prompt, and are cheaper on tokens. Provide explicit CLI commands in skill instructions instead of relying on MCP discovery.
