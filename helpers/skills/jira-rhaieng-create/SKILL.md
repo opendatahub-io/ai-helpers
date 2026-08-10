@@ -1,13 +1,13 @@
 ---
-name: jira-aipcc-create
-description: Create Jira issues in the AIPCC project. Infers summary, description, type, and component from conversation context, confirms with the user before creating. Use when the user wants to file a new AIPCC Jira issue.
+name: jira-rhaieng-create
+description: Create Jira issues in the RHAIENG project. Infers summary, description, type, and component from conversation context, confirms with the user before creating. Use when the user wants to file a new RHAIENG Jira issue.
 allowed-tools: Bash, AskUserQuestion
 user-invocable: true
 ---
 
-# Create AIPCC Jira Issue
+# Create RHAIENG Jira Issue
 
-Create Jira issues in the AIPCC project using the `acli` CLI.
+Create Jira issues in the RHAIENG project using the `acli` CLI.
 
 ## Prerequisites
 
@@ -29,7 +29,7 @@ Analyze the conversation to determine:
    - `Spike`: time-bound unit of work representing research-related task; not easy to size
    - `Initiative`: use when capturing internal improvements
    - `Task`: unit of work to be accomplished, not end-user facing
-4. **Component**: One of the valid AIPCC components:
+4. **Component**: One of the valid RHAIENG components:
    - `Accelerator Enablement`
    - `AI Eng Agilist`
    - `AI Testing + Workflow Validation`
@@ -40,7 +40,7 @@ Analyze the conversation to determine:
    - `PyTorch`
    - `Wheel Package Index`
 
-5. **Parent Epic** (optional): If the user specifies an epic key (e.g. AIPCC-1234), include it as the parent
+5. **Parent Epic** (optional): If the user specifies an epic key (e.g. RHAIENG-1234), include it as the parent
 
 If any field cannot be confidently inferred, ask the user.
 
@@ -48,12 +48,12 @@ If any field cannot be confidently inferred, ask the user.
 
 Present the proposed issue details to the user in a clear format:
 
-```
-I'll create the following AIPCC JIRA issue:
+```text
+I'll create the following RHAIENG JIRA issue:
 
 **Type**: Bug
 **Component**: Wheel Package Index
-**Parent Epic**: AIPCC-1234 (if specified)
+**Parent Epic**: RHAIENG-1234 (if specified)
 **Summary**: Fix duplicate CI pipeline runs
 **Description**:
 > [description]
@@ -73,7 +73,7 @@ If the user specifies a parent epic, include the `parent` field in `additionalAt
 
 ```json
 {
-  "projectKey": "AIPCC",
+  "projectKey": "RHAIENG",
   "summary": "<summary>",
   "type": "<type>",
   "description": {
@@ -119,7 +119,7 @@ acli jira workitem create --from-json <JSON-FILE>
 On success, `acli` prints the new issue key and URL. Report this to the user:
 
 ```
-Created AIPCC-12345: https://redhat.atlassian.net/browse/AIPCC-12345
+Created RHAIENG-12345: https://redhat.atlassian.net/browse/RHAIENG-12345
 ```
 
 Clean up the temporary JSON file after creation.
@@ -143,7 +143,7 @@ Assistant: [Infers details from conversation, presents for confirmation, creates
 ### Explicit Request
 
 ```text
-User: /jira.aipcc-create Bug: selfservice build monitoring flakes
+User: /jira.rhaieng-create Bug: selfservice build monitoring flakes
 Assistant: [Uses provided info, infers description and component, confirms, creates]
 ```
 
@@ -151,7 +151,7 @@ Assistant: [Uses provided info, infers description and component, confirms, crea
 
 ```text
 User: File a task for updating the CI pipeline docs
-Assistant: I'll create an AIPCC task. Which component does this fall under?
+Assistant: I'll create an RHAIENG task. Which component does this fall under?
   1. AIPCC Productization
   2. Wheel Package Index
   3. Development Platform

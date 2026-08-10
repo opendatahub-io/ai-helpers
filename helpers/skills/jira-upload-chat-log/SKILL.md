@@ -26,7 +26,7 @@ This skill exports the current conversation as a formatted markdown document and
 
 1. If a ticket key is provided by the user, use it
 2. Otherwise, search the conversation history for JIRA ticket references matching the pattern `[A-Z]+-\d+`
-3. If no ticket is found in context, ask the user: "Which JIRA ticket should I attach this chat log to? (e.g., AIPCC-1234)"
+3. If no ticket is found in context, ask the user: "Which JIRA ticket should I attach this chat log to? (e.g., RHAIENG-1234)"
 
 ### Step 2: Format the Conversation with Summary and Full Transcript
 
@@ -103,21 +103,21 @@ The skill will:
 ## Examples
 
 ### Basic Usage
-```
-User: Upload this chat to AIPCC-7354
-Assistant: [Skill creates formatted chat log and uploads to AIPCC-7354]
+```text
+User: Upload this chat to RHAIENG-7354
+Assistant: [Skill creates formatted chat log and uploads to RHAIENG-7354]
 ```
 
 ### No Ticket Specified
-```
+```text
 User: Upload this conversation to JIRA
-Assistant: Which JIRA ticket should I attach this chat log to? (e.g., AIPCC-1234)
+Assistant: Which JIRA ticket should I attach this chat log to? (e.g., RHAIENG-1234)
 User: RHEL-9876
 Assistant: [Skill uploads to RHEL-9876]
 ```
 
 ### Context Detection
-```
-User: We're working on AIPCC-7354. Can you upload our conversation?
-Assistant: [Skill detects AIPCC-7354 from context and uploads automatically]
+```text
+User: We're working on RHAIENG-7354. Can you upload our conversation?
+Assistant: [Skill detects RHAIENG-7354 from context and uploads automatically]
 ```

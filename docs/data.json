@@ -120,14 +120,6 @@
         "allowed_tools": "Bash Read Grep Glob"
       },
       {
-        "name": "aipcc-commit-suggest",
-        "description": "Generate AIPCC Commits style commit messages or summarize existing commits",
-        "category": "aipcc",
-        "file_path": "helpers/skills/aipcc-commit-suggest/SKILL.md",
-        "id": "aipcc-commit-suggest",
-        "allowed_tools": ""
-      },
-      {
         "name": "code-review",
         "description": "Perform AI code review on a GitLab MR or local branch. Reviews all commits since the base branch, produces structured JSON feedback with inline comments, and posts results to GitLab (CI) or displays them locally. Use when asked to review code changes, do a code review, or run ai-review.\n",
         "category": "general",
@@ -336,20 +328,20 @@
         "allowed_tools": "Bash"
       },
       {
-        "name": "jira-aipcc-create",
-        "description": "Create Jira issues in the AIPCC project. Infers summary, description, type, and component from conversation context, confirms with the user before creating. Use when the user wants to file a new AIPCC Jira issue.",
-        "category": "aipcc",
-        "file_path": "helpers/skills/jira-aipcc-create/SKILL.md",
-        "id": "jira-aipcc-create",
-        "allowed_tools": "Bash, AskUserQuestion"
-      },
-      {
         "name": "jira-autofix-cve-resolve",
         "description": "Use this skill to orchestrate CVE remediation for a Jira Vulnerability ticket. Resolves affected repositories via component-repository-mappings.json, then for each repo and branch: scans, fixes, verifies, and creates PRs. Handles upstream-to-downstream ordering, fork fallback, existing PR detection, VEX justifications, and multi-branch coverage. Writes final verdict to autofix-output/.autofix-verdict.json.",
         "category": "cve remediation",
         "file_path": "helpers/skills/jira-autofix-cve-resolve/SKILL.md",
         "id": "jira-autofix-cve-resolve",
         "allowed_tools": "Read Write Bash Skill"
+      },
+      {
+        "name": "jira-rhaieng-create",
+        "description": "Create Jira issues in the RHAIENG project. Infers summary, description, type, and component from conversation context, confirms with the user before creating. Use when the user wants to file a new RHAIENG Jira issue.",
+        "category": "aipcc",
+        "file_path": "helpers/skills/jira-rhaieng-create/SKILL.md",
+        "id": "jira-rhaieng-create",
+        "allowed_tools": "Bash, AskUserQuestion"
       },
       {
         "name": "jira-sprint-summary",
@@ -361,7 +353,7 @@
       },
       {
         "name": "jira-status-summary",
-        "description": "Update the Status Summary and Color Status fields on AIPCC Feature and Initiative tickets. Fetches child ticket activity via the jira-activity skill, generates a brief summary and sets the red/yellow/green color status. Use when asked to update the status summary for a Jira ticket.\n",
+        "description": "Update the Status Summary and Color Status fields on RHAIENG Feature and Initiative tickets. Fetches child ticket activity via the jira-activity skill, generates a brief summary and sets the red/yellow/green color status. Use when asked to update the status summary for a Jira ticket.\n",
         "category": "aipcc",
         "file_path": "helpers/skills/jira-status-summary/SKILL.md",
         "id": "jira-status-summary",
@@ -582,6 +574,14 @@
         "file_path": "helpers/skills/python-packaging-static-audit/SKILL.md",
         "id": "python-packaging-static-audit",
         "allowed_tools": "Bash Read Grep"
+      },
+      {
+        "name": "rhaieng-commit-suggest",
+        "description": "Generate RHAIENG Commits style commit messages or summarize existing commits",
+        "category": "aipcc",
+        "file_path": "helpers/skills/rhaieng-commit-suggest/SKILL.md",
+        "id": "rhaieng-commit-suggest",
+        "allowed_tools": ""
       },
       {
         "name": "rpm-examine",

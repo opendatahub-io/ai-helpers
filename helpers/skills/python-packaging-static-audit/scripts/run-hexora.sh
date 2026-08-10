@@ -10,7 +10,7 @@ set -euo pipefail
 repo_path="${1:?Usage: $0 <repo-path>}"
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 
-# Default hexora config is based on data analysis done in AIPCC-13294. Modify as needed.
+# Default hexora config is based on data analysis done in RHAIENG-13294. Modify as needed.
 HEXORA_ARGS=(
   audit "$repo_path"
   --output-format json

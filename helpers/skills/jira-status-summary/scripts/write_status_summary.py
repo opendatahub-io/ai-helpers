@@ -20,10 +20,10 @@ Usage:
   write_status_summary.py <ticket-key> --color green --summary "Summary text." --dry-run
 
 Examples:
-  write_status_summary.py AIPCC-12345 --color green --summary "On track. Two epics completed."
-  write_status_summary.py AIPCC-12345 --color yellow --summary "Some delays on Epic X."
-  write_status_summary.py AIPCC-12345 --color red --summary "Blocked on dependency Y."
-  write_status_summary.py AIPCC-12345 --color green --summary "On track." --dry-run
+  write_status_summary.py RHAIENG-12345 --color green --summary "On track. Two epics completed."
+  write_status_summary.py RHAIENG-12345 --color yellow --summary "Some delays on Epic X."
+  write_status_summary.py RHAIENG-12345 --color red --summary "Blocked on dependency Y."
+  write_status_summary.py RHAIENG-12345 --color green --summary "On track." --dry-run
 """
 
 import argparse
@@ -108,7 +108,7 @@ def main() -> None:
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument("ticket_key", help="Jira ticket key (e.g. AIPCC-12345)")
+    parser.add_argument("ticket_key", help="Jira ticket key (e.g. RHAIENG-12345)")
     parser.add_argument(
         "--color",
         required=True,

@@ -1,7 +1,7 @@
 ---
 name: jira-status-summary
 description: >
-  Update the Status Summary and Color Status fields on AIPCC Feature and
+  Update the Status Summary and Color Status fields on RHAIENG Feature and
   Initiative tickets. Fetches child ticket activity via the jira-activity
   skill, generates a brief summary and sets the red/yellow/green color status.
   Use when asked to update the status summary for a Jira ticket.
@@ -11,7 +11,7 @@ user-invocable: true
 
 # Jira Status Summary
 
-Update the "Status Summary" and "Color Status" fields on an AIPCC Feature
+Update the "Status Summary" and "Color Status" fields on an RHAIENG Feature
 or Initiative ticket with an AI-generated summary and health color.
 
 ## Prerequisites
@@ -39,7 +39,7 @@ user can review before committing.
 
 1. If a ticket key is provided by the user, use it
 2. Otherwise, search the conversation history for JIRA ticket references matching the pattern `[A-Z]+-\d+`
-3. If no ticket is found in context, ask the user: "Which ticket should I update the Status Summary for? (e.g., AIPCC-1234)"
+3. If no ticket is found in context, ask the user: "Which ticket should I update the Status Summary for? (e.g., RHAIENG-1234)"
 
 ### Step 2: Fetch Previous Status Summary and Color Status
 
@@ -172,12 +172,12 @@ and ticket permissions.
 
 ### Basic Usage
 ```text
-User: Update the status summary for AIPCC-12345
+User: Update the status summary for RHAIENG-12345
 Assistant: [Fetches activity, analyzes, writes summary to Jira]
 ```
 
 ### Context Detection
 ```text
-User: We're reviewing AIPCC-12345. Can you update the status?
+User: We're reviewing RHAIENG-12345. Can you update the status?
 Assistant: [Detects ticket from context, fetches activity, writes summary]
 ```

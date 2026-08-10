@@ -35,9 +35,9 @@ If the setup check fails, stop execution and guide the user to fix the issue.
 
 Before substituting user-provided values into JQL templates, validate and sanitize the inputs:
 
-1. **Project keys**: Validate against pattern `[A-Z]+` (e.g., AIPCC, RHOAIENG).
+1. **Project keys**: Validate against pattern `[A-Z]+` (e.g., RHAIENG, RHOAIENG).
 2. **Status values**: Quote multi-word statuses (e.g., "In Progress", "Code Review"). Common statuses: To Do, In Progress, Code Review, Done, Blocked.
-3. **Ticket keys**: Validate against pattern `[A-Z]+-[0-9]+` (e.g., AIPCC-1234).
+3. **Ticket keys**: Validate against pattern `[A-Z]+-[0-9]+` (e.g., RHAIENG-1234).
 4. **Numeric values**: Validate that N in `-<N>d` is a positive integer.
 5. **Issue types**: Whitelist common types: Bug, Story, Epic, Feature, Spike, Initiative, Task.
 6. **Components**: Quote multi-word components (e.g., "Wheel Package Index").
@@ -57,7 +57,7 @@ assignee = currentUser() AND resolution = Unresolved ORDER BY updated DESC
 ```jql
 project = <PROJECT> AND status != Done ORDER BY priority DESC, updated DESC
 ```
-Example: `project = AIPCC AND status != Done ORDER BY priority DESC, updated DESC`
+Example: `project = RHAIENG AND status != Done ORDER BY priority DESC, updated DESC`
 
 **Recent updates in a project (last N days):**
 ```jql
@@ -69,19 +69,19 @@ Example: `project = RHOAIENG AND updatedDate >= -7d ORDER BY updated DESC`
 ```jql
 project = <PROJECT> AND status = "<STATUS>" ORDER BY updated DESC
 ```
-Example: `project = AIPCC AND status = "In Progress" ORDER BY updated DESC`
+Example: `project = RHAIENG AND status = "In Progress" ORDER BY updated DESC`
 
 **Tickets by type (single):**
 ```jql
 project = <PROJECT> AND type = <TYPE> ORDER BY updated DESC
 ```
-Example: `project = AIPCC AND type = Feature ORDER BY updated DESC`
+Example: `project = RHAIENG AND type = Feature ORDER BY updated DESC`
 
 **Tickets by type (multiple):**
 ```jql
 project = <PROJECT> AND type IN (<TYPE1>, <TYPE2>, ...) ORDER BY updated DESC
 ```
-Example: `project = AIPCC AND type IN (Feature, Initiative) ORDER BY updated DESC`
+Example: `project = RHAIENG AND type IN (Feature, Initiative) ORDER BY updated DESC`
 
 **Blocked tickets:**
 ```jql
@@ -97,7 +97,7 @@ project = <PROJECT> AND dueDate >= now() AND dueDate <= endOfWeek() AND resoluti
 ```jql
 project = <PROJECT> AND component = "<COMPONENT>" ORDER BY priority DESC
 ```
-Example: `project = AIPCC AND component = "Wheel Package Index" ORDER BY priority DESC`
+Example: `project = RHAIENG AND component = "Wheel Package Index" ORDER BY priority DESC`
 
 **Epics and their children:**
 ```jql
@@ -114,10 +114,10 @@ Search conversation history for ticket keys, then query:
 ```jql
 key IN (<KEY1>, <KEY2>, ...) ORDER BY updated DESC
 ```
-Example: `key IN (AIPCC-1234, AIPCC-5678, RHOAIENG-910) ORDER BY updated DESC`
+Example: `key IN (RHAIENG-1234, RHAIENG-5678, RHOAIENG-910) ORDER BY updated DESC`
 
 **Tips for extracting values:**
-- If user says "AIPCC backlog", use `project = AIPCC`
+- If user says "RHAIENG backlog", use `project = RHAIENG`
 - If user says "in progress tickets", use `status = "In Progress"`
 - If user says "last week", use `updatedDate >= -7d`
 - If user says "Wheel Package Index component", use `component = "Wheel Package Index"`
@@ -134,7 +134,7 @@ Build the JQL query from validated inputs and execute the search:
 # Validate and sanitize inputs extracted from user request
 PROJECT="<project-from-step-2>"
 if [[ ! "$PROJECT" =~ ^[A-Z]+$ ]]; then
-  echo "Error: Invalid project key format. Expected uppercase letters only (e.g., AIPCC, RHOAIENG)"
+  echo "Error: Invalid project key format. Expected uppercase letters only (e.g., RHAIENG, RHOAIENG)"
   exit 1
 fi
 
@@ -177,42 +177,42 @@ acli jira workitem search \
 
 Parse the JSON output and format as a table:
 
-```
-Found 15 tickets matching: project = AIPCC AND status = "In Progress"
+```text
+Found 15 tickets matching: project = RHAIENG AND status = "In Progress"
 
 KEY          STATUS        ASSIGNEE      UPDATED     SUMMARY
 ─────────────────────────────────────────────────────────────────────
-AIPCC-1234   In Progress   code-samurai      2024-03-20  Fix duplicate CI runs
-AIPCC-5678   In Progress   super-picky-reviewer    2024-03-19  Add wheel signing support
-AIPCC-910    In Progress   Unassigned    2024-03-18  Update documentation
+RHAIENG-1234   In Progress   code-samurai      2024-03-20  Fix duplicate CI runs
+RHAIENG-5678   In Progress   super-picky-reviewer    2024-03-19  Add wheel signing support
+RHAIENG-910    In Progress   Unassigned    2024-03-18  Update documentation
 ...
 ```
 
 For smaller result sets (< 10 tickets), show more detail:
 
-```
+```text
 === 3 tickets found ===
 
-1. AIPCC-1234: Fix duplicate CI pipeline runs
+1. RHAIENG-1234: Fix duplicate CI pipeline runs
    Status: In Progress → Code Review
    Assignee: code-samurai
    Priority: High
    Updated: 2024-03-20
-   https://redhat.atlassian.net/browse/AIPCC-1234
+   https://redhat.atlassian.net/browse/RHAIENG-1234
 
-2. AIPCC-5678: Add wheel signing support
+2. RHAIENG-5678: Add wheel signing support
    Status: In Progress
    Assignee: super-picky-reviewer
    Priority: Medium
    Updated: 2024-03-19
-   https://redhat.atlassian.net/browse/AIPCC-5678
+   https://redhat.atlassian.net/browse/RHAIENG-5678
 
-3. AIPCC-910: Update documentation for new API
+3. RHAIENG-910: Update documentation for new API
    Status: In Progress
    Assignee: Unassigned
    Priority: Low
    Updated: 2024-03-18
-   https://redhat.atlassian.net/browse/AIPCC-910
+   https://redhat.atlassian.net/browse/RHAIENG-910
 ```
 
 ### Step 5: Offer Export Options
@@ -238,8 +238,8 @@ echo "Results exported to: $TEMP_CSV"
 
 Extract the list of ticket keys from results and store them for potential bulk operations:
 
-```
-Ticket keys: AIPCC-1234, AIPCC-5678, AIPCC-910
+```text
+Ticket keys: RHAIENG-1234, RHAIENG-5678, RHAIENG-910
 
 Use these keys with other skills for bulk operations.
 ```
@@ -249,7 +249,7 @@ Use these keys with other skills for bulk operations.
 ### Combining Multiple Criteria
 
 ```jql
-project = AIPCC
+project = RHAIENG
   AND status IN ("To Do", "In Progress")
   AND assignee = currentUser()
   AND priority IN (High, Highest)
@@ -266,15 +266,15 @@ project = AIPCC
 ### Text Search
 
 ```jql
-project = AIPCC AND text ~ "wheel building" ORDER BY updated DESC
+project = RHAIENG AND text ~ "wheel building" ORDER BY updated DESC
 ```
 
 ### Custom Fields
 
-For AIPCC-specific fields:
+For RHAIENG-specific fields:
 
 ```jql
-project = AIPCC AND "Color Status" = Red ORDER BY updated DESC
+project = RHAIENG AND "Color Status" = Red ORDER BY updated DESC
 ```
 
 ## Error Handling
@@ -300,9 +300,9 @@ Found 5 open tickets assigned to you:
 ### Project Backlog
 
 ```text
-User: What's in the AIPCC backlog?
-Assistant: [Searches with: project = AIPCC AND status != Done]
-Found 47 tickets in the AIPCC backlog
+User: What's in the RHAIENG backlog?
+Assistant: [Searches with: project = RHAIENG AND status != Done]
+Found 47 tickets in the RHAIENG backlog
 [Displays results with pagination]
 ```
 
@@ -318,7 +318,7 @@ Found 23 tickets updated in the last 7 days
 ### Export to CSV
 
 ```text
-User: Export all AIPCC bugs to CSV
+User: Export all RHAIENG bugs to CSV
 Assistant: [Searches and exports]
 Exported 156 tickets to /tmp/jira-search-results.csv
 ```
@@ -326,10 +326,10 @@ Exported 156 tickets to /tmp/jira-search-results.csv
 ### Refine Search
 
 ```text
-User: /jira-workitem-search project = AIPCC AND status = "In Progress"
+User: /jira-workitem-search project = RHAIENG AND status = "In Progress"
 Assistant: [Shows 15 results]
 User: Only show high priority ones
-Assistant: [Refines to: project = AIPCC AND status = "In Progress" AND priority = High]
+Assistant: [Refines to: project = RHAIENG AND status = "In Progress" AND priority = High]
 Found 3 high-priority tickets in progress
 [Displays refined results]
 ```

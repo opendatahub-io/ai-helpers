@@ -69,8 +69,8 @@ For `needs_info` verdicts, `message_to_opener` must reference the specific faile
 
 ## Example
 
-```
-/triage-bug-readiness AIPCC-1234
+```text
+/triage-bug-readiness RHAIENG-1234
 ```
 
 ## Gotchas
