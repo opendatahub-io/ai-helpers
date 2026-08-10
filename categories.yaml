@@ -46,6 +46,7 @@ CVE Remediation:
   - cve-fix-apply
   - cve-verify
   - cve-vex-assess
+  - notebooks-cve-resolution
 
 Team Management:
   - team-weekly-report
