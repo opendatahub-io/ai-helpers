@@ -45,8 +45,13 @@ bash "${CLAUDE_SKILL_DIR}/scripts/sync-merge.sh" \
   --target-branch "${TARGET_BRANCH}" \
   --upstream-repo "${UPSTREAM_REPO}" \
   --protected-patterns "${PROTECTED_PATTERNS}" \
+  ${CO_AUTHOR:+--co-author "${CO_AUTHOR}"} \
   ${ARGUMENTS:+--commit "${ARGUMENTS}"}
 ```
+
+`--co-author` is optional; pass it (e.g. `Claude <noreply@anthropic.com>`) to
+credit the agent driving the sync as a `Co-authored-by:` trailer on the merge
+commit, alongside the human author.
 
 Exit codes:
 
@@ -60,8 +65,13 @@ Exit codes:
   git -C "${REPO_ROOT}" checkout "${ORIGINAL_BRANCH}"
   git -C "${REPO_ROOT}" branch -D "${BRANCH}"
   ```
-- **3**: duplicate branch exists. Prints `DUPLICATE_BRANCH` lines.
-  Ask user whether to delete and re-run, or abort.
+- **3**: duplicate branch exists. Prints `DUPLICATE_BRANCH` lines. Means a
+  sync branch for this exact upstream tip already exists (e.g. a prior sync
+  PR is still open). Ask the user whether to delete and re-run, or abort.
+- **4**: nothing to sync — the target already contains the upstream tip
+  (e.g. the previous sync PR was merged, or the fork is already current).
+  Prints `NOTHING_TO_SYNC` plus `FULL_SHA`/`SHORT_SHA`/`COMMIT_COUNT 0`. No
+  branch is created. Report "already up to date" and stop; do not open a PR.
 
 ### open-pr.sh
 
@@ -74,10 +84,21 @@ bash "${CLAUDE_SKILL_DIR}/scripts/open-pr.sh" \
   --upstream-repo "${UPSTREAM_REPO}" \
   --upstream-branch "${UPSTREAM_BRANCH}" \
   --full-sha "${FULL_SHA}" \
-  --short-sha "${SHORT_SHA}"
+  --short-sha "${SHORT_SHA}" \
+  ${CONFLICTS:+--conflicts "${CONFLICTS}"} \
+  ${ASSIGNEE:+--assignee "${ASSIGNEE}"}
 ```
 
-Output: `PR_URL\t<url>`.
+Output: `PR_URL\t<url>`. `--assignee` is optional (best-effort; assigning the
+PR author is allowed). If an open PR for the head branch already exists,
+open-pr.sh prints that PR's URL and exits 0 without pushing or duplicating.
+
+The PR body includes a `## Summary` section with commit count and diffstat,
+derived automatically from the sync merge commit's two parents (parent 1 =
+target tip, parent 2 = synced upstream commit). `--conflicts` is optional:
+pass markdown table rows (no header), one per resolved conflict, e.g.
+`` | `OWNERS` | kept ours | ODH-owned file | ``. When supplied, a
+`## Conflict Resolution` section is appended.
 
 ## Summary Template
 
@@ -99,8 +120,10 @@ Sync completed successfully
 - **Fork owner detection**: Always extract from `origin` remote URL, not
   `gh repo view --json owner` (resolves to parent on forks).
 - **SSH vs HTTPS URLs**: The sed pattern in scripts handles both formats.
-- **Protected file globs**: Patterns without `/` match the basename, so
-  `Dockerfile*konflux` matches `services/foo/Dockerfile.konflux`. Patterns
-  with `/` match the relative path, so `.tekton/*.yaml` matches
-  `.tekton/pipeline.yaml`.
+- **Protected file globs**: A bare pattern matches the basename anywhere, so
+  `Dockerfile*konflux` matches `services/foo/Dockerfile.konflux`. A pattern
+  with `/` matches the relative path, so `.tekton/*.yaml` matches
+  `.tekton/pipeline.yaml`. A leading `/` anchors to the repo root, so
+  `/OWNERS` matches only the top-level `OWNERS` — not nested `pkg/.../OWNERS`
+  files that upstream owns. Prefer `/OWNERS /OWNERS_ALIASES` over `OWNERS*`.
 - **Conflict markers after clean merge**: `sync-merge.sh` always scans.
