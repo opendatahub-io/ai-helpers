@@ -8,8 +8,9 @@ Generate the Claude Code marketplace and container settings from plugins/.
 Each plugins/<plugin>/ directory with a .claude-plugin/plugin.json becomes a
 marketplace plugin entry (source ./plugins/<plugin>). External plugins are read
 from claude-external-plugin-sources.json. The container claude-settings.json
-enables the individual odh-* plugins (not the deprecated odh-ai-helpers
-umbrella, which re-exports the same skills via symlinks).
+enables the odh-ai-helpers umbrella (the marketplace's default plugin), which
+re-exports every odh-* skill via symlinks; external plugins are merged into it at
+build time by fetch_external_plugins.py.
 """
 
 import json
@@ -94,19 +95,19 @@ def generate_marketplace(local: List[Dict], external: List[Dict]) -> Dict:
     return {"name": MARKETPLACE_NAME, "owner": {"name": "ODH"}, "plugins": plugins}
 
 
-def generate_settings(local: List[Dict], external: List[Dict]) -> Dict:
-    """Container settings: enable individual odh-* plugins + external plugins."""
+def generate_settings(external: List[Dict]) -> Dict:
+    """Container settings: enable the umbrella (all skills) + external plugins."""
     settings = {
         "extraKnownMarketplaces": {
             MARKETPLACE_NAME: {"source": {"source": "directory", "path": "/opt/ai-helpers"}}
         },
         "enabledPlugins": {},
     }
-    for p in local:
-        if p["name"] == UMBRELLA_PLUGIN:
-            # Deprecated backwards-compat bundle; not enabled by default.
-            continue
-        settings["enabledPlugins"][f"{MARKETPLACE_NAME}@{p['name']}"] = True
+    # Enable the umbrella: it is the marketplace's default plugin (its name matches the
+    # marketplace), so it auto-loads in non-interactive `claude -p`, and it re-exports
+    # every odh-* skill via symlinks. External plugins are merged into it at container
+    # build time by fetch_external_plugins.py.
+    settings["enabledPlugins"][f"{MARKETPLACE_NAME}@{UMBRELLA_PLUGIN}"] = True
     for p in external:
         settings["enabledPlugins"][f"{MARKETPLACE_NAME}@{p['name']}"] = True
     return settings
@@ -139,7 +140,7 @@ def main() -> None:
         for err in dup_errors:
             print(f"Warning: {err}", file=sys.stderr)
 
-    write_json(settings_path, generate_settings(local, external))
+    write_json(settings_path, generate_settings(external))
     print(f"Wrote {settings_path}")
     write_json(marketplace_path, generate_marketplace(local, external))
     print(f"Wrote {marketplace_path}")
