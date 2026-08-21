@@ -26,8 +26,4 @@ rules:
         warn: 4000
         error: 8000
 
-  content-critical-position:
-    enabled: true
-    severity: info
-
 strict: true

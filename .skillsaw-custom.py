@@ -1,7 +1,8 @@
 """
-Custom skillsaw rules for AIPCC AI helpers
+Custom skillsaw rules for the ODH AI Helpers marketplace (plugins/ layout).
 """
 
+import json
 import subprocess
 from typing import List
 
@@ -13,7 +14,7 @@ except ImportError:
 
 
 class PluginsDocUpToDateRule(Rule):
-    """Check that docs/data.json and claude-settings.json are up-to-date."""
+    """Check that generated marketplace/settings/site data are up-to-date."""
 
     @property
     def rule_id(self) -> str:
@@ -22,8 +23,9 @@ class PluginsDocUpToDateRule(Rule):
     @property
     def description(self) -> str:
         return (
-            "docs/data.json and images/claude/claude-settings.json must be"
-            " up-to-date with plugin metadata. Run 'make update' to regenerate."
+            "docs/data.json, .claude-plugin/marketplace.json and"
+            " images/claude/claude-settings.json must be up-to-date with the"
+            " plugins/ tree. Run 'make update' to regenerate."
         )
 
     def default_severity(self) -> Severity:
@@ -32,123 +34,79 @@ class PluginsDocUpToDateRule(Rule):
     def check(self, context: RepositoryContext) -> List[RuleViolation]:
         violations = []
 
-        # Only check marketplace repos
         if not context.has_marketplace():
             return violations
 
-        data_json_path = context.root_path / "docs" / "data.json"
-        claude_settings_path = context.root_path / "images" / "claude" / "claude-settings.json"
-
-        # Check if we have categories.yaml as the source of truth
-        categories_yaml_path = context.root_path / "categories.yaml"
-        if not categories_yaml_path.exists():
+        plugins_dir = context.root_path / "plugins"
+        if not plugins_dir.exists():
             return violations
 
+        generated = {
+            "docs/data.json": context.root_path / "docs" / "data.json",
+            ".claude-plugin/marketplace.json": (
+                context.root_path / ".claude-plugin" / "marketplace.json"
+            ),
+            "images/claude/claude-settings.json": (
+                context.root_path / "images" / "claude" / "claude-settings.json"
+            ),
+        }
+        scripts = [
+            context.root_path / "scripts" / "build-website.py",
+            context.root_path / "scripts" / "update_claude_settings.py",
+        ]
+
         try:
-            # Read current content of files to check
-            original_data_json = data_json_path.read_text() if data_json_path.exists() else None
-            original_claude_settings = (
-                claude_settings_path.read_text() if claude_settings_path.exists() else None
-            )
+            originals = {
+                label: (path.read_text() if path.exists() else None)
+                for label, path in generated.items()
+            }
 
-            # Run build-website.py if it exists
-            website_script_path = context.root_path / "scripts" / "build-website.py"
-            if website_script_path.exists():
+            for script in scripts:
+                if not script.exists():
+                    continue
                 result = subprocess.run(
-                    ["python3", str(website_script_path)],
+                    [str(script)],
                     cwd=str(context.root_path),
                     capture_output=True,
                     text=True,
-                    timeout=30,
+                    timeout=120,
                 )
-
                 if result.returncode != 0:
                     violations.append(
                         self.violation(
-                            f"build-website.py failed: {result.stderr}",
-                            file_path=data_json_path
-                            if data_json_path.exists()
-                            else categories_yaml_path,
+                            f"{script.name} failed: {result.stderr.strip()}",
+                            file_path=plugins_dir,
                         )
                     )
                     return violations
 
-            # Run update_claude_settings.py if it exists
-            claude_settings_script_path = (
-                context.root_path / "scripts" / "update_claude_settings.py"
-            )
-            if claude_settings_script_path.exists():
-                result = subprocess.run(
-                    ["python3", str(claude_settings_script_path)],
-                    cwd=str(context.root_path),
-                    capture_output=True,
-                    text=True,
-                    timeout=30,
-                )
-
-                if result.returncode != 0:
+            for label, path in generated.items():
+                if not path.exists():
+                    continue
+                regenerated = path.read_text()
+                if originals[label] != regenerated:
+                    if originals[label] is not None:
+                        path.write_text(originals[label])
                     violations.append(
                         self.violation(
-                            f"update_claude_settings.py failed: {result.stderr}",
-                            file_path=claude_settings_path
-                            if claude_settings_path.exists()
-                            else categories_yaml_path,
-                        )
-                    )
-                    return violations
-
-            # Check if generated files changed
-
-            # Check if docs/data.json changed
-            if data_json_path.exists():
-                generated_data_json = data_json_path.read_text()
-                if original_data_json != generated_data_json:
-                    # Restore original content
-                    if original_data_json is not None:
-                        data_json_path.write_text(original_data_json)
-
-                    violations.append(
-                        self.violation(
-                            "docs/data.json is out of sync with plugin"
-                            " metadata. Run 'make update' to update.",
-                            file_path=data_json_path,
-                        )
-                    )
-
-            # Check if images/claude-settings.json changed
-            if claude_settings_path.exists():
-                generated_claude_settings = claude_settings_path.read_text()
-                if original_claude_settings != generated_claude_settings:
-                    # Restore original content
-                    if original_claude_settings is not None:
-                        claude_settings_path.write_text(original_claude_settings)
-
-                    violations.append(
-                        self.violation(
-                            "images/claude/claude-settings.json is out of"
-                            " sync with plugin metadata."
-                            " Run 'make update' to update.",
-                            file_path=claude_settings_path,
+                            f"{label} is out of sync with the plugins/ tree."
+                            " Run 'make update' to regenerate.",
+                            file_path=path,
                         )
                     )
 
         except subprocess.TimeoutExpired:
-            violations.append(
-                self.violation("'make update' timed out", file_path=categories_yaml_path)
-            )
+            violations.append(self.violation("'make update' timed out", file_path=plugins_dir))
         except Exception as e:
             violations.append(
-                self.violation(
-                    f"Error checking files up-to-date status: {e}",
-                    file_path=categories_yaml_path,
-                )
+                self.violation(f"Error checking generated files: {e}", file_path=plugins_dir)
             )
 
         return violations
 
 
 class MarketplacePluginsUpToDateRule(Rule):
-    """Check that .claude-plugin/marketplace.json includes all available plugins"""
+    """Check that marketplace.json lists every plugins/<plugin> directory."""
 
     @property
     def rule_id(self) -> str:
@@ -156,7 +114,7 @@ class MarketplacePluginsUpToDateRule(Rule):
 
     @property
     def description(self) -> str:
-        return ".claude-plugin/marketplace.json must include all available plugins"
+        return ".claude-plugin/marketplace.json must include all plugins/ entries"
 
     def default_severity(self) -> Severity:
         return Severity.ERROR
@@ -164,19 +122,12 @@ class MarketplacePluginsUpToDateRule(Rule):
     def check(self, context: RepositoryContext) -> List[RuleViolation]:
         violations = []
 
-        # Only check repos with Claude plugins
         marketplace_path = context.root_path / ".claude-plugin" / "marketplace.json"
-        if not marketplace_path.exists():
-            return violations
-
-        plugins_dir = context.root_path / "claude-plugins"
-        if not plugins_dir.exists():
+        plugins_dir = context.root_path / "plugins"
+        if not marketplace_path.exists() or not plugins_dir.exists():
             return violations
 
         try:
-            import json
-
-            # Read marketplace.json
             with open(marketplace_path, "r") as f:
                 marketplace_data = json.load(f)
 
@@ -189,21 +140,14 @@ class MarketplacePluginsUpToDateRule(Rule):
                 )
                 return violations
 
-            # Get available plugin directories
-            available_plugins = []
-            for plugin_dir in plugins_dir.iterdir():
-                if plugin_dir.is_dir():
-                    available_plugins.append(plugin_dir.name)
+            available_plugins = [p.name for p in plugins_dir.iterdir() if p.is_dir()]
 
-            # Get plugins listed in marketplace.json
             marketplace_plugins = {}
             for plugin in marketplace_data["plugins"]:
                 name = plugin.get("name")
-                source = plugin.get("source")
                 if name:
-                    marketplace_plugins[name] = source
+                    marketplace_plugins[name] = plugin.get("source")
 
-            # Check for missing plugins
             missing_plugins = set(available_plugins) - set(marketplace_plugins.keys())
             if missing_plugins:
                 violations.append(
@@ -214,19 +158,17 @@ class MarketplacePluginsUpToDateRule(Rule):
                     )
                 )
 
-            # Check source paths are correct
-            for plugin_name, source_path in marketplace_plugins.items():
-                if plugin_name in available_plugins:
-                    expected_source = f"./claude-plugins/{plugin_name}"
-                    if source_path != expected_source:
-                        violations.append(
-                            self.violation(
-                                f"Plugin '{plugin_name}' source path should"
-                                f" be '{expected_source}',"
-                                f" got '{source_path}'",
-                                file_path=marketplace_path,
-                            )
+            for plugin_name in available_plugins:
+                source_path = marketplace_plugins.get(plugin_name)
+                expected_source = f"./plugins/{plugin_name}"
+                if source_path is not None and source_path != expected_source:
+                    violations.append(
+                        self.violation(
+                            f"Plugin '{plugin_name}' source path should be"
+                            f" '{expected_source}', got '{source_path}'",
+                            file_path=marketplace_path,
                         )
+                    )
 
         except json.JSONDecodeError as e:
             violations.append(
@@ -240,8 +182,8 @@ class MarketplacePluginsUpToDateRule(Rule):
         return violations
 
 
-class CategoriesYamlValidationRule(Rule):
-    """Validate categories.yaml structure, tool consistency, and prevent duplicates"""
+class PluginsValidationRule(Rule):
+    """Validate the plugins/ structure and prevent duplicate tool names."""
 
     @property
     def rule_id(self) -> str:
@@ -250,9 +192,9 @@ class CategoriesYamlValidationRule(Rule):
     @property
     def description(self) -> str:
         return (
-            "categories.yaml must have valid structure, consistent"
-            " categories, proper tool definitions, and no duplicate"
-            " tool names across types"
+            "plugins/ must have valid structure: each plugin has a"
+            " .claude-plugin/plugin.json matching its directory, every skill has"
+            " a SKILL.md, and no tool name is duplicated across plugins"
         )
 
     def default_severity(self) -> Severity:
@@ -261,75 +203,62 @@ class CategoriesYamlValidationRule(Rule):
     def check(self, context: RepositoryContext) -> List[RuleViolation]:
         violations = []
 
-        # Check if categories.yaml exists
-        categories_yaml_path = context.root_path / "categories.yaml"
-        if not categories_yaml_path.exists():
+        plugins_dir = context.root_path / "plugins"
+        if not plugins_dir.exists():
             if context.has_marketplace():
                 violations.append(
                     self.violation(
-                        "categories.yaml is required for marketplace repos",
-                        file_path=categories_yaml_path,
+                        "plugins/ directory is required for marketplace repos",
+                        file_path=plugins_dir,
                     )
                 )
             return violations
 
-        # Run the validation script
         validation_script_path = context.root_path / "scripts" / "validate_tools.py"
         if not validation_script_path.exists():
             violations.append(
                 self.violation(
-                    "scripts/validate_tools.py not found but categories.yaml exists",
-                    file_path=categories_yaml_path,
+                    "scripts/validate_tools.py not found but plugins/ exists",
+                    file_path=plugins_dir,
                 )
             )
             return violations
 
         try:
             result = subprocess.run(
-                ["python3", str(validation_script_path), str(categories_yaml_path)],
+                ["python3", str(validation_script_path), str(plugins_dir)],
                 cwd=str(context.root_path),
                 capture_output=True,
                 text=True,
-                timeout=30,
+                timeout=60,
             )
 
             if result.returncode != 0:
                 output = "\n".join(part for part in [result.stdout, result.stderr] if part)
-                # Parse the validation errors from the script output
-                error_lines = output.strip().split("\n")
-                # Find the lines that contain actual errors (start with ✗)
-                for line in error_lines:
+                for line in output.strip().split("\n"):
                     if line.strip().startswith("✗"):
-                        error_msg = line.strip()[2:].strip()  # Remove ✗ prefix
+                        error_msg = line.strip()[1:].strip()
                         violations.append(
                             self.violation(
-                                f"categories.yaml validation error: {error_msg}",
-                                file_path=categories_yaml_path,
+                                f"plugins validation error: {error_msg}",
+                                file_path=plugins_dir,
                             )
                         )
-
-                # If no specific errors found, use the full output
                 if not violations:
                     violations.append(
                         self.violation(
-                            f"categories.yaml validation failed: {output.strip()}",
-                            file_path=categories_yaml_path,
+                            f"plugins validation failed: {output.strip()}",
+                            file_path=plugins_dir,
                         )
                     )
 
         except subprocess.TimeoutExpired:
             violations.append(
-                self.violation(
-                    "categories.yaml validation script timed out",
-                    file_path=categories_yaml_path,
-                )
+                self.violation("plugins validation script timed out", file_path=plugins_dir)
             )
         except Exception as e:
             violations.append(
-                self.violation(
-                    f"Error running categories.yaml validation: {e}",
-                    file_path=categories_yaml_path,
-                )
+                self.violation(f"Error running plugins validation: {e}", file_path=plugins_dir)
             )
 
         return violations

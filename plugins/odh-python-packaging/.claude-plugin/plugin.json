@@ -1,0 +1,8 @@
+{
+  "name": "odh-python-packaging",
+  "description": "Python package analysis, security auditing, and build complexity assessment",
+  "version": "0.1.0",
+  "author": {
+    "name": "opendatahub-io"
+  }
+}

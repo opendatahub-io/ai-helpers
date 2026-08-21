@@ -18,10 +18,10 @@ python3 scripts/build-website.py
 ```
 
 This extracts information from:
-- `categories.yaml` - Centralized category registry
-- `helpers/skills/*/SKILL.md` - Skill definitions
-- `helpers/agents/*.md` - Agent definitions
-- `helpers/gems/gems.yaml` - Gemini Gems definitions
+- `plugins/<plugin>/.claude-plugin/plugin.json` - Plugin (category) definitions
+- `plugins/<plugin>/skills/*/SKILL.md` - Skill definitions
+- `plugins/<plugin>/agents/*.md` - Agent definitions
+- `gems/gems.yaml` - Gemini Gems definitions
 
 ## Local Development
 

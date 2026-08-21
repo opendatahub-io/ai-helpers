@@ -27,7 +27,7 @@ Thank you for your interest in contributing to the AI Helpers marketplace! This 
    git checkout -b my-new-tool
    ```
 
-If you're new to the project, start by browsing the [marketplace website](https://opendatahub-io.github.io/ai-helpers/) and the existing tools in the `helpers/` directory to see how things are structured.
+If you're new to the project, start by browsing the [marketplace website](https://opendatahub-io.github.io/ai-helpers/) and the existing tools in the `plugins/` directory to see how things are structured.
 
 ## Ways to Contribute
 
@@ -41,9 +41,9 @@ This is the most common type of contribution. The repository hosts four tool typ
 
 | Type | Location | Format |
 |------|----------|--------|
-| **Skills** | `helpers/skills/<name>/` | Directory with `SKILL.md` and optional `scripts/` |
-| **Agents** | `helpers/agents/` | Single Markdown file |
-| **Gemini Gems** | `helpers/gems/` | Entry in `gems.yaml` |
+| **Skills** | `plugins/<plugin>/skills/<name>/` | Directory with `SKILL.md` and optional `scripts/` |
+| **Agents** | `plugins/<plugin>/agents/` | Single Markdown file |
+| **Gemini Gems** | `gems/` | Entry in `gems.yaml` |
 
 ### Fix a Bug or Improve Existing Tools
 
@@ -93,10 +93,10 @@ To test a skill with Claude Code before submitting:
 
 ### Skills
 
-Skills are the most full-featured tool type. Create a new directory under `helpers/skills/`:
+Skills are the most full-featured tool type. Create a new directory under the relevant plugin's `skills/` (e.g. `plugins/odh-jira/skills/`):
 
 ```text
-helpers/skills/my-skill/
+plugins/odh-jira/skills/my-skill/
 ├── SKILL.md          # Required: skill definition with frontmatter
 └── scripts/          # Optional: supporting scripts
     └── run.py
@@ -125,28 +125,23 @@ Common optional fields:
 | `compatibility` | List runtime requirements (e.g., `python3, git`) |
 | `metadata` | Block for `author`, `version`, and `tags` |
 
-Study existing skills in `helpers/skills/` for examples of structure and patterns.
+Study existing skills in `plugins/<plugin>/skills/` for examples of structure and patterns.
 
 ### Agents
 
-Agents are Markdown files in `helpers/agents/`:
+Agents are Markdown files in a plugin's `agents/` directory:
 
 ```text
-helpers/agents/my-agent.md
+plugins/<plugin>/agents/my-agent.md
 ```
 
 ### Gemini Gems
 
-Add your Gem to `helpers/gems/gems.yaml`. See the [Gemini Gems README](helpers/gems/README.md) for details.
+Add your Gem to `gems/gems.yaml`. See the [Gemini Gems README](gems/README.md) for details.
 
 ### Categorization
 
-Tools are automatically placed in the "General" category. If your tool belongs to a specialized category, add it to `categories.yaml`:
-
-```yaml
-YourCategory:
-  - my-tool-name
-```
+Each plugin directory is its own category. To add a tool to an existing category, place it in that plugin's `skills/` (or `agents/`) directory. To create a new category, add a new `plugins/<plugin>/` directory with its own `.claude-plugin/plugin.json`, then run `make update`.
 
 ## Submitting Your Contribution
 

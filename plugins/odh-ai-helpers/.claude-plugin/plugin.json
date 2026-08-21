@@ -1,0 +1,8 @@
+{
+  "name": "odh-ai-helpers",
+  "description": "[DEPRECATED] Backwards-compatibility bundle re-exporting every ODH AI Helpers skill under the original odh-ai-helpers:* names. Install the individual odh-* plugins you need instead; this bundle is removed after the migration window.",
+  "version": "0.1.0",
+  "author": {
+    "name": "opendatahub-io"
+  }
+}

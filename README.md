@@ -26,17 +26,17 @@ Want to work on an issue? Comment `/assign` on it to assign yourself.
 
 This repository is made for collaboration. We highly welcome contributions.
 
-For skills, check out the `helpers/skills/` directory for examples.
-For agents, see the `helpers/agents/` directory.
+For skills, browse the `plugins/<plugin>/skills/` directories for examples.
+For agents, see `plugins/<plugin>/agents/`.
 Using AI code assistant itself to develop the tools is highly encouraged.
 
 ### Adding New Tools
 
 When contributing new tools:
 
-1. **Skills**: Add to the `helpers/skills/` directory following the agentskills.io format
-2. **Agents**: Add to the `helpers/agents/` directory with appropriate documentation
-3. **Gemini Gems**: Add to the `helpers/gems/` directory
+1. **Skills**: Add to the appropriate `plugins/<plugin>/skills/` directory following the agentskills.io format
+2. **Agents**: Add to the appropriate `plugins/<plugin>/agents/` directory with appropriate documentation
+3. **Gemini Gems**: Add to the `gems/` directory
 
 Once you have added the tool, you'd have to run have to run `make update` in order to generate the website data.
 Then you should git commit your change and after than running `make lint` would run local tests to validate the syntax.
@@ -49,43 +49,27 @@ Then you should git commit your change and after than running `make lint` would 
 4. Test plugin and remove local marketplace after done testing which will remove plugin
 5. You can now reinstall from the git marketplace
 
-## Tool Registry
+## Plugin Structure
 
-The AI Helpers marketplace uses a centralized category registry in `categories.yaml` to organize specialized tools by category. **Tools not listed in any category are automatically placed in the "General" category** - perfect for most contributions!
+Tools are organized into per-domain plugins under `plugins/`. Each `plugins/<plugin>/`
+directory is an independently installable Claude Code plugin (and doubles as the tool's
+category on the website):
 
-### Category Registry Structure
-
-Specialized tool categories are registered in `categories.yaml`:
-
-```yaml
-CategoryName:
-  - specialized-tool
-  - another-tool
-
-AnotherCategory:
-  - domain-specific-tool
+```text
+plugins/odh-jira/
+  .claude-plugin/plugin.json   # plugin name + description
+  skills/<skill>/SKILL.md      # one directory per skill
+  agents/<agent>.md            # optional agents
 ```
 
-### Adding a New Category
+To add a tool, drop it into the relevant plugin's `skills/` (or `agents/`) directory, or
+create a new `plugins/<plugin>/` directory with its own `.claude-plugin/plugin.json`. Then
+run `make update` to regenerate the marketplace, settings, and website data. The build
+system infers tool types from the filesystem and prevents duplicate tool names across
+plugins.
 
-To add a new category, edit `categories.yaml` to include the new category as a top-level key:
-
-1. **Add category with tools**:
-   ```yaml
-   YourCategory:
-     - your-tool-name
-     - another-tool
-   ```
-
-2. **Update documentation**: Run `make update` to regenerate the website
-
-### Automatic Management
-
-The build system automatically handles tool organization and validation:
-- Tools not in `categories.yaml` are automatically assigned to "General" category
-- Tool types are inferred from filesystem structure
-- Duplicate tool names across categories are prevented
-- All tools require valid names and types
+> The deprecated `odh-ai-helpers` umbrella plugin re-exports every skill under the legacy
+> `odh-ai-helpers:*` names for backwards compatibility and is excluded from these checks.
 
 
 ## Using with Claude Code
@@ -106,15 +90,20 @@ the [official Claude Code plugins documentation](https://docs.claude.com/en/docs
    ```
 
 
-2. **Install a plugin:**
+2. **Install the plugins you need:**
    ```bash
-   /plugin install odh-ai-helpers
+   /plugin install odh-jira
+   /plugin install odh-python-packaging
    ```
+
+> [!NOTE]
+> The `odh-ai-helpers` umbrella installs everything under the legacy `odh-ai-helpers:*`
+> names but is **deprecated** — prefer the individual `odh-*` plugins.
 
 > [!TIP]
 > To browse and install multiple plugins interactively, use `/plugin` after adding the marketplace.
 > This will show you all available plugins and allow you to install them selectively.
-> For a complete list of all available tools, see **[categories.yaml](categories.yaml)** or visit our [website](https://opendatahub-io.github.io/ai-helpers/).
+> For a complete list of all available tools, visit our [website](https://opendatahub-io.github.io/ai-helpers/).
 
 3. **Use the commands:**
    ```bash
@@ -301,17 +290,17 @@ cursor-container() {
 2. **Install globally:**
    ```bash
    mkdir -p ~/.config/opencode/skills
-   ln -sf $(pwd)/helpers/skills/* ~/.config/opencode/skills/
+   ln -sf $(pwd)/plugins/*/skills/* ~/.config/opencode/skills/
    ```
 
 These helpers are available when loading the odh-ai-helpers plugin from the marketplace as instructed above.
 
 ## Gemini Gems
 
-The `helpers/gems/` directory contains a curated collection of Gemini Gems - specialized AI assistants for various
+The `gems/` directory contains a curated collection of Gemini Gems - specialized AI assistants for various
 development tasks. These can be accessed directly through Google's Gemini platform.
 
-For detailed information about using and contributing Gemini Gems, see [helpers/gems/README.md](helpers/gems/README.md).
+For detailed information about using and contributing Gemini Gems, see [gems/README.md](gems/README.md).
 
 ## Validating Tools
 

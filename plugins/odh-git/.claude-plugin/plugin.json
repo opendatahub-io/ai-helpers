@@ -1,0 +1,8 @@
+{
+  "name": "odh-git",
+  "description": "Git utilities, GitHub/GitLab workflow automation, and CI debugging",
+  "version": "0.1.0",
+  "author": {
+    "name": "opendatahub-io"
+  }
+}

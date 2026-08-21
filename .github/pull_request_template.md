@@ -55,7 +55,7 @@
 - [ ] Gemini: Created Gem in Gemini platform and verified sharing link works (if applicable)
 
 ## Categorization
-- [ ] Tool is properly categorized in `categories.yaml` (or uses default "General" category)
+- [ ] Tool is placed in the appropriate `plugins/<plugin>/` directory (or a new plugin directory for a new category)
 
 ## Ethical Guidelines Compliance
 - [ ] ✅ No real people are referenced by name in examples or documentation

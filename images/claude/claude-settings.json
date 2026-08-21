@@ -8,7 +8,22 @@
     }
   },
   "enabledPlugins": {
-    "odh-ai-helpers@odh-ai-helpers": true,
+    "odh-ai-helpers@odh-code-quality": true,
+    "odh-ai-helpers@odh-documentation": true,
+    "odh-ai-helpers@odh-general": true,
+    "odh-ai-helpers@odh-git": true,
+    "odh-ai-helpers@odh-google-workspace": true,
+    "odh-ai-helpers@odh-jira": true,
+    "odh-ai-helpers@odh-konflux": true,
+    "odh-ai-helpers@odh-llm-d": true,
+    "odh-ai-helpers@odh-maas": true,
+    "odh-ai-helpers@odh-modules": true,
+    "odh-ai-helpers@odh-python-packaging": true,
+    "odh-ai-helpers@odh-pytorch": true,
+    "odh-ai-helpers@odh-rpm": true,
+    "odh-ai-helpers@odh-security": true,
+    "odh-ai-helpers@odh-team": true,
+    "odh-ai-helpers@odh-vllm": true,
     "odh-ai-helpers@fips-compliance-checker": true,
     "odh-ai-helpers@autofix-skills": true
   }

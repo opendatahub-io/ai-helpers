@@ -1161,8 +1161,8 @@
                 const category = categories[categoryKey];
                 const categoryName = category.name || categoryKey;
 
-                // Only check "general" category by default, uncheck all others
-                const isChecked = categoryKey === 'general' ? 'checked' : '';
+                // Check every category by default so all tools are visible on load
+                const isChecked = 'checked';
 
                 const checkboxHtml = `
                     <label class="filter-checkbox">
@@ -1347,7 +1347,7 @@
                 <div style="margin-bottom: 1.5rem;">
                     <div style="margin-bottom: 1rem;">
                         <div style="font-weight: 600; margin-bottom: 0.5rem;">Claude Code</div>
-                        <div style="font-size: 0.875rem; color: var(--text-secondary);">Available through the odh-ai-helpers plugin loaded by marketplace as instructed.</div>
+                        <div style="font-size: 0.875rem; color: var(--text-secondary);">Available in the <code>${tool.category}</code> plugin &mdash; install with <code>/plugin install ${tool.category}@odh-ai-helpers</code> (after adding the marketplace; see How to Install). Also included in the deprecated <code>odh-ai-helpers</code> umbrella.</div>
                     </div>
 
                     <div style="margin-bottom: 1rem;">
@@ -1664,7 +1664,7 @@
                 </h3>
 
                 <p style="margin-bottom: 1rem; color: var(--text-secondary);">
-                    Install plugins from the ODH ai-helpers marketplace:
+                    Add the marketplace, then install the plugins you need:
                 </p>
 
                 <div style="position: relative; margin-bottom: 1rem;">
@@ -1677,15 +1677,19 @@
                     </button>
                 </div>
 
-                <div style="position: relative; margin-bottom: 1rem;">
-                    <div class="code-block" style="padding-right: 5rem;">/plugin install odh-ai-helpers</div>
-                    <button class="copy-button" onclick="copyToClipboard('/plugin install odh-ai-helpers', event)" title="Copy to clipboard">
+                <div style="position: relative; margin-bottom: 0.75rem;">
+                    <div class="code-block" style="padding-right: 5rem;">/plugin install odh-jira@odh-ai-helpers</div>
+                    <button class="copy-button" onclick="copyToClipboard('/plugin install odh-jira@odh-ai-helpers', event)" title="Copy to clipboard">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M5.75 4.75H10.25V1.75H5.75V4.75ZM5.75 4.75H2.75V14.25H10.25V11.25M5.75 4.75V7.75H13.25V14.25H10.25V11.25M10.25 11.25H13.25V7.75H5.75V4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                         <span class="copy-button-text">Copy</span>
                     </button>
                 </div>
+
+                <p style="margin-bottom: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                    Replace <code style="background: var(--bg-code); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.85em;">odh-jira</code> with any plugin (each tool's plugin is shown as its category above), or run <code style="background: var(--bg-code); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.85em;">/plugin</code> to browse and install interactively. The <code style="background: var(--bg-code); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.85em;">odh-ai-helpers</code> umbrella installs everything under the legacy <code style="background: var(--bg-code); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.85em;">odh-ai-helpers:*</code> names but is <strong>deprecated</strong>.
+                </p>
 
                 <p style="margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 600;">
                     Updating
@@ -1730,8 +1734,8 @@
                 </div>
 
                 <div style="position: relative; margin-bottom: 1.5rem;">
-                    <div class="code-block" style="padding-right: 5rem;">ln -sf $(pwd)/helpers/skills/* ~/.cursor/skills/ && ln -sf $(pwd)/helpers/agents/* ~/.cursor/agents/</div>
-                    <button class="copy-button" onclick="copyToClipboard('ln -sf $(pwd)/helpers/skills/* ~/.cursor/skills/ && ln -sf $(pwd)/helpers/agents/* ~/.cursor/agents/', event)" title="Copy to clipboard">
+                    <div class="code-block" style="padding-right: 5rem;">ln -sf $(pwd)/plugins/*/skills/* ~/.cursor/skills/ && ln -sf $(pwd)/plugins/*/agents/* ~/.cursor/agents/</div>
+                    <button class="copy-button" onclick="copyToClipboard('ln -sf $(pwd)/plugins/*/skills/* ~/.cursor/skills/ && ln -sf $(pwd)/plugins/*/agents/* ~/.cursor/agents/', event)" title="Copy to clipboard">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M5.75 4.75H10.25V1.75H5.75V4.75ZM5.75 4.75H2.75V14.25H10.25V11.25M5.75 4.75V7.75H13.25V14.25H10.25V11.25M10.25 11.25H13.25V7.75H5.75V4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
@@ -1792,8 +1796,8 @@
                 </div>
 
                 <div style="position: relative; margin-bottom: 1.5rem;">
-                    <div class="code-block" style="padding-right: 5rem;">ln -sf $(pwd)/helpers/skills/* ~/.config/opencode/skills/</div>
-                    <button class="copy-button" onclick="copyToClipboard('ln -sf $(pwd)/helpers/skills/* ~/.config/opencode/skills/', event)" title="Copy to clipboard">
+                    <div class="code-block" style="padding-right: 5rem;">ln -sf $(pwd)/plugins/*/skills/* ~/.config/opencode/skills/</div>
+                    <button class="copy-button" onclick="copyToClipboard('ln -sf $(pwd)/plugins/*/skills/* ~/.config/opencode/skills/', event)" title="Copy to clipboard">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M5.75 4.75H10.25V1.75H5.75V4.75ZM5.75 4.75H2.75V14.25H10.25V11.25M5.75 4.75V7.75H13.25V14.25H10.25V11.25M10.25 11.25H13.25V7.75H5.75V4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
