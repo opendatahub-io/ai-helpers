@@ -1,0 +1,8 @@
+{
+  "name": "odh-vllm",
+  "description": "vLLM backport triage, cherry-pick automation, and requirements comparison",
+  "version": "0.1.0",
+  "author": {
+    "name": "opendatahub-io"
+  }
+}

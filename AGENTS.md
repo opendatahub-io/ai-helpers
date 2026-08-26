@@ -16,17 +16,17 @@ This enables teams to automate repetitive tasks, integrate with development tool
 ### Skills
 Standardized capabilities that work across multiple AI platforms using the agentskills.io specification. Skills provide reusable functionality with cross-platform compatibility.
 
-**→ Located in [helpers/skills/](helpers/skills/) directory**
+**→ Located in each plugin's `skills/` subdirectory under [plugins/](plugins/)**
 
 ### Agents
 Specialized AI entities capable of complex reasoning and multi-step workflows. Agents maintain context and can execute sophisticated analysis within their domain of expertise.
 
-**→ Located in [helpers/agents/](helpers/agents/) directory**
+**→ Located in a plugin's `agents/` subdirectory under [plugins/](plugins/)**
 
 ### Gemini Gems
 Conversational AI assistants created within Google's Gemini platform. Each Gem is tailored with specific instructions and knowledge bases for particular domains or tasks.
 
-**→ For detailed Gemini Gems instructions, see [Gemini Gems README](helpers/gems/README.md)**
+**→ For detailed Gemini Gems instructions, see [Gemini Gems README](gems/README.md)**
 
 ## Platform Support
 
@@ -70,22 +70,18 @@ Conversational AI assistants created within Google's Gemini platform. Each Gem i
    - Update relevant documentation
    - Submit a merge request with your changes
 
-## Tool Registry
+## Plugin Structure
 
-The marketplace uses a centralized category registry in `categories.yaml` to organize specialized tools by category. **Tools not listed in any category are automatically placed in the "General" category**, providing a clean organization system that requires no action from contributors for basic tools.
+Tools are organized into per-domain plugins under `plugins/`. Each `plugins/<plugin>/` directory is an independently installable Claude Code plugin (and doubles as the tool's category on the website), with a `.claude-plugin/plugin.json`, a `skills/` subdirectory, and an optional `agents/` subdirectory:
 
-### Category Registry Structure
-
-Specialized tool categories are defined in `categories.yaml` at the repository root:
-
-```yaml
-CategoryName:
-  - specialized-tool
-  - another-tool
-
-AnotherCategory:
-  - domain-specific-tool
+```text
+plugins/odh-jira/
+  .claude-plugin/plugin.json
+  skills/<skill>/SKILL.md
+  agents/<agent>.md
 ```
+
+To add a category, create a new `plugins/<plugin>/` directory with its own `.claude-plugin/plugin.json`, then run `make update`. The deprecated `odh-ai-helpers` umbrella plugin re-exports every skill under the legacy `odh-ai-helpers:*` names for backwards compatibility.
 
 ## Ethical Guidelines
 
@@ -139,7 +135,7 @@ These rules prevent the most common review findings. Follow them when generating
 
 ## Getting Started
 
-1. **Explore Existing Tools**: Browse [categories.yaml](categories.yaml) for categorized tools or visit our [website](https://opendatahub-io.github.io/ai-helpers/)
+1. **Explore Existing Tools**: Browse the [plugins/](plugins/) directory or visit our [website](https://opendatahub-io.github.io/ai-helpers/)
 2. **Choose Your Platform**: Review platform-specific READMEs for detailed guidance
 3. **Study Examples**: Look at existing implementations for structure and patterns
 4. **Start Contributing**: Follow the development workflow for your chosen platform

@@ -1,0 +1,8 @@
+{
+  "name": "odh-general",
+  "description": "General-purpose helpers and learning mode",
+  "version": "0.1.0",
+  "author": {
+    "name": "opendatahub-io"
+  }
+}

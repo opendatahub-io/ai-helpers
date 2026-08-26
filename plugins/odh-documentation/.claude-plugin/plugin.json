@@ -1,0 +1,8 @@
+{
+  "name": "odh-documentation",
+  "description": "AsciiDoc documentation generation, validation, review, and ADR review",
+  "version": "0.1.0",
+  "author": {
+    "name": "opendatahub-io"
+  }
+}

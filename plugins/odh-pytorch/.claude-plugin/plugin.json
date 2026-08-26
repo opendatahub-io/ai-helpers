@@ -1,0 +1,8 @@
+{
+  "name": "odh-pytorch",
+  "description": "PyTorch cross-language analysis with TorchTalk",
+  "version": "0.1.0",
+  "author": {
+    "name": "opendatahub-io"
+  }
+}

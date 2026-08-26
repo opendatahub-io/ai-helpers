@@ -1,0 +1,8 @@
+{
+  "name": "odh-rpm",
+  "description": "RPM build failure analysis and non-Red Hat RPM detection",
+  "version": "0.1.0",
+  "author": {
+    "name": "opendatahub-io"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "odh-code-quality",
+  "description": "CodeRabbit review triage and project-conformant unit test generation",
+  "version": "0.1.0",
+  "author": {
+    "name": "opendatahub-io"
+  }
+}
