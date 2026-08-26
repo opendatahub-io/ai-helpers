@@ -57,11 +57,18 @@ USER cursor
 # Install Cursor CLI
 RUN curl -fsSL https://cursor.com/install | bash
 
-# Install ai-helpers skills, commands, and agents for Cursor
-RUN mkdir -p /home/cursor/.cursor/skills /home/cursor/.cursor/commands && \
-    ln -s /opt/ai-helpers/helpers/skills/* /home/cursor/.cursor/skills/ && \
-    ln -s /opt/ai-helpers/helpers/commands/* /home/cursor/.cursor/commands/ && \
-    ln -s /opt/ai-helpers/helpers/agents/* /home/cursor/.cursor/skills/
+# Install ai-helpers skills and agents for Cursor (excluding the deprecated umbrella,
+# which re-exports every skill via symlinks and would collide with the real dirs)
+RUN mkdir -p /home/cursor/.cursor/skills && \
+    for d in /opt/ai-helpers/plugins/*/skills/*/; do \
+        case "$d" in */odh-ai-helpers/*) continue ;; esac; \
+        ln -s "${d%/}" "/home/cursor/.cursor/skills/$(basename "$d")"; \
+    done && \
+    for a in /opt/ai-helpers/plugins/*/agents/*.md; do \
+        case "$a" in */odh-ai-helpers/*) continue ;; esac; \
+        [ -e "$a" ] || continue; \
+        ln -s "$a" "/home/cursor/.cursor/skills/$(basename "$a")"; \
+    done
 
 # Set Cursor Agent CLI as the default command
 # --trust: skip workspace trust prompt

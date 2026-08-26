@@ -1,0 +1,8 @@
+{
+  "name": "odh-modules",
+  "description": "ODH module operator scaffolding, migration, and compliance checks",
+  "version": "0.1.0",
+  "author": {
+    "name": "opendatahub-io"
+  }
+}

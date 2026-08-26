@@ -22,9 +22,88 @@
     },
     {
       "name": "odh-ai-helpers",
-      "source": "./helpers",
-      "description": "AI automation tools, plugins, and assistants for enhanced productivity",
-      "strict": false
+      "source": "./plugins/odh-ai-helpers",
+      "description": "[DEPRECATED] Backwards-compatibility bundle re-exporting every ODH AI Helpers skill under the original odh-ai-helpers:* names. Install the individual odh-* plugins you need instead; this bundle is removed after the migration window."
+    },
+    {
+      "name": "odh-code-quality",
+      "source": "./plugins/odh-code-quality",
+      "description": "CodeRabbit review triage and project-conformant unit test generation"
+    },
+    {
+      "name": "odh-documentation",
+      "source": "./plugins/odh-documentation",
+      "description": "AsciiDoc documentation generation, validation, review, and ADR review"
+    },
+    {
+      "name": "odh-general",
+      "source": "./plugins/odh-general",
+      "description": "General-purpose helpers and learning mode"
+    },
+    {
+      "name": "odh-git",
+      "source": "./plugins/odh-git",
+      "description": "Git utilities, GitHub/GitLab workflow automation, and CI debugging"
+    },
+    {
+      "name": "odh-google-workspace",
+      "source": "./plugins/odh-google-workspace",
+      "description": "Gmail, Google Calendar, Docs, and Drive integration"
+    },
+    {
+      "name": "odh-jira",
+      "source": "./plugins/odh-jira",
+      "description": "Jira ticket management, search, triage, and automation"
+    },
+    {
+      "name": "odh-konflux",
+      "source": "./plugins/odh-konflux",
+      "description": "Konflux application and component management"
+    },
+    {
+      "name": "odh-llm-d",
+      "source": "./plugins/odh-llm-d",
+      "description": "llm-d release orchestration for opendatahub-io"
+    },
+    {
+      "name": "odh-maas",
+      "source": "./plugins/odh-maas",
+      "description": "MaaS nightly QE impact analysis"
+    },
+    {
+      "name": "odh-modules",
+      "source": "./plugins/odh-modules",
+      "description": "ODH module operator scaffolding, migration, and compliance checks"
+    },
+    {
+      "name": "odh-python-packaging",
+      "source": "./plugins/odh-python-packaging",
+      "description": "Python package analysis, security auditing, and build complexity assessment"
+    },
+    {
+      "name": "odh-pytorch",
+      "source": "./plugins/odh-pytorch",
+      "description": "PyTorch cross-language analysis with TorchTalk"
+    },
+    {
+      "name": "odh-rpm",
+      "source": "./plugins/odh-rpm",
+      "description": "RPM build failure analysis and non-Red Hat RPM detection"
+    },
+    {
+      "name": "odh-security",
+      "source": "./plugins/odh-security",
+      "description": "Supply-chain security alerting and OCI image CVE comparison"
+    },
+    {
+      "name": "odh-team",
+      "source": "./plugins/odh-team",
+      "description": "Team weekly reports, engineer activity snapshots, and delivery postmortems"
+    },
+    {
+      "name": "odh-vllm",
+      "source": "./plugins/odh-vllm",
+      "description": "vLLM backport triage, cherry-pick automation, and requirements comparison"
     }
   ]
 }

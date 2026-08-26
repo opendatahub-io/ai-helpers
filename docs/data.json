@@ -2,44 +2,56 @@
   "name": "odh-ai-helpers",
   "owner": "ODH",
   "categories": {
-    "general": {
-      "name": "General"
+    "odh-code-quality": {
+      "name": "Code Quality"
     },
-    "aipcc": {
-      "name": "AIPCC"
-    },
-    "pytorch": {
-      "name": "PyTorch"
-    },
-    "documentation": {
+    "odh-documentation": {
       "name": "Documentation"
     },
-    "vllm": {
-      "name": "vLLM"
+    "odh-general": {
+      "name": "General"
     },
-    "jira management": {
-      "name": "Jira Management"
+    "odh-git": {
+      "name": "Git"
     },
-    "cve remediation": {
-      "name": "CVE Remediation"
+    "odh-google-workspace": {
+      "name": "Google Workspace"
     },
-    "team management": {
-      "name": "Team Management"
+    "odh-jira": {
+      "name": "Jira"
     },
-    "git workflows": {
-      "name": "Git Workflows"
+    "odh-konflux": {
+      "name": "Konflux"
     },
-    "compliance": {
-      "name": "Compliance"
-    },
-    "llm-d": {
+    "odh-llm-d": {
       "name": "LLM-D"
     },
-    "odh modules": {
+    "odh-maas": {
+      "name": "MaaS"
+    },
+    "odh-modules": {
       "name": "ODH Modules"
     },
-    "maas": {
-      "name": "MaaS"
+    "odh-python-packaging": {
+      "name": "Python Packaging"
+    },
+    "odh-pytorch": {
+      "name": "PyTorch"
+    },
+    "odh-rpm": {
+      "name": "RPM"
+    },
+    "odh-security": {
+      "name": "Security"
+    },
+    "odh-team": {
+      "name": "Team"
+    },
+    "odh-vllm": {
+      "name": "vLLM"
+    },
+    "gems": {
+      "name": "Gemini Gems"
     }
   },
   "tools": {
@@ -47,679 +59,616 @@
       {
         "name": "aipcc-adr-assistant",
         "description": "My purpose is to help you generate well-structured Architecture Decision Records (ADRs) in AIPCC. You provide the relevant documents and notes, and I will synthesize that information to populate a predefined ADR template.",
-        "category": "aipcc",
-        "file_path": "",
+        "category": "gems",
         "link": "https://gemini.google.com/gem/11WO66DX_4-MQHIF6fj4LeM8dKxDzkz17?usp=sharing"
       },
       {
         "name": "codebase-explainer",
         "description": "Your AI guide for code exploration. I help you understand complex repositories, from big-picture overviews to file-level details.",
-        "category": "general",
-        "file_path": "",
+        "category": "gems",
         "link": "https://gemini.google.com/gem/1gY4g7MaPaAubmHmWrYiJuOSG0FF9VxLD?usp=sharing"
       },
       {
         "name": "commit-message-assistant",
         "description": "I am the AIPCC Commit Message Assistant. Please provide a description of your code changes, and I will generate a well-formatted commit message for you.",
-        "category": "aipcc",
-        "file_path": "",
+        "category": "gems",
         "link": "https://gemini.google.com/gem/1j7GV5eSdCl3jtT2dYWrRlDpV6q7eBqqc?usp=sharing"
       },
       {
         "name": "email-copilot",
         "description": "My purpose is to take your minimal, raw notes and expand them into complete, polished email drafts, acting as your thought partner.",
-        "category": "general",
-        "file_path": "",
+        "category": "gems",
         "link": "https://gemini.google.com/gem/1P0wg_pwCga6YDVKfd3enWY1CRh2EzuXI?usp=sharing"
       },
       {
         "name": "red-hat-ai-release-navigator",
         "description": "Advisor on the Red Hat AI (RHAI) release lifecycle",
-        "category": "general",
-        "file_path": "",
+        "category": "gems",
         "link": "https://gemini.google.com/gem/1BuXxrQY7YZS7TluLX9iF3fezVzPoCwHL?usp=sharing"
       },
       {
         "name": "technical-spike-investigation",
         "description": "My purpose is to help an engineer conduct a technical spike for a new feature, library, initiative, or component. Note: gems don't have access to deep research so if you need the Spike to perform some research on the Internet, you'll not want to use this Gem and use regular chat sessions.",
-        "category": "general",
-        "file_path": "",
+        "category": "gems",
         "link": "https://gemini.google.com/gem/1PAt1u0cEtMbzqjl3Kp3TAzaUft3qrkXw?usp=sharing"
       },
       {
         "name": "tl-dev",
         "description": "My purpose is to act as your technical article filter. Provide a URL, and I will generate a concise TL;DR summary for you. I first determine if the content is technical. If not, I will reply only with Content is not relevant to software development.",
-        "category": "general",
-        "file_path": "",
+        "category": "gems",
         "link": "https://gemini.google.com/gem/1vi4as7sXcljjj0nFwq0rXGYdLl0NJ-7g?usp=sharing"
       }
     ],
     "skills": [
       {
         "name": "acli-setup-check",
-        "description": "Verify acli installation and authentication. Checks if acli is installed, authenticated to Jira, and can query projects. Use when troubleshooting acli issues or setting up acli for the first time.",
-        "category": "jira management",
-        "file_path": "helpers/skills/acli-setup-check/SKILL.md",
         "id": "acli-setup-check",
-        "allowed_tools": "Bash"
+        "description": "Verify acli installation and authentication. Checks if acli is installed, authenticated to Jira, and can query projects. Use when troubleshooting acli issues or setting up acli for the first time.",
+        "category": "odh-jira",
+        "allowed_tools": "Bash",
+        "file_path": "plugins/odh-jira/skills/acli-setup-check/SKILL.md"
       },
       {
         "name": "adr-review",
-        "description": "Review an Architectural Decision Record (ADR) using a team of six specialist reviewer subagents and produce a consolidated report as both PDF and PPTX slide deck. Use this skill whenever the user asks to review, critique, audit, or get feedback on an ADR, architecture decision, design doc, or RFC — whether the input is a Markdown file, a .docx document, or pasted text. Trigger even if the user does not explicitly say \"ADR\"; phrases like \"review this architecture decision\", \"critique this design doc\", or \"run the reviewer panel on this\" should also invoke this skill.",
-        "category": "general",
-        "file_path": "helpers/skills/adr-review/SKILL.md",
         "id": "adr-review",
-        "allowed_tools": ""
+        "description": "Review an Architectural Decision Record (ADR) using a team of six specialist reviewer subagents and produce a consolidated report as both PDF and PPTX slide deck. Use this skill whenever the user asks to review, critique, audit, or get feedback on an ADR, architecture decision, design doc, or RFC — whether the input is a Markdown file, a .docx document, or pasted text. Trigger even if the user does not explicitly say \"ADR\"; phrases like \"review this architecture decision\", \"critique this design doc\", or \"run the reviewer panel on this\" should also invoke this skill.",
+        "category": "odh-documentation",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-documentation/skills/adr-review/SKILL.md"
       },
       {
         "name": "ai-bug-fix-triage",
-        "description": "Triage JIRA bugs against repository code to classify AI fixability. Use when reviewing a backlog of bugs to determine which ones an AI agent can fix.",
-        "category": "general",
-        "file_path": "helpers/skills/ai-bug-fix-triage/SKILL.md",
         "id": "ai-bug-fix-triage",
-        "allowed_tools": "Bash Read Grep Glob"
+        "description": "Triage JIRA bugs against repository code to classify AI fixability. Use when reviewing a backlog of bugs to determine which ones an AI agent can fix.",
+        "category": "odh-jira",
+        "allowed_tools": "Bash Read Grep Glob",
+        "file_path": "plugins/odh-jira/skills/ai-bug-fix-triage/SKILL.md"
       },
       {
         "name": "aipcc-commit-suggest",
-        "description": "Generate AIPCC Commits style commit messages or summarize existing commits",
-        "category": "aipcc",
-        "file_path": "helpers/skills/aipcc-commit-suggest/SKILL.md",
         "id": "aipcc-commit-suggest",
-        "allowed_tools": ""
-      },
-      {
-        "name": "code-review",
-        "description": "Perform AI code review on a GitLab MR or local branch. Reviews all commits since the base branch, produces structured JSON feedback with inline comments, and posts results to GitLab (CI) or displays them locally. Use when asked to review code changes, do a code review, or run ai-review.\n",
-        "category": "general",
-        "file_path": "helpers/skills/code-review/SKILL.md",
-        "id": "code-review",
-        "allowed_tools": "Bash Read Grep Glob"
+        "description": "Generate AIPCC Commits style commit messages or summarize existing commits",
+        "category": "odh-git",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-git/skills/aipcc-commit-suggest/SKILL.md"
       },
       {
         "name": "coderabbit-review",
-        "description": "Use when you need to evaluate CodeRabbit PR comments and fix or reply",
-        "category": "general",
-        "file_path": "helpers/skills/coderabbit-review/SKILL.md",
         "id": "coderabbit-review",
-        "allowed_tools": "Bash(gh pr view:*) Bash(gh repo view:*) Bash(git remote:*) Bash(git branch:*) Bash(gh pr list:*) Bash(gh api:*) Bash(curl:*) Bash(sha256sum:*) Read Glob Grep Edit AskUserQuestion"
+        "description": "Use when you need to evaluate CodeRabbit PR comments and fix or reply",
+        "category": "odh-code-quality",
+        "allowed_tools": "Bash(gh pr view:*) Bash(gh repo view:*) Bash(git remote:*) Bash(git branch:*) Bash(gh pr list:*) Bash(gh api:*) Bash(curl:*) Bash(sha256sum:*) Read Glob Grep Edit AskUserQuestion",
+        "file_path": "plugins/odh-code-quality/skills/coderabbit-review/SKILL.md"
       },
       {
         "name": "create-delivery-postmortem",
-        "description": "Use when a release delay, missed deadline, or delivery incident needs a structured post-mortem. Facilitates context gathering, timeline synthesis, and interactive Five Whys root cause analysis. Produces an executive-ready document in HTML or Markdown.",
-        "category": "general",
-        "file_path": "helpers/skills/create-delivery-postmortem/SKILL.md",
         "id": "create-delivery-postmortem",
-        "allowed_tools": "Read Write Bash(git config:*) Bash(open:*) Bash(xdg-open:*) AskUserQuestion"
-      },
-      {
-        "name": "cve-fix-apply",
-        "description": "Use this skill to apply a CVE fix to a repository. Reads .cve-fix/examples.md for repo-specific guidance (branch naming, co-upgrades, files that change together). Supports Go version bumps, module updates, npm overrides, Python deps, and base image updates. Writes result to autofix-output/cve-fix-result.json.",
-        "category": "cve remediation",
-        "file_path": "helpers/skills/cve-fix-apply/SKILL.md",
-        "id": "cve-fix-apply",
-        "allowed_tools": "Read Write Glob Grep Bash Edit"
-      },
-      {
-        "name": "cve-scan",
-        "description": "Use this skill to scan a cloned repository for a specific CVE using version-matched toolchains. Supports Go (govulncheck with GOTOOLCHAIN), Node.js (npm audit), and Python (pip-audit). Writes scan result to autofix-output/cve-scan-result.json.",
-        "category": "cve remediation",
-        "file_path": "helpers/skills/cve-scan/SKILL.md",
-        "id": "cve-scan",
-        "allowed_tools": "Bash Read Glob Write"
-      },
-      {
-        "name": "cve-verify",
-        "description": "Use this skill to verify that a CVE fix actually resolved the vulnerability by scanning the compiled binary or updated manifests. Catches transitive dep overrides, replace directives, and lockfile conflicts. Writes result to autofix-output/cve-verify-result.json.",
-        "category": "cve remediation",
-        "file_path": "helpers/skills/cve-verify/SKILL.md",
-        "id": "cve-verify",
-        "allowed_tools": "Bash Read Write"
-      },
-      {
-        "name": "cve-vex-assess",
-        "description": "Use this skill to determine VEX (Vulnerability Exploitability eXchange) justification when a CVE is not present in scan results. Auto-detects three justification types. Cases requiring human judgment are flagged for manual review. Writes result to autofix-output/cve-vex-result.json.",
-        "category": "cve remediation",
-        "file_path": "helpers/skills/cve-vex-assess/SKILL.md",
-        "id": "cve-vex-assess",
-        "allowed_tools": "Bash Read Write"
+        "description": "Use when a release delay, missed deadline, or delivery incident needs a structured post-mortem. Facilitates context gathering, timeline synthesis, and interactive Five Whys root cause analysis. Produces an executive-ready document in HTML or Markdown.",
+        "category": "odh-team",
+        "allowed_tools": "Read Write Bash(git config:*) Bash(open:*) Bash(xdg-open:*) AskUserQuestion",
+        "file_path": "plugins/odh-team/skills/create-delivery-postmortem/SKILL.md"
       },
       {
         "name": "doc-gap",
-        "description": "Use this skill to analyze context sufficiency for documentation generation. Reads workspace/context-package.json and produces workspace/gap-report.json with severity-rated gaps and a proceed/gather-more/stop recommendation.\n",
-        "category": "documentation",
-        "file_path": "helpers/skills/doc-gap/SKILL.md",
         "id": "doc-gap",
-        "allowed_tools": ""
+        "description": "Use this skill to analyze context sufficiency for documentation generation. Reads workspace/context-package.json and produces workspace/gap-report.json with severity-rated gaps and a proceed/gather-more/stop recommendation.\n",
+        "category": "odh-documentation",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-documentation/skills/doc-gap/SKILL.md"
       },
       {
         "name": "doc-gather",
-        "description": "Use when you need to gather context for a Jira ticket or PR. Resolves ticket metadata, clones relevant repos, collects candidate files, runs filtering pipeline, and produces workspace/context-package.json.\n",
-        "category": "documentation",
-        "file_path": "helpers/skills/doc-gather/SKILL.md",
         "id": "doc-gather",
-        "allowed_tools": ""
+        "description": "Use when you need to gather context for a Jira ticket or PR. Resolves ticket metadata, clones relevant repos, collects candidate files, runs filtering pipeline, and produces workspace/context-package.json.\n",
+        "category": "odh-documentation",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-documentation/skills/doc-gather/SKILL.md"
       },
       {
         "name": "doc-generate",
-        "description": "Use when you need to generate AsciiDoc documentation modules from gathered context. Reads context package and gap report, generates content, then self-validates with iterative correction (up to 3 retries). Produces generated files and workspace/generation-report.json.\n",
-        "category": "documentation",
-        "file_path": "helpers/skills/doc-generate/SKILL.md",
         "id": "doc-generate",
-        "allowed_tools": ""
+        "description": "Use when you need to generate AsciiDoc documentation modules from gathered context. Reads context package and gap report, generates content, then self-validates with iterative correction (up to 3 retries). Produces generated files and workspace/generation-report.json.\n",
+        "category": "odh-documentation",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-documentation/skills/doc-generate/SKILL.md"
       },
       {
         "name": "doc-pipeline",
-        "description": "Use this skill to orchestrate the full documentation pipeline. Sequences doc-gather, doc-gap, doc-validate, doc-review, and doc-generate skills based on the requested pipeline mode.\n",
-        "category": "documentation",
-        "file_path": "helpers/skills/doc-pipeline/SKILL.md",
         "id": "doc-pipeline",
-        "allowed_tools": ""
+        "description": "Use this skill to orchestrate the full documentation pipeline. Sequences doc-gather, doc-gap, doc-validate, doc-review, and doc-generate skills based on the requested pipeline mode.\n",
+        "category": "odh-documentation",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-documentation/skills/doc-pipeline/SKILL.md"
       },
       {
         "name": "doc-plan",
-        "description": "Use this skill to produce a STRAT-level documentation plan. Traverses a strategic initiative's child epics and stories to identify what documentation is needed, what type, and at what priority.\n",
-        "category": "documentation",
-        "file_path": "helpers/skills/doc-plan/SKILL.md",
         "id": "doc-plan",
-        "allowed_tools": ""
+        "description": "Use this skill to produce a STRAT-level documentation plan. Traverses a strategic initiative's child epics and stories to identify what documentation is needed, what type, and at what priority.\n",
+        "category": "odh-documentation",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-documentation/skills/doc-plan/SKILL.md"
       },
       {
         "name": "doc-post",
-        "description": "Use this skill to post validation and review findings as comments on a GitHub PR or GitLab MR. Reads workspace findings files and formats them as inline or summary comments.\n",
-        "category": "documentation",
-        "file_path": "helpers/skills/doc-post/SKILL.md",
         "id": "doc-post",
-        "allowed_tools": ""
+        "description": "Use this skill to post validation and review findings as comments on a GitHub PR or GitLab MR. Reads workspace findings files and formats them as inline or summary comments.\n",
+        "category": "odh-documentation",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-documentation/skills/doc-post/SKILL.md"
       },
       {
         "name": "doc-review",
-        "description": "Use this skill to perform adversarial review of AsciiDoc documentation against context sources. Checks factual accuracy, completeness, consistency, and hallucination. Produces workspace/review-findings.json.\n",
-        "category": "documentation",
-        "file_path": "helpers/skills/doc-review/SKILL.md",
         "id": "doc-review",
-        "allowed_tools": ""
+        "description": "Use this skill to perform adversarial review of AsciiDoc documentation against context sources. Checks factual accuracy, completeness, consistency, and hallucination. Produces workspace/review-findings.json.\n",
+        "category": "odh-documentation",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-documentation/skills/doc-review/SKILL.md"
       },
       {
         "name": "doc-validate",
-        "description": "Use when you need to validate AsciiDoc documentation for technical accuracy using Extract-Identify-Validate pattern. Runs Vale, asciidoctor, lychee, YAML syntax checks, and LLM-powered cross-reference validation. Produces workspace/validation-findings.json.\n",
-        "category": "documentation",
-        "file_path": "helpers/skills/doc-validate/SKILL.md",
         "id": "doc-validate",
-        "allowed_tools": ""
+        "description": "Use when you need to validate AsciiDoc documentation for technical accuracy using Extract-Identify-Validate pattern. Runs Vale, asciidoctor, lychee, YAML syntax checks, and LLM-powered cross-reference validation. Produces workspace/validation-findings.json.\n",
+        "category": "odh-documentation",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-documentation/skills/doc-validate/SKILL.md"
       },
       {
         "name": "email-meeting-summary",
-        "description": "Use when the user wants to summarize a Google Meet meeting and send the summary by email. Reviews a Google Meet transcript for a specific meeting topic, then composes a Gmail draft summarizing decisions and action items for that topic. Prompts for meeting selection if not specified, and for topic selection before drafting. Stops with a message if the transcript is not yet available.",
-        "category": "general",
-        "file_path": "helpers/skills/email-meeting-summary/SKILL.md",
         "id": "email-meeting-summary",
-        "allowed_tools": "Bash, AskUserQuestion"
+        "description": "Use when the user wants to summarize a Google Meet meeting and send the summary by email. Reviews a Google Meet transcript for a specific meeting topic, then composes a Gmail draft summarizing decisions and action items for that topic. Prompts for meeting selection if not specified, and for topic selection before drafting. Stops with a message if the transcript is not yet available.",
+        "category": "odh-google-workspace",
+        "allowed_tools": "Bash, AskUserQuestion",
+        "file_path": "plugins/odh-google-workspace/skills/email-meeting-summary/SKILL.md"
       },
       {
         "name": "engineer-snapshot",
-        "description": "Generate an engineer activity snapshot showing active JIRA issues with days open, blocked work, upstream PRs awaiting review, recently merged PRs, and open action items from 1:1 notes. Requires a team config YAML file. Use when the user asks to review an engineer's status, check someone's workload, or prepare for a 1:1.",
-        "category": "team management",
-        "file_path": "helpers/skills/engineer-snapshot/SKILL.md",
         "id": "engineer-snapshot",
-        "allowed_tools": "Bash, Read"
+        "description": "Generate an engineer activity snapshot showing active JIRA issues with days open, blocked work, upstream PRs awaiting review, recently merged PRs, and open action items from 1:1 notes. Requires a team config YAML file. Use when the user asks to review an engineer's status, check someone's workload, or prepare for a 1:1.",
+        "category": "odh-team",
+        "allowed_tools": "Bash, Read",
+        "file_path": "plugins/odh-team/skills/engineer-snapshot/SKILL.md"
       },
       {
         "name": "gist-upload",
-        "description": "Use this skill to upload a summary or plan from the current conversation as a GitHub Gist using the `gh` CLI.",
-        "category": "general",
-        "file_path": "helpers/skills/gist-upload/SKILL.md",
         "id": "gist-upload",
-        "allowed_tools": "Bash"
+        "description": "Use this skill to upload a summary or plan from the current conversation as a GitHub Gist using the `gh` CLI.",
+        "category": "odh-git",
+        "allowed_tools": "Bash",
+        "file_path": "plugins/odh-git/skills/gist-upload/SKILL.md"
       },
       {
         "name": "git-shallow-clone",
-        "description": "Use this skill to perform a shallow clone of a Git repository to a temporary location.",
-        "category": "general",
-        "file_path": "helpers/skills/git-shallow-clone/SKILL.md",
         "id": "git-shallow-clone",
-        "allowed_tools": "Bash"
+        "description": "Use this skill to perform a shallow clone of a Git repository to a temporary location.",
+        "category": "odh-git",
+        "allowed_tools": "Bash",
+        "file_path": "plugins/odh-git/skills/git-shallow-clone/SKILL.md"
       },
       {
         "name": "github-actions-debugger",
-        "description": "Debug and monitor GitHub Actions workflow runs. Check run status, view failed job logs, and troubleshoot CI failures. Use this when the user needs to investigate GitHub Actions failures, inspect job output, or identify the root cause of a broken workflow run.",
-        "category": "general",
-        "file_path": "helpers/skills/github-actions-debugger/SKILL.md",
         "id": "github-actions-debugger",
-        "allowed_tools": "Bash(gh:*)"
+        "description": "Debug and monitor GitHub Actions workflow runs. Check run status, view failed job logs, and troubleshoot CI failures. Use this when the user needs to investigate GitHub Actions failures, inspect job output, or identify the root cause of a broken workflow run.",
+        "category": "odh-git",
+        "allowed_tools": "Bash(gh:*)",
+        "file_path": "plugins/odh-git/skills/github-actions-debugger/SKILL.md"
       },
       {
         "name": "github-sync-upstream",
-        "description": "Sync code from an upstream GitHub repository into a target fork (e.g., opendatahub-io midstream). Detects remotes from the current repo, or clones fresh if run from outside. Fetches upstream, merges into a sync branch, restores protected files, resolves conflicts, and opens a PR to the target GitHub repo. Use when asked to sync upstream, merge upstream changes, or bring a GitHub fork up to date with its upstream source.",
-        "category": "git workflows",
-        "file_path": "helpers/skills/github-sync-upstream/SKILL.md",
         "id": "github-sync-upstream",
-        "allowed_tools": "Bash Read AskUserQuestion"
+        "description": "Sync code from an upstream GitHub repository into a target fork (e.g., opendatahub-io midstream). Detects remotes from the current repo, or clones fresh if run from outside. Fetches upstream, merges into a sync branch, restores protected files, resolves conflicts, and opens a PR to the target GitHub repo. Use when asked to sync upstream, merge upstream changes, or bring a GitHub fork up to date with its upstream source.",
+        "category": "odh-git",
+        "allowed_tools": "Bash Read AskUserQuestion",
+        "file_path": "plugins/odh-git/skills/github-sync-upstream/SKILL.md"
       },
       {
         "name": "gitlab-pipeline-debugger",
-        "description": "Debug and monitor GitLab CI/CD pipelines for merge requests. Check pipeline status, view job logs, and troubleshoot CI failures. Use this when the user needs to investigate GitLab CI pipeline issues, check job statuses, or view specific job logs.",
-        "category": "general",
-        "file_path": "helpers/skills/gitlab-pipeline-debugger/SKILL.md",
         "id": "gitlab-pipeline-debugger",
-        "allowed_tools": "Bash(glab:*)"
+        "description": "Debug and monitor GitLab CI/CD pipelines for merge requests. Check pipeline status, view job logs, and troubleshoot CI failures. Use this when the user needs to investigate GitLab CI pipeline issues, check job statuses, or view specific job logs.",
+        "category": "odh-git",
+        "allowed_tools": "Bash(glab:*)",
+        "file_path": "plugins/odh-git/skills/gitlab-pipeline-debugger/SKILL.md"
       },
       {
         "name": "gmail-draft",
-        "description": "Use this skill to compose a Gmail draft from text content in the conversation. Accepts a body, recipient list, and subject — either from the user or from context — and creates a draft in the user's Gmail Drafts folder via gws.",
-        "category": "general",
-        "file_path": "helpers/skills/gmail-draft/SKILL.md",
         "id": "gmail-draft",
-        "allowed_tools": "Bash, AskUserQuestion"
+        "description": "Use this skill to compose a Gmail draft from text content in the conversation. Accepts a body, recipient list, and subject — either from the user or from context — and creates a draft in the user's Gmail Drafts folder via gws.",
+        "category": "odh-google-workspace",
+        "allowed_tools": "Bash, AskUserQuestion",
+        "file_path": "plugins/odh-google-workspace/skills/gmail-draft/SKILL.md"
       },
       {
         "name": "google-workspace",
-        "description": "Fetch and query data from Google Workspace using the gws CLI — Gmail, Calendar, Docs, Sheets, Slides, and Drive. Use this skill whenever the user mentions email, inbox, messages, calendar, meetings, schedule, agenda, Google Docs, spreadsheets, presentations, or Drive files. Trigger on phrases like \"check my email\", \"what meetings do I have\", \"read this doc\", \"open this spreadsheet\", \"find files in Drive\", or any Google URL (docs.google.com, drive.google.com).\n",
-        "category": "general",
-        "file_path": "helpers/skills/google-workspace/SKILL.md",
         "id": "google-workspace",
-        "allowed_tools": "Bash"
-      },
-      {
-        "name": "hello-world-echo",
-        "description": "Hello world plugin implementation",
-        "category": "general",
-        "file_path": "helpers/skills/hello-world-echo/SKILL.md",
-        "id": "hello-world-echo",
-        "allowed_tools": ""
+        "description": "Fetch and query data from Google Workspace using the gws CLI — Gmail, Calendar, Docs, Sheets, Slides, and Drive. Use this skill whenever the user mentions email, inbox, messages, calendar, meetings, schedule, agenda, Google Docs, spreadsheets, presentations, or Drive files. Trigger on phrases like \"check my email\", \"what meetings do I have\", \"read this doc\", \"open this spreadsheet\", \"find files in Drive\", or any Google URL (docs.google.com, drive.google.com).\n",
+        "category": "odh-google-workspace",
+        "allowed_tools": "Bash",
+        "file_path": "plugins/odh-google-workspace/skills/google-workspace/SKILL.md"
       },
       {
         "name": "jira-activity",
-        "description": "Summarize Jira ticket activity, including child tickets, to detect stale tickets in the backlog. Use when user asks to review one or more Jira tickets to determine if they are being worked on.",
-        "category": "jira management",
-        "file_path": "helpers/skills/jira-activity/SKILL.md",
         "id": "jira-activity",
-        "allowed_tools": "Bash"
+        "description": "Summarize Jira ticket activity, including child tickets, to detect stale tickets in the backlog. Use when user asks to review one or more Jira tickets to determine if they are being worked on.",
+        "category": "odh-jira",
+        "allowed_tools": "Bash",
+        "file_path": "plugins/odh-jira/skills/jira-activity/SKILL.md"
       },
       {
         "name": "jira-aipcc-create",
-        "description": "Create Jira issues in the AIPCC project. Infers summary, description, type, and component from conversation context, confirms with the user before creating. Use when the user wants to file a new AIPCC Jira issue.",
-        "category": "aipcc",
-        "file_path": "helpers/skills/jira-aipcc-create/SKILL.md",
         "id": "jira-aipcc-create",
-        "allowed_tools": "Bash, AskUserQuestion"
-      },
-      {
-        "name": "jira-autofix-cve-resolve",
-        "description": "Use this skill to orchestrate CVE remediation for a Jira Vulnerability ticket. Resolves affected repositories via component-repository-mappings.json, then for each repo and branch: scans, fixes, verifies, and creates PRs. Handles upstream-to-downstream ordering, fork fallback, existing PR detection, VEX justifications, and multi-branch coverage. Writes final verdict to autofix-output/.autofix-verdict.json.",
-        "category": "cve remediation",
-        "file_path": "helpers/skills/jira-autofix-cve-resolve/SKILL.md",
-        "id": "jira-autofix-cve-resolve",
-        "allowed_tools": "Read Write Bash Skill"
+        "description": "Create Jira issues in the AIPCC project. Infers summary, description, type, and component from conversation context, confirms with the user before creating. Use when the user wants to file a new AIPCC Jira issue.",
+        "category": "odh-jira",
+        "allowed_tools": "Bash, AskUserQuestion",
+        "file_path": "plugins/odh-jira/skills/jira-aipcc-create/SKILL.md"
       },
       {
         "name": "jira-sprint-summary",
-        "description": "Generate comprehensive sprint summaries by analyzing JIRA sprint data, including issue breakdown, progress metrics, and team performance insights.",
-        "category": "general",
-        "file_path": "helpers/skills/jira-sprint-summary/SKILL.md",
         "id": "jira-sprint-summary",
-        "allowed_tools": ""
+        "description": "Generate comprehensive sprint summaries by analyzing JIRA sprint data, including issue breakdown, progress metrics, and team performance insights.",
+        "category": "odh-jira",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-jira/skills/jira-sprint-summary/SKILL.md"
       },
       {
         "name": "jira-status-summary",
-        "description": "Update the Status Summary and Color Status fields on AIPCC Feature and Initiative tickets. Fetches child ticket activity via the jira-activity skill, generates a brief summary and sets the red/yellow/green color status. Use when asked to update the status summary for a Jira ticket.\n",
-        "category": "aipcc",
-        "file_path": "helpers/skills/jira-status-summary/SKILL.md",
         "id": "jira-status-summary",
-        "allowed_tools": "Bash"
+        "description": "Update the Status Summary and Color Status fields on AIPCC Feature and Initiative tickets. Fetches child ticket activity via the jira-activity skill, generates a brief summary and sets the red/yellow/green color status. Use when asked to update the status summary for a Jira ticket.\n",
+        "category": "odh-jira",
+        "allowed_tools": "Bash",
+        "file_path": "plugins/odh-jira/skills/jira-status-summary/SKILL.md"
       },
       {
         "name": "jira-upload-chat-log",
-        "description": "Use this skill to export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation.",
-        "category": "jira management",
-        "file_path": "helpers/skills/jira-upload-chat-log/SKILL.md",
         "id": "jira-upload-chat-log",
-        "allowed_tools": "Skill, AskUserQuestion"
+        "description": "Use this skill to export and upload the current chat conversation as a markdown file attachment to a JIRA ticket for later review and documentation.",
+        "category": "odh-jira",
+        "allowed_tools": "Skill, AskUserQuestion",
+        "file_path": "plugins/odh-jira/skills/jira-upload-chat-log/SKILL.md"
       },
       {
         "name": "jira-workitem-attach",
-        "description": "Upload file attachments to Jira tickets. Verifies file exists and uploads via Jira API. Use when user wants to attach files to tickets.",
-        "category": "jira management",
-        "file_path": "helpers/skills/jira-workitem-attach/SKILL.md",
         "id": "jira-workitem-attach",
-        "allowed_tools": "Bash, Skill"
+        "description": "Upload file attachments to Jira tickets. Verifies file exists and uploads via Jira API. Use when user wants to attach files to tickets.",
+        "category": "odh-jira",
+        "allowed_tools": "Bash, Skill",
+        "file_path": "plugins/odh-jira/skills/jira-workitem-attach/SKILL.md"
       },
       {
         "name": "jira-workitem-comment",
-        "description": "Add comments to Jira tickets using simple text or Jira markup (ADF JSON). Supports rich formatting with code blocks, lists, mentions, and links. Use when user wants to comment on a ticket.",
-        "category": "jira management",
-        "file_path": "helpers/skills/jira-workitem-comment/SKILL.md",
         "id": "jira-workitem-comment",
-        "allowed_tools": "Bash, AskUserQuestion, Skill"
+        "description": "Add comments to Jira tickets using simple text or Jira markup (ADF JSON). Supports rich formatting with code blocks, lists, mentions, and links. Use when user wants to comment on a ticket.",
+        "category": "odh-jira",
+        "allowed_tools": "Bash, AskUserQuestion, Skill",
+        "file_path": "plugins/odh-jira/skills/jira-workitem-comment/SKILL.md"
       },
       {
         "name": "jira-workitem-search",
-        "description": "Search Jira tickets using JQL queries. Provides common query templates and flexible output formats. Use when user needs to find or filter tickets.",
-        "category": "jira management",
-        "file_path": "helpers/skills/jira-workitem-search/SKILL.md",
         "id": "jira-workitem-search",
-        "allowed_tools": "Bash, AskUserQuestion, Skill"
+        "description": "Search Jira tickets using JQL queries. Provides common query templates and flexible output formats. Use when user needs to find or filter tickets.",
+        "category": "odh-jira",
+        "allowed_tools": "Bash, AskUserQuestion, Skill",
+        "file_path": "plugins/odh-jira/skills/jira-workitem-search/SKILL.md"
       },
       {
         "name": "jira-workitem-view",
-        "description": "Retrieve and display full details of a Jira ticket. Fetches all fields and formats them for conversation context. Use when user needs ticket information or wants to examine a ticket.",
-        "category": "jira management",
-        "file_path": "helpers/skills/jira-workitem-view/SKILL.md",
         "id": "jira-workitem-view",
-        "allowed_tools": "Bash, Skill"
+        "description": "Retrieve and display full details of a Jira ticket. Fetches all fields and formats them for conversation context. Use when user needs ticket information or wants to examine a ticket.",
+        "category": "odh-jira",
+        "allowed_tools": "Bash, Skill",
+        "file_path": "plugins/odh-jira/skills/jira-workitem-view/SKILL.md"
       },
       {
         "name": "konflux-application",
-        "description": "Manage Konflux application",
-        "category": "general",
-        "file_path": "helpers/skills/konflux-application/SKILL.md",
         "id": "konflux-application",
-        "allowed_tools": ""
+        "description": "Manage Konflux application",
+        "category": "odh-konflux",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-konflux/skills/konflux-application/SKILL.md"
       },
       {
         "name": "konflux-component",
-        "description": "Manage Konflux component",
-        "category": "general",
-        "file_path": "helpers/skills/konflux-component/SKILL.md",
         "id": "konflux-component",
-        "allowed_tools": ""
+        "description": "Manage Konflux component",
+        "category": "odh-konflux",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-konflux/skills/konflux-component/SKILL.md"
       },
       {
         "name": "learning-mode",
-        "description": "Hands-on mentoring: the agent scaffolds work, then pauses so the engineer writes small, meaningful code (roughly 5–15 lines) for practice. Use when the user enables learning mode, asks for guided mentoring, hands-on practice, collaborative coding, or teaching while building a feature.",
-        "category": "general",
-        "file_path": "helpers/skills/learning-mode/SKILL.md",
         "id": "learning-mode",
-        "allowed_tools": ""
+        "description": "Hands-on mentoring: the agent scaffolds work, then pauses so the engineer writes small, meaningful code (roughly 5–15 lines) for practice. Use when the user enables learning mode, asks for guided mentoring, hands-on practice, collaborative coding, or teaching while building a feature.",
+        "category": "odh-general",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-general/skills/learning-mode/SKILL.md"
       },
       {
         "name": "maas-nightly-qe-impact",
-        "description": "Assess whether a Models-as-a-Service autofix change requires follow-up in opendatahub-tests or ods-ci nightly QE pipelines. Runs as a Jira autofix post_review extension for the Model as a Service component. Appends a Nightly QE Impact section to the PR description and writes informational findings. Use when autofix completes a fix in models-as-a-service.",
-        "category": "maas",
-        "file_path": "helpers/skills/maas-nightly-qe-impact/SKILL.md",
         "id": "maas-nightly-qe-impact",
-        "allowed_tools": "Read Write Bash Grep Glob"
+        "description": "Assess whether a Models-as-a-Service autofix change requires follow-up in opendatahub-tests or ods-ci nightly QE pipelines. Runs as a Jira autofix post_review extension for the Model as a Service component. Appends a Nightly QE Impact section to the PR description and writes informational findings. Use when autofix completes a fix in models-as-a-service.",
+        "category": "odh-maas",
+        "allowed_tools": "Read Write Bash Grep Glob",
+        "file_path": "plugins/odh-maas/skills/maas-nightly-qe-impact/SKILL.md"
       },
       {
         "name": "module-compliance",
-        "description": "Check an ODH module operator repository for contract violations against the platform onboarding guide. Validates PlatformObject status, CRD structure, Helm chart content, webhook ownership, metadata conventions, and reconciler chain ordering. Use during code review or after scaffolding a new module.",
-        "category": "odh modules",
-        "file_path": "helpers/skills/module-compliance/SKILL.md",
         "id": "module-compliance",
-        "allowed_tools": "Read Grep Glob"
+        "description": "Check an ODH module operator repository for contract violations against the platform onboarding guide. Validates PlatformObject status, CRD structure, Helm chart content, webhook ownership, metadata conventions, and reconciler chain ordering. Use during code review or after scaffolding a new module.",
+        "category": "odh-modules",
+        "allowed_tools": "Read Grep Glob",
+        "file_path": "plugins/odh-modules/skills/module-compliance/SKILL.md"
       },
       {
         "name": "module-migrate",
-        "description": "Read existing in-tree ODH operator component code and produce a step-by-step extraction checklist for migrating it to a standalone module. Analyzes controller logic, webhooks, RBAC, embedded manifests, and DSC field mappings. Use when extracting a component from the monolithic operator into its own module repo.",
-        "category": "odh modules",
-        "file_path": "helpers/skills/module-migrate/SKILL.md",
         "id": "module-migrate",
-        "allowed_tools": "Read Grep Glob Write"
+        "description": "Read existing in-tree ODH operator component code and produce a step-by-step extraction checklist for migrating it to a standalone module. Analyzes controller logic, webhooks, RBAC, embedded manifests, and DSC field mappings. Use when extracting a component from the monolithic operator into its own module repo.",
+        "category": "odh-modules",
+        "allowed_tools": "Read Grep Glob Write",
+        "file_path": "plugins/odh-modules/skills/module-migrate/SKILL.md"
       },
       {
         "name": "module-scaffold",
-        "description": "Given a component name, generate a complete standalone ODH module operator repository. Produces Go module, CRD types implementing PlatformObject, controller skeleton with reconciler builder pattern, Helm chart, Makefile, CI config, singleton webhook, and AGENTS.md. Use when starting a new module from scratch.",
-        "category": "odh modules",
-        "file_path": "helpers/skills/module-scaffold/SKILL.md",
         "id": "module-scaffold",
-        "allowed_tools": "Bash Read Grep Glob Write Edit"
+        "description": "Given a component name, generate a complete standalone ODH module operator repository. Produces Go module, CRD types implementing PlatformObject, controller skeleton with reconciler builder pattern, Helm chart, Makefile, CI config, singleton webhook, and AGENTS.md. Use when starting a new module from scratch.",
+        "category": "odh-modules",
+        "allowed_tools": "Bash Read Grep Glob Write Edit",
+        "file_path": "plugins/odh-modules/skills/module-scaffold/SKILL.md"
       },
       {
         "name": "non-redhat-rpms",
-        "description": "Use this skill to identify non-Red Hat RPM packages installed in container images or on the local machine. For containers, pulls images across multiple architectures and release tags; for local scans, inspects the host directly. Extracts RPM signing metadata and reports packages not signed with the Red Hat GPG key as CSV output. Use when auditing compliance, checking supply-chain provenance, or scanning for third-party RPMs in RHOAI component images.\n",
-        "category": "compliance",
-        "file_path": "helpers/skills/non-redhat-rpms/SKILL.md",
         "id": "non-redhat-rpms",
-        "allowed_tools": "Bash"
+        "description": "Use this skill to identify non-Red Hat RPM packages installed in container images or on the local machine. For containers, pulls images across multiple architectures and release tags; for local scans, inspects the host directly. Extracts RPM signing metadata and reports packages not signed with the Red Hat GPG key as CSV output. Use when auditing compliance, checking supply-chain provenance, or scanning for third-party RPMs in RHOAI component images.\n",
+        "category": "odh-rpm",
+        "allowed_tools": "Bash",
+        "file_path": "plugins/odh-rpm/skills/non-redhat-rpms/SKILL.md"
       },
       {
         "name": "oci-cve-checker",
-        "description": "Use this skill to compare CVE vulnerabilities between two OCI container images and generate reports showing fixed and new CVEs.",
-        "category": "general",
-        "file_path": "helpers/skills/oci-cve-checker/SKILL.md",
         "id": "oci-cve-checker",
-        "allowed_tools": "Bash Read"
+        "description": "Use this skill to compare CVE vulnerabilities between two OCI container images and generate reports showing fixed and new CVEs.",
+        "category": "odh-security",
+        "allowed_tools": "Bash Read",
+        "file_path": "plugins/odh-security/skills/oci-cve-checker/SKILL.md"
       },
       {
         "name": "odh-llm-d-release",
-        "description": "Orchestrate the opendatahub-io release for all llm-d components in one cycle. Collects upstream(llm-d) versions, auto-discovers the release tracker issue, then spawns parallel sub-agents — one per component (release branch, Konflux onboarder workflow, PR validation, approve+merge, Quay image verify, GitHub draft release) plus one KServe metadata PR sub-agent — and posts the final #Release# tracker comment. Use when the release manager runs on/before ODH code-freeze date for the llm-d team.",
-        "category": "llm-d",
-        "file_path": "helpers/skills/odh-llm-d-release/SKILL.md",
         "id": "odh-llm-d-release",
-        "allowed_tools": "Bash Read AskUserQuestion Agent"
+        "description": "Orchestrate the opendatahub-io release for all llm-d components in one cycle. Collects upstream(llm-d) versions, auto-discovers the release tracker issue, then spawns parallel sub-agents — one per component (release branch, Konflux onboarder workflow, PR validation, approve+merge, Quay image verify, GitHub draft release) plus one KServe metadata PR sub-agent — and posts the final #Release# tracker comment. Use when the release manager runs on/before ODH code-freeze date for the llm-d team.",
+        "category": "odh-llm-d",
+        "allowed_tools": "Bash Read AskUserQuestion Agent",
+        "file_path": "plugins/odh-llm-d/skills/odh-llm-d-release/SKILL.md"
       },
       {
         "name": "pr-jira-linker",
-        "description": "Find and link Jira issues to PRs/MRs that are missing Jira references. Supports single PR/MR linking and batch audit of configured repos. Use when the user mentions \"link PR to Jira\", \"scan PRs\", \"PR audit\", \"MR missing Jira\", \"link merge request\", or wants to connect code changes to Jira for traceability.",
-        "category": "general",
-        "file_path": "helpers/skills/pr-jira-linker/SKILL.md",
         "id": "pr-jira-linker",
-        "allowed_tools": "Read Grep Glob WebFetch Bash user-github plugin-gitlab-GitLab user-mcp-atlassian"
+        "description": "Find and link Jira issues to PRs/MRs that are missing Jira references. Supports single PR/MR linking and batch audit of configured repos. Use when the user mentions \"link PR to Jira\", \"scan PRs\", \"PR audit\", \"MR missing Jira\", \"link merge request\", or wants to connect code changes to Jira for traceability.",
+        "category": "odh-jira",
+        "allowed_tools": "Read Grep Glob WebFetch Bash user-github plugin-gitlab-GitLab user-mcp-atlassian",
+        "file_path": "plugins/odh-jira/skills/pr-jira-linker/SKILL.md"
       },
       {
         "name": "python-full-deps",
-        "description": "Resolve the full install-time dependency tree for a Python package. Use when the user needs all transitive dependencies, full dependency list, or install requirements resolved for a specific Python version with environment markers.",
-        "category": "general",
-        "file_path": "helpers/skills/python-full-deps/SKILL.md",
         "id": "python-full-deps",
-        "allowed_tools": "Bash Read"
+        "description": "Resolve the full install-time dependency tree for a Python package. Use when the user needs all transitive dependencies, full dependency list, or install requirements resolved for a specific Python version with environment markers.",
+        "category": "odh-python-packaging",
+        "allowed_tools": "Bash Read",
+        "file_path": "plugins/odh-python-packaging/skills/python-full-deps/SKILL.md"
       },
       {
         "name": "python-packaging-binary-audit",
-        "description": "Scan a Python package repository for compiled/binary files using Fromager-style detection and malcontent YARA analysis, then triage findings with deterministic rules and AI reasoning to produce a structured risk report section.",
-        "category": "general",
-        "file_path": "helpers/skills/python-packaging-binary-audit/SKILL.md",
         "id": "python-packaging-binary-audit",
-        "allowed_tools": "Bash Read Grep"
+        "description": "Scan a Python package repository for compiled/binary files using Fromager-style detection and malcontent YARA analysis, then triage findings with deterministic rules and AI reasoning to produce a structured risk report section.",
+        "category": "odh-python-packaging",
+        "allowed_tools": "Bash Read Grep",
+        "file_path": "plugins/odh-python-packaging/skills/python-packaging-binary-audit/SKILL.md"
       },
       {
         "name": "python-packaging-bug-finder",
-        "description": "Use when you need to find known packaging bugs, fixes, and workarounds for Python projects by searching GitHub issues and analyzing their resolution status",
-        "category": "general",
-        "file_path": "helpers/skills/python-packaging-bug-finder/SKILL.md",
         "id": "python-packaging-bug-finder",
-        "allowed_tools": "Skill WebFetch WebSearch"
+        "description": "Use when you need to find known packaging bugs, fixes, and workarounds for Python projects by searching GitHub issues and analyzing their resolution status",
+        "category": "odh-python-packaging",
+        "allowed_tools": "Skill WebFetch WebSearch",
+        "file_path": "plugins/odh-python-packaging/skills/python-packaging-bug-finder/SKILL.md"
       },
       {
         "name": "python-packaging-complexity",
-        "description": "Use this skill to analyze Python package build complexity by inspecting PyPI metadata. Evaluates compilation requirements, dependencies, distribution types, and provides recommendations for wheel building strategies.",
-        "category": "general",
-        "file_path": "helpers/skills/python-packaging-complexity/SKILL.md",
         "id": "python-packaging-complexity",
-        "allowed_tools": "Bash Read"
+        "description": "Use this skill to analyze Python package build complexity by inspecting PyPI metadata. Evaluates compilation requirements, dependencies, distribution types, and provides recommendations for wheel building strategies.",
+        "category": "odh-python-packaging",
+        "allowed_tools": "Bash Read",
+        "file_path": "plugins/odh-python-packaging/skills/python-packaging-complexity/SKILL.md"
       },
       {
         "name": "python-packaging-env-finder",
-        "description": "Use this skill to investigate environment variables that can be set when building Python wheels for a given project. Analyzes setup.py, CMake files, and other build configuration files to discover customizable build environment variables.",
-        "category": "general",
-        "file_path": "helpers/skills/python-packaging-env-finder/SKILL.md",
         "id": "python-packaging-env-finder",
-        "allowed_tools": "Bash Read Grep Glob"
+        "description": "Use this skill to investigate environment variables that can be set when building Python wheels for a given project. Analyzes setup.py, CMake files, and other build configuration files to discover customizable build environment variables.",
+        "category": "odh-python-packaging",
+        "allowed_tools": "Bash Read Grep Glob",
+        "file_path": "plugins/odh-python-packaging/skills/python-packaging-env-finder/SKILL.md"
       },
       {
         "name": "python-packaging-git-audit",
-        "description": "Inspect recent git history of a Python package repository for suspicious commits touching supply-chain-sensitive files, then triage findings with AI reasoning to produce a structured risk report section.",
-        "category": "general",
-        "file_path": "helpers/skills/python-packaging-git-audit/SKILL.md",
         "id": "python-packaging-git-audit",
-        "allowed_tools": "Bash Read Grep"
+        "description": "Inspect recent git history of a Python package repository for suspicious commits touching supply-chain-sensitive files, then triage findings with AI reasoning to produce a structured risk report section.",
+        "category": "odh-python-packaging",
+        "allowed_tools": "Bash Read Grep",
+        "file_path": "plugins/odh-python-packaging/skills/python-packaging-git-audit/SKILL.md"
       },
       {
         "name": "python-packaging-license-checker",
-        "description": "Use this skill to check whether a Python package license is compatible with redistribution in Red Hat products, using the Fedora License Data as the authoritative policy source. Produces a structured six-field verdict with escalation guidance for non-trivial cases.",
-        "category": "general",
-        "file_path": "helpers/skills/python-packaging-license-checker/SKILL.md",
         "id": "python-packaging-license-checker",
-        "allowed_tools": "Bash Skill WebFetch"
+        "description": "Use this skill to check whether a Python package license is compatible with redistribution in Red Hat products, using the Fedora License Data as the authoritative policy source. Produces a structured six-field verdict with escalation guidance for non-trivial cases.",
+        "category": "odh-python-packaging",
+        "allowed_tools": "Bash Skill WebFetch",
+        "file_path": "plugins/odh-python-packaging/skills/python-packaging-license-checker/SKILL.md"
       },
       {
         "name": "python-packaging-license-finder",
-        "description": "Use this skill to deterministically find license information for Python packages by checking PyPI metadata first, then falling back to Git repository LICENSE files using shallow cloning.",
-        "category": "general",
-        "file_path": "helpers/skills/python-packaging-license-finder/SKILL.md",
         "id": "python-packaging-license-finder",
-        "allowed_tools": "Bash Skill"
+        "description": "Use this skill to deterministically find license information for Python packages by checking PyPI metadata first, then falling back to Git repository LICENSE files using shallow cloning.",
+        "category": "odh-python-packaging",
+        "allowed_tools": "Bash Skill",
+        "file_path": "plugins/odh-python-packaging/skills/python-packaging-license-finder/SKILL.md"
       },
       {
         "name": "python-packaging-security-audit",
-        "description": "Use this skill to evaluate the security of a Python package repository by orchestrating static analysis, binary scanning, and git history inspection sub-skills in parallel, then combining their results into a unified security report with a risk rating.",
-        "category": "general",
-        "file_path": "helpers/skills/python-packaging-security-audit/SKILL.md",
         "id": "python-packaging-security-audit",
-        "allowed_tools": "Bash Read Grep Skill"
+        "description": "Use this skill to evaluate the security of a Python package repository by orchestrating static analysis, binary scanning, and git history inspection sub-skills in parallel, then combining their results into a unified security report with a risk rating.",
+        "category": "odh-python-packaging",
+        "allowed_tools": "Bash Read Grep Skill",
+        "file_path": "plugins/odh-python-packaging/skills/python-packaging-security-audit/SKILL.md"
       },
       {
         "name": "python-packaging-source-finder",
-        "description": "Use this skill to locate source code repositories for Python packages by analyzing PyPI metadata, project URLs, and code hosting platforms like GitHub, GitLab, and Bitbucket. Provides deterministic results with confidence levels.",
-        "category": "general",
-        "file_path": "helpers/skills/python-packaging-source-finder/SKILL.md",
         "id": "python-packaging-source-finder",
-        "allowed_tools": "Bash WebSearch WebFetch"
+        "description": "Use this skill to locate source code repositories for Python packages by analyzing PyPI metadata, project URLs, and code hosting platforms like GitHub, GitLab, and Bitbucket. Provides deterministic results with confidence levels.",
+        "category": "odh-python-packaging",
+        "allowed_tools": "Bash WebSearch WebFetch",
+        "file_path": "plugins/odh-python-packaging/skills/python-packaging-source-finder/SKILL.md"
       },
       {
         "name": "python-packaging-static-audit",
-        "description": "Run hexora static analysis on a Python package repository to detect suspicious code patterns, then triage findings with deterministic rules and AI reasoning to produce a structured risk report section.",
-        "category": "general",
-        "file_path": "helpers/skills/python-packaging-static-audit/SKILL.md",
         "id": "python-packaging-static-audit",
-        "allowed_tools": "Bash Read Grep"
+        "description": "Run hexora static analysis on a Python package repository to detect suspicious code patterns, then triage findings with deterministic rules and AI reasoning to produce a structured risk report section.",
+        "category": "odh-python-packaging",
+        "allowed_tools": "Bash Read Grep",
+        "file_path": "plugins/odh-python-packaging/skills/python-packaging-static-audit/SKILL.md"
       },
       {
         "name": "rpm-examine",
-        "description": "Analyze RPM build.log failures",
-        "category": "general",
-        "file_path": "helpers/skills/rpm-examine/SKILL.md",
         "id": "rpm-examine",
-        "allowed_tools": ""
+        "description": "Analyze RPM build.log failures",
+        "category": "odh-rpm",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-rpm/skills/rpm-examine/SKILL.md"
       },
       {
         "name": "security-alert",
-        "description": "Use this skill to filter a pre-fetched set of Hacker News stories down to those that report supply-chain security threats relevant to the Red Hat / RHEL ecosystem, Python (PyPI/pip), or JavaScript/TypeScript (npm/yarn/pnpm). Reads stories from stories.json in the workspace, performs semantic analysis (fetching HN threads when the title alone is ambiguous), and writes the stories worth alerting on to findings.json.",
-        "category": "aipcc",
-        "file_path": "helpers/skills/security-alert/SKILL.md",
         "id": "security-alert",
-        "allowed_tools": "Bash(curl:https://hn.algolia.com/*) Read Write"
+        "description": "Use this skill to filter a pre-fetched set of Hacker News stories down to those that report supply-chain security threats relevant to the Red Hat / RHEL ecosystem, Python (PyPI/pip), or JavaScript/TypeScript (npm/yarn/pnpm). Reads stories from stories.json in the workspace, performs semantic analysis (fetching HN threads when the title alone is ambiguous), and writes the stories worth alerting on to findings.json.",
+        "category": "odh-security",
+        "allowed_tools": "Bash(curl:https://hn.algolia.com/*) Read Write",
+        "file_path": "plugins/odh-security/skills/security-alert/SKILL.md"
       },
       {
         "name": "team-weekly-report",
-        "description": "Generate a weekly team status report combining JIRA and GitHub data. Fetches closed, open, stale, and blocked issues plus PR activity for each team member. Requires a team config YAML file with JIRA project, GitHub repos, and team member mappings. Use when the user asks for a weekly report, team status, or team update.",
-        "category": "team management",
-        "file_path": "helpers/skills/team-weekly-report/SKILL.md",
         "id": "team-weekly-report",
-        "allowed_tools": "Bash"
+        "description": "Generate a weekly team status report combining JIRA and GitHub data. Fetches closed, open, stale, and blocked issues plus PR activity for each team member. Requires a team config YAML file with JIRA project, GitHub repos, and team member mappings. Use when the user asks for a weekly report, team status, or team update.",
+        "category": "odh-team",
+        "allowed_tools": "Bash",
+        "file_path": "plugins/odh-team/skills/team-weekly-report/SKILL.md"
       },
       {
         "name": "torchtalk-analyzer",
-        "description": "Analyze PyTorch internals across Python, C++, and CUDA layers using the TorchTalk MCP server. Use when asked about how PyTorch operators work internally, where functions are implemented, what would break if code is modified, or finding tests for PyTorch operators.",
-        "category": "pytorch",
-        "file_path": "helpers/skills/torchtalk-analyzer/SKILL.md",
         "id": "torchtalk-analyzer",
-        "allowed_tools": "Bash Read Grep Glob"
+        "description": "Analyze PyTorch internals across Python, C++, and CUDA layers using the TorchTalk MCP server. Use when asked about how PyTorch operators work internally, where functions are implemented, what would break if code is modified, or finding tests for PyTorch operators.",
+        "category": "odh-pytorch",
+        "allowed_tools": "Bash Read Grep Glob",
+        "file_path": "plugins/odh-pytorch/skills/torchtalk-analyzer/SKILL.md"
       },
       {
         "name": "torchtalk-setup",
-        "description": "Install and configure TorchTalk MCP server for PyTorch cross-language analysis",
-        "category": "pytorch",
-        "file_path": "helpers/skills/torchtalk-setup/SKILL.md",
         "id": "torchtalk-setup",
-        "allowed_tools": ""
+        "description": "Install and configure TorchTalk MCP server for PyTorch cross-language analysis",
+        "category": "odh-pytorch",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-pytorch/skills/torchtalk-setup/SKILL.md"
       },
       {
         "name": "torchtalk-trace",
-        "description": "Trace a PyTorch function's cross-language binding chain (Python -> C++ -> CUDA)",
-        "category": "pytorch",
-        "file_path": "helpers/skills/torchtalk-trace/SKILL.md",
         "id": "torchtalk-trace",
-        "allowed_tools": ""
+        "description": "Trace a PyTorch function's cross-language binding chain (Python -> C++ -> CUDA)",
+        "category": "odh-pytorch",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-pytorch/skills/torchtalk-trace/SKILL.md"
       },
       {
         "name": "triage-bug-readiness",
-        "description": "Use when assessing a Jira bug ticket for AI autofix readiness. Produces a structured JSON verdict (ready/needs_info/not_fixable) based on a three-gate rubric. Designed for CI pipeline use with the jira-triage orchestrator.",
-        "category": "general",
-        "file_path": "helpers/skills/triage-bug-readiness/SKILL.md",
         "id": "triage-bug-readiness",
-        "allowed_tools": "Read Grep Glob Write"
+        "description": "Use when assessing a Jira bug ticket for AI autofix readiness. Produces a structured JSON verdict (ready/needs_info/not_fixable) based on a three-gate rubric. Designed for CI pipeline use with the jira-triage orchestrator.",
+        "category": "odh-jira",
+        "allowed_tools": "Read Grep Glob Write",
+        "file_path": "plugins/odh-jira/skills/triage-bug-readiness/SKILL.md"
       },
       {
         "name": "unit-test-project-conformant",
-        "description": "Use this skill to write unit tests that strictly conform to the project's existing testing structure, patterns, and style by learning from similar tests before writing anything new.",
-        "category": "general",
-        "file_path": "helpers/skills/unit-test-project-conformant/SKILL.md",
         "id": "unit-test-project-conformant",
-        "allowed_tools": ""
+        "description": "Use this skill to write unit tests that strictly conform to the project's existing testing structure, patterns, and style by learning from similar tests before writing anything new.",
+        "category": "odh-code-quality",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-code-quality/skills/unit-test-project-conformant/SKILL.md"
       },
       {
         "name": "vllm-backport-check-backported",
-        "description": "Check which candidate PRs have already been cherry-picked into the downstream branch. Use after classify-and-filter to mark already_backported on each PR. Fully deterministic — compares merge SHAs and PR titles.\n",
-        "category": "vllm",
-        "file_path": "helpers/skills/vllm-backport-check-backported/SKILL.md",
         "id": "vllm-backport-check-backported",
-        "allowed_tools": "Bash Read"
+        "description": "Check which candidate PRs have already been cherry-picked into the downstream branch. Use after classify-and-filter to mark already_backported on each PR. Fully deterministic — compares merge SHAs and PR titles.\n",
+        "category": "odh-vllm",
+        "allowed_tools": "Bash Read",
+        "file_path": "plugins/odh-vllm/skills/vllm-backport-check-backported/SKILL.md"
       },
       {
         "name": "vllm-backport-cherry-pick",
-        "description": "Auto cherry-pick backport candidates and create a draft PR on the downstream repo. Use after scoring to attempt clean cherry-picks for ai-fixable candidates. The agent must still do semantic validation on the result.\n",
-        "category": "vllm",
-        "file_path": "helpers/skills/vllm-backport-cherry-pick/SKILL.md",
         "id": "vllm-backport-cherry-pick",
-        "allowed_tools": "Bash Read"
+        "description": "Auto cherry-pick backport candidates and create a draft PR on the downstream repo. Use after scoring to attempt clean cherry-picks for ai-fixable candidates. The agent must still do semantic validation on the result.\n",
+        "category": "odh-vllm",
+        "allowed_tools": "Bash Read",
+        "file_path": "plugins/odh-vllm/skills/vllm-backport-cherry-pick/SKILL.md"
       },
       {
         "name": "vllm-backport-classify",
-        "description": "Classify bugfix PRs by type (runtime_bug, platform_specific, unclear, not_bugfix) and filter by file existence at a release tag. Use after fetching raw PRs to produce a filtered candidate list. PRs marked \"unclear\" need agent review.\n",
-        "category": "vllm",
-        "file_path": "helpers/skills/vllm-backport-classify/SKILL.md",
         "id": "vllm-backport-classify",
-        "allowed_tools": "Bash Read"
+        "description": "Classify bugfix PRs by type (runtime_bug, platform_specific, unclear, not_bugfix) and filter by file existence at a release tag. Use after fetching raw PRs to produce a filtered candidate list. PRs marked \"unclear\" need agent review.\n",
+        "category": "odh-vllm",
+        "allowed_tools": "Bash Read",
+        "file_path": "plugins/odh-vllm/skills/vllm-backport-classify/SKILL.md"
       },
       {
         "name": "vllm-backport-fetch-prs",
-        "description": "Fetch merged bugfix PRs from vllm-project/vllm within a date window. Use when starting a backport triage run to get raw PR data from GitHub. Outputs a JSON array of PR objects with labels, authors, and merge commits.\n",
-        "category": "vllm",
-        "file_path": "helpers/skills/vllm-backport-fetch-prs/SKILL.md",
         "id": "vllm-backport-fetch-prs",
-        "allowed_tools": "Bash Read"
+        "description": "Fetch merged bugfix PRs from vllm-project/vllm within a date window. Use when starting a backport triage run to get raw PR data from GitHub. Outputs a JSON array of PR objects with labels, authors, and merge commits.\n",
+        "category": "odh-vllm",
+        "allowed_tools": "Bash Read",
+        "file_path": "plugins/odh-vllm/skills/vllm-backport-fetch-prs/SKILL.md"
       },
       {
         "name": "vllm-backport-push-report",
-        "description": "Push a triage report to GitHub under a timestamped directory in reports/. Use after the agent writes the report markdown and has ranked.json ready. Outputs the report URL to stdout.\n",
-        "category": "vllm",
-        "file_path": "helpers/skills/vllm-backport-push-report/SKILL.md",
         "id": "vllm-backport-push-report",
-        "allowed_tools": "Bash"
+        "description": "Push a triage report to GitHub under a timestamped directory in reports/. Use after the agent writes the report markdown and has ranked.json ready. Outputs the report URL to stdout.\n",
+        "category": "odh-vllm",
+        "allowed_tools": "Bash",
+        "file_path": "plugins/odh-vllm/skills/vllm-backport-push-report/SKILL.md"
       },
       {
         "name": "vllm-backport-score-rank",
-        "description": "Score and rank backport candidates using a composite formula based on verdict, severity, scope, risk, and self-containedness. Use after the agent completes semantic analysis to produce a prioritized ranked list.\n",
-        "category": "vllm",
-        "file_path": "helpers/skills/vllm-backport-score-rank/SKILL.md",
         "id": "vllm-backport-score-rank",
-        "allowed_tools": "Bash Read"
+        "description": "Score and rank backport candidates using a composite formula based on verdict, severity, scope, risk, and self-containedness. Use after the agent completes semantic analysis to produce a prioritized ranked list.\n",
+        "category": "odh-vllm",
+        "allowed_tools": "Bash Read",
+        "file_path": "plugins/odh-vllm/skills/vllm-backport-score-rank/SKILL.md"
       },
       {
         "name": "vllm-compare-reqs",
-        "description": "Use this skill to compare vllm requirements files between versions",
-        "category": "vllm",
-        "file_path": "helpers/skills/vllm-compare-reqs/SKILL.md",
         "id": "vllm-compare-reqs",
-        "allowed_tools": "Bash"
+        "description": "Use this skill to compare vllm requirements files between versions",
+        "category": "odh-vllm",
+        "allowed_tools": "Bash",
+        "file_path": "plugins/odh-vllm/skills/vllm-compare-reqs/SKILL.md"
       },
       {
         "name": "vllm-slack-summary",
-        "description": "Use this skill to generate slack summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team",
-        "category": "vllm",
-        "file_path": "helpers/skills/vllm-slack-summary/SKILL.md",
         "id": "vllm-slack-summary",
-        "allowed_tools": ""
+        "description": "Use this skill to generate slack summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team",
+        "category": "odh-vllm",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-vllm/skills/vllm-slack-summary/SKILL.md"
       }
     ],
     "agents": [
       {
         "name": "python-packaging-investigator",
-        "description": "Investigates Python package repositories to analyze build systems, dependencies, and packaging complexity. Provides comprehensive guidance on how packages can be built from source using integrated analysis skills.",
-        "category": "general",
-        "file_path": "helpers/agents/python-packaging-investigator.md",
         "id": "python-packaging-investigator",
-        "tools": "Bash, Read, Grep, Glob, WebFetch, Skill"
+        "description": "Investigates Python package repositories to analyze build systems, dependencies, and packaging complexity. Provides comprehensive guidance on how packages can be built from source using integrated analysis skills.",
+        "category": "odh-python-packaging",
+        "tools": "Bash, Read, Grep, Glob, WebFetch, Skill",
+        "file_path": "plugins/odh-python-packaging/agents/python-packaging-investigator.md"
       }
     ]
   }

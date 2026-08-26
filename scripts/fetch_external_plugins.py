@@ -3,9 +3,9 @@
 Fetch external plugin repositories and merge their content into the default plugin.
 
 Claude Code only auto-loads the marketplace's default plugin (the one whose name
-matches the marketplace name, i.e. ``odh-ai-helpers`` from ``./helpers``). Other
-plugins listed in marketplace.json require explicit installation into the plugin
-cache, which does not happen in non-interactive mode (``claude -p``).
+matches the marketplace name, i.e. ``odh-ai-helpers`` at ``plugins/odh-ai-helpers``).
+Other plugins listed in marketplace.json require explicit installation into the
+plugin cache, which does not happen in non-interactive mode (``claude -p``).
 
 This script works around that by cloning external plugin repos and copying their
 skills, agents, and commands directly into the default plugin directory so they
@@ -26,7 +26,7 @@ def main():
     repo_root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).parent.parent
 
     sources_path = repo_root / "claude-external-plugin-sources.json"
-    default_plugin_dir = repo_root / "helpers"
+    default_plugin_dir = repo_root / "plugins" / "odh-ai-helpers"
 
     with open(sources_path, encoding="utf-8") as f:
         external_config = json.load(f)

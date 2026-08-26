@@ -1,0 +1,8 @@
+{
+  "name": "odh-security",
+  "description": "Supply-chain security alerting and OCI image CVE comparison",
+  "version": "0.1.0",
+  "author": {
+    "name": "opendatahub-io"
+  }
+}

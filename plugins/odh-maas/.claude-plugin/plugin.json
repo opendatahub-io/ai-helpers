@@ -1,0 +1,8 @@
+{
+  "name": "odh-maas",
+  "description": "MaaS nightly QE impact analysis",
+  "version": "0.1.0",
+  "author": {
+    "name": "opendatahub-io"
+  }
+}
