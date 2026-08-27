@@ -81,7 +81,7 @@ plugins/odh-jira/
   agents/<agent>.md
 ```
 
-To add a category, create a new `plugins/<plugin>/` directory with its own `.claude-plugin/plugin.json`, then run `make update`. The deprecated `odh-ai-helpers` umbrella plugin re-exports every skill under the legacy `odh-ai-helpers:*` names for backwards compatibility.
+Plugin names follow the `odh-<domain>` convention and skills are referenced as `odh-<plugin>:<skill>` (e.g., `odh-jira:jira-workitem-view`). To add a category, create a new `plugins/<plugin>/` directory with its own `.claude-plugin/plugin.json`, then run `make update`. The deprecated `odh-ai-helpers` umbrella plugin re-exports every skill under the legacy `odh-ai-helpers:*` names for backwards compatibility.
 
 ## Ethical Guidelines
 
