@@ -373,6 +373,14 @@
         "file_path": "plugins/odh-konflux/skills/konflux-component/SKILL.md"
       },
       {
+        "name": "konflux-sandbox-onboarding",
+        "id": "konflux-sandbox-onboarding",
+        "description": "Guide AIPCC engineers through obtaining access to the shared Konflux sandbox, onboarding a user-selected GitHub repository or dummy project, and verifying pull-request and push pipelines. Use when an engineer wants a hands-on Konflux staging experiment; exclude production tenants and release configuration.",
+        "category": "odh-konflux",
+        "allowed_tools": "",
+        "file_path": "plugins/odh-konflux/skills/konflux-sandbox-onboarding/SKILL.md"
+      },
+      {
         "name": "learning-mode",
         "id": "learning-mode",
         "description": "Hands-on mentoring: the agent scaffolds work, then pauses so the engineer writes small, meaningful code (roughly 5–15 lines) for practice. Use when the user enables learning mode, asks for guided mentoring, hands-on practice, collaborative coding, or teaching while building a feature.",

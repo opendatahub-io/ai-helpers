@@ -1,0 +1,12 @@
+ARG BASE_IMAGE=registry.access.redhat.com/ubi9/ubi-minimal:latest
+FROM ${BASE_IMAGE}
+
+ARG PROJECT_OWNER="sandbox-engineer"
+ARG BUILD_MESSAGE="Konflux sandbox build succeeded"
+
+LABEL org.opencontainers.image.title="Konflux sandbox dummy project"
+LABEL org.opencontainers.image.description="Minimal image for a Konflux pipeline experiment"
+
+RUN printf '%s\n' "Owner: ${PROJECT_OWNER}" "${BUILD_MESSAGE}" > /konflux-result.txt
+
+CMD ["/bin/sh", "-c", "cat /konflux-result.txt"]

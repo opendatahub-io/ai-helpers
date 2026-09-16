@@ -1,0 +1,4 @@
+interface:
+  display_name: "Konflux Sandbox Onboarding"
+  short_description: "Set up a GitHub project in Konflux staging"
+  default_prompt: "Use $konflux-sandbox-onboarding to help me access the AIPCC sandbox and run a test pipeline."
