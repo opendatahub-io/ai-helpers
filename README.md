@@ -3,7 +3,7 @@
 This repository is a collaborative place hosting collections of AI plugins to automate and assist with various tasks.
 
 > [!NOTE]
-> Right now the focus is to support Claude Code, OpenCode.ai, Gemini Gems, and Cursor AI.
+> Right now the focus is to support Claude Code, Codex CLI, OpenCode.ai, Gemini Gems, and Cursor AI.
 > Other tools are welcome here, please submit Pull Requests.
 
 > [!NOTE]
@@ -52,7 +52,7 @@ Then you should git commit your change and after than running `make lint` would 
 ## Plugin Structure
 
 Tools are organized into per-domain plugins under `plugins/`. Each `plugins/<plugin>/`
-directory is an independently installable Claude Code plugin (and doubles as the tool's
+directory is an independently installable plugin (and doubles as the tool's
 category on the website):
 
 ```text
@@ -272,6 +272,29 @@ cursor-container() {
     ghcr.io/opendatahub-io/ai-helpers-cursor:latest "$@"
 }
 ```
+
+## Using with Codex CLI
+
+[Codex CLI](https://learn.chatgpt.com/docs/codex/cli) can install the `odh-*` plugins directly
+from this marketplace. No clone or skill symlinks are needed.
+
+```bash
+codex plugin marketplace add opendatahub-io/ai-helpers
+codex plugin add odh-jira@odh-ai-helpers
+codex plugin add odh-python-packaging@odh-ai-helpers
+```
+
+Replace the example plugin names with the categories you need. Use
+`codex plugin list --marketplace odh-ai-helpers` to see what is installed. The
+`odh-ai-helpers` umbrella plugin is deprecated; install individual `odh-*` plugins instead.
+
+If you access GitHub through SSH, use
+`codex plugin marketplace add git@github.com:opendatahub-io/ai-helpers.git` for the first
+command. To refresh a Git-backed marketplace, run
+`codex plugin marketplace upgrade odh-ai-helpers`.
+
+Some skills use Claude-specific variables or tools and may need adjustments in Codex. See
+[Codex skills and plugins](https://learn.chatgpt.com/docs/skills-and-plugins) for usage details.
 
 ## Using with OpenCode.ai
 
