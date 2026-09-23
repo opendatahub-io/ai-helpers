@@ -1350,6 +1350,13 @@
                         <div style="font-size: 0.875rem; color: var(--text-secondary);">Available in the <code>${tool.category}</code> plugin &mdash; install with <code>/plugin install ${tool.category}@odh-ai-helpers</code> (after adding the marketplace; see How to Install). Also included in the deprecated <code>odh-ai-helpers</code> umbrella.</div>
                     </div>
 
+                    ${tool.tool_type === 'skills' ? `
+                    <div style="margin-bottom: 1rem;">
+                        <div style="font-weight: 600; margin-bottom: 0.5rem;">Codex CLI</div>
+                        <div style="font-size: 0.875rem; color: var(--text-secondary);">Install the <code>${tool.category}</code> plugin with <code>codex plugin add ${tool.category}@odh-ai-helpers</code> (after adding the marketplace; see How to Install).</div>
+                    </div>
+                    ` : ''}
+
                     <div style="margin-bottom: 1rem;">
                         <div style="font-weight: 600; margin-bottom: 0.5rem;">Cursor</div>
                         ${tool.tool_type === 'skills' ? `
@@ -1696,6 +1703,48 @@
                 </p>
                 <p style="margin-bottom: 1rem; color: var(--text-secondary);">
                     Auto-update is disabled by default for third-party marketplaces. To enable it, run <code style="background: var(--bg-code); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.85em;">/plugin</code>, navigate to <strong>Marketplaces</strong> → <strong>odh-ai-helpers</strong>, and select <strong>Enable auto-update</strong>.
+                </p>
+
+                <hr style="border: none; border-top: 1px solid var(--border); margin: 2rem 0;">
+
+                <h3 style="margin-bottom: 1rem; color: #10A37F; display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="background: #10A37F; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Codex CLI</span>
+                    <a href="https://learn.chatgpt.com/docs/skills-and-plugins" target="_blank" rel="noopener noreferrer" style="color: #10A37F; font-size: 0.875rem; text-decoration: none;">📖 Docs</a>
+                </h3>
+
+                <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+                    Add the marketplace, then install the plugins you need:
+                </p>
+
+                <div style="position: relative; margin-bottom: 1rem;">
+                    <div class="code-block" style="padding-right: 5rem;">codex plugin marketplace add opendatahub-io/ai-helpers</div>
+                    <button class="copy-button" onclick="copyToClipboard('codex plugin marketplace add opendatahub-io/ai-helpers', event)" title="Copy to clipboard">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5.75 4.75H10.25V1.75H5.75V4.75ZM5.75 4.75H2.75V14.25H10.25V11.25M5.75 4.75V7.75H13.25V14.25H10.25V11.25M10.25 11.25H13.25V7.75H5.75V4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="copy-button-text">Copy</span>
+                    </button>
+                </div>
+
+                <div style="position: relative; margin-bottom: 0.75rem;">
+                    <div class="code-block" style="padding-right: 5rem;">codex plugin add odh-jira@odh-ai-helpers</div>
+                    <button class="copy-button" onclick="copyToClipboard('codex plugin add odh-jira@odh-ai-helpers', event)" title="Copy to clipboard">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5.75 4.75H10.25V1.75H5.75V4.75ZM5.75 4.75H2.75V14.25H10.25V11.25M5.75 4.75V7.75H13.25V14.25H10.25V11.25M10.25 11.25H13.25V7.75H5.75V4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="copy-button-text">Copy</span>
+                    </button>
+                </div>
+
+                <p style="margin-bottom: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                    Replace <code>odh-jira</code> with any plugin category shown above. The <code>odh-ai-helpers</code> umbrella is deprecated; install individual <code>odh-*</code> plugins. If you use SSH for GitHub, add the marketplace with <code>codex plugin marketplace add git@github.com:opendatahub-io/ai-helpers.git</code>. Some skills use Claude-specific variables or tools and may need adjustments in Codex.
+                </p>
+
+                <p style="margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 600;">
+                    Updating
+                </p>
+                <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+                    Run <code>codex plugin marketplace upgrade odh-ai-helpers</code> to refresh the Git-backed marketplace.
                 </p>
 
                 <hr style="border: none; border-top: 1px solid var(--border); margin: 2rem 0;">
