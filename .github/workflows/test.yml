@@ -22,7 +22,12 @@ jobs:
         python-version: '3.x'
 
     - name: Install dependencies
-      run: pip install pytest
+      run: pip install pytest -r plugins/odh-jira/skills/aipcc-cve-report/scripts/requirements.txt
 
     - name: Run tests
       run: make test
+
+    - name: Run AIPCC CVE report regression tests
+      run: |
+        node --version
+        python plugins/odh-jira/skills/aipcc-cve-report/scripts/test_report.py
