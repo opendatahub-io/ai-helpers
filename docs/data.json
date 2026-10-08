@@ -141,6 +141,14 @@
         "file_path": "plugins/odh-git/skills/aipcc-commit-suggest/SKILL.md"
       },
       {
+        "name": "aipcc-cve-report",
+        "id": "aipcc-cve-report",
+        "description": "Generate CVE remediation instructions for the user's target RHAI product release or content channel from Jira JQL, ticket keys or a ticket description. Verify fixed packages in the RHAI package index and a matching RHAI base image (RHAIBI), or prepare a focused AIPCC build-request prompt.",
+        "category": "odh-jira",
+        "allowed_tools": "Bash Read Write Edit WebFetch WebSearch AskUserQuestion",
+        "file_path": "plugins/odh-jira/skills/aipcc-cve-report/SKILL.md"
+      },
+      {
         "name": "coderabbit-review",
         "id": "coderabbit-review",
         "description": "Use when you need to evaluate CodeRabbit PR comments and fix or reply",
