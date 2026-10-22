@@ -96,6 +96,7 @@ These rules prevent the most common review findings. Follow them when generating
 ### General
 - Do not create orphaned test files that will never be executed.
 - Do not add unnecessary external dependencies in simple scripts.
+- Do not modify centrally managed security config files (`semgrep.yaml`, `.gitleaks.toml`, `.gitleaksignore`) — they are synced from the `opendatahub-io/security-config` repository and protected by an org-level push ruleset.
 
 ### Markdown
 - Always specify a language identifier on fenced code blocks (` ```bash `, ` ```json `, ` ```yaml `, ` ```python `, etc.). Never use bare ` ``` ` fences.
