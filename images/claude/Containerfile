@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi10/ubi:10.2@sha256:9c6a62df091dd9fcef9c52ca4e10c252bdeaa0cb48b363f7e61b4c975dc75d75
+FROM registry.access.redhat.com/ubi10/ubi:10.2@sha256:7495bfa53ae7a81a58aeface0bb4858d12741832c542c29dc690d67b183b73b0
 
 # Install Node.js (includes NPM), Python 3, development tools, and RPM tools
 RUN dnf install -y nodejs \
